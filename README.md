@@ -1,25 +1,25 @@
-# TÍTULO DO PROJETO
+# CHECAR
 
-`CURSO`
+`CURSO` ANÁLISE E DESENVOLVIMENTO DE SISTEMAS
 
-`DISCIPLINA`
+`DISCIPLINA` Desenvolvimento de uma Aplicação Distribuída
 
-`SEMESTRE`
+`SEMESTRE` 4º
 
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+Checar nasceu da necessidade de pequenas, médias e grandes empresas realizem o acompanhamento períodico dos componentes associados a sua frota. O checklist direciona os operadores e a equipe de manutenção a encontrarem possíveis falhas antes do seu estado crítico, evitando paradas emergenciais dos equipamentos.
 
 ## Integrantes
 
-* Nome completo do aluno 1
-* Nome completo do aluno 2
-* Nome completo do aluno 3
-* Nome completo do aluno 4
-* Nome completo do aluno 5
-* Nome completo do aluno 6
+* Gabriel Rodrigues
+* Gabriela Aparecida Alcântara Silva
+* Israel Aparecido
+* Marcus
+* Renata
+* Talisson
 
 ## Orientador
 
-* Nome completo do professor 1
+* Carolina Stephanie Jerônimo de Almeida 
 
 ## Instruções de utilização
 
