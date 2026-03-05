@@ -1,18 +1,9 @@
 # Introdução
-
-Texto descritivo com a visão geral do projeto abordado. Inclui o contexto, o problema, os objetivos, a justificativa e o público-alvo do projeto.
+Manutenção é uma estratégia na obtenção dos resultados da organização, como aumento da produtividade, e deve estar direcionada ao suporte do gerenciamento e solução de problemas (KARDEC; NASCIF, 2019). A manutenção deve considerar os objetivos da empresa sendo gerenciada para proporcionar um custo global gerenciado. Com isso, FACCIO et al.(2014) demonstra que empresas tendem a reduzir gastos, o que atinge diretamente verbas que seriam destinadas a manutenção, causando impacto e provocando consequências críticas no fator confiabilidade a longo prazo. O desenvolvimento de políticas de manutenção adequadas garante a eficiência das unidades produtivas, em termos de qualidade e disponibilidade. Segundo Slack, Brandon-Jones e Johnston (2018, p. 645), a manutenção preventiva “visa
+eliminar ou reduzir a probabilidade de falhas por manutenção (limpeza, lubrificação, substituição e verificação) das instalações em intervalos de tempo pré-planejados”. Neste tipo de manutenção, o custo incorrido tende a ser menor, refletindo positivamente no resultado do exercício da entidade, diferentemente da manutenção corretiva que é executada por decorrência da falta de manutenção (FREITAS; RESENDE FILHO, 2005). Diante desse contexto, este trabalho propõe o desenvolvimento do aplicativo web e mobile CHECAR, com o objetivo de apoiar a equipe de planejamento da manutenção na tomada de decisões relacionadas ao agendamento de manutenções preventivas e à realização de checklist.
 
 ## Problema
-Nesse momento você deve apresentar o problema que a sua aplicação deve  resolver. No entanto, não é a hora de comentar sobre a aplicação.
-
-Descreva também o contexto em que essa aplicação será usada, se  houver: empresa, tecnologias, etc. Novamente, descreva apenas o que de  fato existir, pois ainda não é a hora de apresentar requisitos  detalhados ou projetos.
-
-Nesse momento, o grupo pode optar por fazer uso  de ferramentas como Design Thinking, que permite um olhar de ponta a ponta para o problema.
-
-> **Links Úteis**:
-> - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
-> - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
-> - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
+Foram observados custos elevados de manutenção devido ao alto índice de intervenções emergenciais. Por se tratarem de paradas inesperadas, a urgência dessas ocorrências aumenta significativamente os custos relacionados ao trâmite e ao reparo dos equipamentos. 
 
 ## Objetivos
 
