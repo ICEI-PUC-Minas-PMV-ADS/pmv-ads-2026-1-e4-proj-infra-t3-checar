@@ -14,7 +14,7 @@ Checar nasceu da necessidade de pequenas, médias e grandes empresas realizem o 
 * Gabriela Aparecida Alcântara Silva
 * Israel Aparecido
 * Marcus
-* Renata
+* Renata Pereira da Rocha
 * Talisson
 
 ## Orientador
