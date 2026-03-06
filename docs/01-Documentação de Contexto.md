@@ -3,7 +3,14 @@ Manutenção é uma estratégia na obtenção dos resultados da organização, c
 eliminar ou reduzir a probabilidade de falhas por manutenção (limpeza, lubrificação, substituição e verificação) das instalações em intervalos de tempo pré-planejados”. Neste tipo de manutenção, o custo incorrido tende a ser menor, refletindo positivamente no resultado do exercício da entidade, diferentemente da manutenção corretiva que é executada por decorrência da falta de manutenção (FREITAS; RESENDE FILHO, 2005). Diante desse contexto, este trabalho propõe o desenvolvimento do aplicativo web e mobile CHECAR, com o objetivo de apoiar a equipe de planejamento da manutenção na tomada de decisões relacionadas ao agendamento de manutenções preventivas e à realização de checklist.
 
 ## Problema
-Foram observados custos elevados de manutenção devido ao alto índice de intervenções emergenciais. Por se tratarem de paradas inesperadas, a urgência dessas ocorrências aumenta significativamente os custos relacionados ao trâmite e ao reparo dos equipamentos. 
+
+Em organizações que utilizam veículos em suas operações, como empresas de logística, transporte ou prestação de serviços, a realização de checklists e manutenções preventivas é fundamental para garantir a segurança, a disponibilidade e o bom funcionamento dos veículos. Entretanto, em muitos casos, essas atividades ainda são realizadas de forma manual ou pouco estruturada, utilizando formulários em papel ou registros descentralizados.
+
+Esse cenário pode gerar diversos problemas operacionais, como falta de padronização no registro das inspeções, dificuldade no acompanhamento do histórico de manutenção e falhas na comunicação entre as equipes responsáveis pela gestão da frota. Além disso, a ausência de um controle centralizado pode dificultar a identificação de problemas recorrentes e o planejamento adequado das manutenções.
+
+A utilização de checklists estruturados é uma prática importante para registrar inspeções e acompanhar o estado de conservação dos veículos, contribuindo para a prevenção de falhas e para a melhoria do controle da frota (TOTVS, 2023). No entanto, quando esse processo não é realizado de maneira organizada e acessível, torna-se mais difícil monitorar as condições dos veículos e garantir que as verificações necessárias sejam realizadas regularmente.
+
+Como consequência, veículos podem continuar em operação mesmo apresentando irregularidades, o que aumenta o risco de falhas mecânicas, custos elevados com manutenção corretiva e possíveis impactos na segurança dos usuários. Dessa forma, observa-se a necessidade de melhorar os processos de registro, acompanhamento e organização das informações relacionadas aos checklists e à manutenção de veículos, possibilitando maior controle e eficiência na gestão dessas atividades.
 
 ## Objetivos
 
