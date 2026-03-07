@@ -14,12 +14,15 @@ Como consequência, veículos podem continuar em operação mesmo apresentando i
 
 ## Objetivos
 
-Aqui você deve descrever os objetivos do trabalho indicando que o objetivo geral é desenvolver um software para solucionar o problema apresentado acima. 
+Desenvolver uma ferramenta voltada a registro e padronização de checklists a inspeções veiculares, com armazenamento do histórico de manutenções e controle de prazos (ex: IPVA, seguro), de modo a apoiar o planejamento da manutenção preventiva, reduzir falhas operacionais e contribuir para a segurança e disponibilidade dos veículos.
 
-Apresente também alguns (pelo menos 2) objetivos específicos dependendo de onde você vai querer concentrar a sua prática investigativa, ou como você vai aprofundar no seu trabalho.
- 
-> **Links Úteis**:
-> - [Objetivo geral e objetivo específico: como fazer e quais verbos utilizar](https://blog.mettzer.com/diferenca-entre-objetivo-geral-e-objetivo-especifico/)
+Como objetivos específicos, podemos destacar:
+
+* Estruturar e modelar um checklist digital padronizado que contemple condições de componentes, itens de segurança e pendências administrativas.
+
+* Implementar funcionalidades para um registro de inspeções e a consolidação de um histórico por veículo, permitindo consultas favorecendo o acompanhamento de ocorrências.
+
+* Desenvolver mecanismos de alertas e notificações para vencimentos e manutenção, a fim de apoiar o planejamento e execução de intervenções preventivas.
 
 ## Justificativa
 
