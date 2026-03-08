@@ -33,13 +33,11 @@ O grupo de trabalho pode fazer uso de questionários, entrevistas e dados estat�
 
 ## Público-Alvo
 
-Descreva quem serão as pessoas que usarão a sua aplicação indicando os diferentes perfis. O objetivo aqui não é definir quem serão os clientes ou quais serão os papéis dos usuários na aplicação. A ideia é, dentro do possível, conhecer um pouco mais sobre o perfil dos usuários: conhecimentos prévios, relação com a tecnologia, relações
-hierárquicas, etc.
+O App **Checar** foi desenvolvida para um público diversificado que transita entre o uso autônomo e o corporativo. O perfil geral engloba indivíduos de 18+ anos, com níveis variados de conhecimento digital, mas que possuem em comum a dependência do veículo para suas atividades econômicas.
 
-Adicione informações sobre o público-alvo por meio de uma descrição textual, diagramas de personas e mapa de stakeholders.
+### Perfil dos Usuários:
+* **Conhecimentos Prévios:** Variam desde o motorista operacional, que possui familiaridade básica com smartphones (uso de GPS e WhatsApp), até gestores de logística com domínio de ferramentas de análise de dados e ERPs.
+* **Relação com a Tecnologia:** A aplicação deve atender tanto o "heavy user" (que busca personalização e dados) quanto o usuário resistente, que necessita de interfaces limpas, botões grandes e processos que não ultrapassem 2 minutos.
+* **Relações Hierárquicas:** O sistema suporta desde o uso **individual** (autônomo) até estruturas de **comando e controle**, onde o motorista reporta o status ao gestor, e este, por sua vez, presta contas a órgãos reguladores ou diretores financeiros.
 
-> **Links Úteis**:
-> - [Público-alvo](https://blog.hotmart.com/pt-br/publico-alvo/)
-> - [Como definir o público alvo](https://exame.com/pme/5-dicas-essenciais-para-definir-o-publico-alvo-do-seu-negocio/)
-> - [Público-alvo: o que é, tipos, como definir seu público e exemplos](https://klickpages.com.br/blog/publico-alvo-o-que-e/)
-> - [Qual a diferença entre público-alvo e persona?](https://rockcontent.com/blog/diferenca-publico-alvo-e-persona/)
+
