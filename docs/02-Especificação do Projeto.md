@@ -8,19 +8,63 @@ Apresente uma visão geral do que será abordado nesta parte do documento, enume
 
 ## Personas
 
-Pedro Paulo tem 26 anos, é arquiteto recém-formado e autônomo. Pensa em se desenvolver profissionalmente através de um mestrado fora do país, pois adora viajar, é solteiro e sempre quis fazer um intercâmbio. Está buscando uma agência que o ajude a encontrar universidades na Europa que aceitem alunos estrangeiros.
+### 1. Pedro Paulo
+* **Perfil:** 26 anos, arquiteto recém-formado e autônomo. Solteiro, planeja mestrado na Europa.
+* **Comportamento:** Extremamente organizado com finanças para viabilizar seu intercâmbio. Usa o carro para visitar obras e clientes.
+* **Dor:** Medo de quebras inesperadas que consumam sua reserva financeira para a viagem internacional.
+* **Necessidade:** Registro rigoroso de manutenção para valorizar o veículo na revenda futura.
+* **No App:** Checklist diário e alertas de manutenção preventiva para evitar gastos corretivos.
 
-Enumere e detalhe as personas da sua solução. Para tanto, baseie-se tanto nos documentos disponibilizados na disciplina e/ou nos seguintes links:
+### 2. Alberto
+* **Perfil:** 45 anos, gerencia 15 vans de entrega rápida.
+* **Comportamento:** Toma decisões baseadas em métricas. Não tem tempo para verificar veículo por veículo.
+* **Dor:** Falta de responsabilidade dos motoristas e veículos parados por negligência (óleo/pneu).
+* **Necessidade:** Centralização de dados e auditoria remota.
+* **No App:** Dashboard administrativo e geração de relatórios PDF consolidados.
 
-> **Links Úteis**:
-> - [Rock Content](https://rockcontent.com/blog/personas/)
-> - [Hotmart](https://blog.hotmart.com/pt-br/como-criar-persona-negocio/)
-> - [O que é persona?](https://resultadosdigitais.com.br/blog/persona-o-que-e/)
-> - [Persona x Público-alvo](https://flammo.com.br/blog/persona-e-publico-alvo-qual-a-diferenca/)
-> - [Mapa de Empatia](https://resultadosdigitais.com.br/blog/mapa-da-empatia/)
-> - [Mapa de Stalkeholders](https://www.racecomunicacao.com.br/blog/como-fazer-o-mapeamento-de-stakeholders/)
->
-Lembre-se que você deve ser enumerar e descrever precisamente e personalizada todos os clientes ideais que sua solução almeja.
+### 3. Cláudia
+* **Perfil:** 34 anos, líder de equipes de campo.
+* **Comportamento:** Rigorosa com processos. Gerencia o revezamento de motoristas em turnos.
+* **Dor:** Danos estéticos (mossas/riscos) que aparecem sem que nenhum funcionário assuma a culpa.
+* **Necessidade:** Prova visual do estado do veículo na entrega das chaves.
+* **No App:** Uso obrigatório da funcionalidade de **Upload de Fotos** em 360°.
+
+### 4. Seu Manuel
+* **Perfil:** 55 anos, motorista de pesados em rotas interestaduais.
+* **Comportamento:** Resistente a tecnologia; usa o celular apenas para o básico (WhatsApp).
+* **Dor:** Aplicativos complexos com textos pequenos e que não funcionam sem sinal de internet.
+* **Necessidade:** Agilidade para cumprir protocolos de segurança sem atrasar a viagem.
+* **No App:** Interface simplificada, botões grandes e **Modo Offline**.
+
+### 5. Ricardo
+* **Perfil:** 40 anos, dono de uma rent-a-car local.
+* **Comportamento:** Focado em segurança jurídica e proteção do patrimônio.
+* **Dor:** Clientes que contestam avarias no momento da devolução do veículo.
+* **Necessidade:** Documento datado e assinado com o estado do carro.
+* **No App:** Geração automática de PDF de Check-in/Check-out com assinatura digital.
+
+### 6. Jorge
+* **Perfil:** 48 anos, responsável pela manutenção preventiva de uma construtora.
+* **Comportamento:** Técnico e detalhista. Prefere prevenir do que consertar.
+* **Dor:** Receber informações vagas como "o carro está estranho".
+* **Necessidade:** Diagnóstico prévio baseado no que o motorista reportou no checklist.
+* **No App:** Acesso ao histórico de inspeções para identificar padrões de falha.
+
+### 7. Drª Margarida
+* **Perfil:** 52 anos, responsável pela frota de transporte escolar.
+* **Comportamento:** Burocrática e focada em conformidade legal (compliance).
+* **Dor:** Dificuldade em provar fiscalização em caso de auditorias do governo.
+* **Necessidade:** Registro imutável de inspeções de itens de segurança (cintos/freios).
+* **No App:** Exportação de logs para prestação de contas governamental.
+
+### 8. Lucas
+* **Perfil:** 24 anos, vive e viaja em uma van adaptada (Motorhome).
+* **Comportamento:** Conectado e entusiasta da vida ao ar livre.
+* **Dor:** Insegurança ao viajar por locais desertos sem saber se a mecânica está 100%.
+* **Necessidade:** Checklist customizado para os sistemas da casa (água, bateria, gás).
+* **No App:** Funcionalidade de customização total de itens do checklist.
+
+---
 
 ## Histórias de Usuários
 
