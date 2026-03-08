@@ -94,31 +94,33 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 
 |ID    | Descrição do Requisito  | Prioridade | Responsável |
 |------|-----------------------------------------|----|----|
-|RF-001| Permitir que o usuário cadastre tarefas | ALTA | Pedro |
-|RF-002| Emitir um relatório de tarefas no mês   | MÉDIA | João |
-|RF-003| Emitir um relatório de tarefas no mês   | MÉDIA | João |
+|RF-001| Permitir o cadastro e autenticação de motoristas e gestores | ALTA | Drª Margarida |
+|RF-002| Permitir o cadastro detalhado de veículos (placa, modelo, ano) | ALTA | Lucas |
+|RF-003| Permitir a criação de modelos de checklist (diário, preventivo) | MÉDIA | Jorge |
+|RF-004| Registrar status de itens (Conforme/Não Conforme) | ALTA | Ricardo |
+|RF-005| Permitir upload de fotos de avarias nos veículos | ALTA | Manuel |
+|RF-006| Permitir a inclusão de observações em texto livre por item | MÉDIA | Cláudia |
+|RF-007| Permitir a assinatura digital do condutor ao finalizar | MÉDIA | Alberto |
+|RF-008| Calcular automaticamente a conformidade do checklist | ALTA | Pedro Paulo |
+|RF-009| Gerar relatórios em PDF das inspeções realizadas | MÉDIA | Drª Margarida |
+|RF-010| Enviar notificações de falhas críticas via sistema | ALTA | Lucas |
+|RF-011| Permitir a busca de histórico de inspeções por placa | MÉDIA | Jorge |
+|RF-012| Permitir a exportação de dados em formato CSV | BAIXA | Ricardo |
 
 ### Requisitos não Funcionais
 
 |ID     | Descrição do Requisito  |Prioridade |
 |-------|-------------------------|----|
-|RNF-001| O sistema deve ser responsivo para rodar em um dispositivos móvel | MÉDIA | 
-|RNF-002| Deve processar requisições do usuário em no máximo 3s |  BAIXA | 
-
-Com base nas Histórias de Usuário, enumere os requisitos da sua solução. Classifique esses requisitos em dois grupos:
-
-- [Requisitos Funcionais
- (RF)](https://pt.wikipedia.org/wiki/Requisito_funcional):
- correspondem a uma funcionalidade que deve estar presente na
-  plataforma (ex: cadastro de usuário).
-- [Requisitos Não Funcionais
-  (RNF)](https://pt.wikipedia.org/wiki/Requisito_n%C3%A3o_funcional):
-  correspondem a uma característica técnica, seja de usabilidade,
-  desempenho, confiabilidade, segurança ou outro (ex: suporte a
-  dispositivos iOS e Android).
-Lembre-se que cada requisito deve corresponder à uma e somente uma
-característica alvo da sua solução. Além disso, certifique-se de que
-todos os aspectos capturados nas Histórias de Usuário foram cobertos.
+|RNF-001| O sistema deve ser responsivo e adaptável a telas mobile | MÉDIA | 
+|RNF-002| O sistema deve permitir preenchimento em modo offline | ALTA |
+|RNF-003| Tempo de resposta para salvar checklist não deve exceder 2s | MÉDIA |
+|RNF-004| Toda a comunicação deve ser protegida via TLS 1.3 | ALTA |
+|RNF-005| O sistema deve manter logs de auditoria de cada alteração | MÉDIA |
+|RNF-006| A interface deve seguir diretrizes de acessibilidade e contraste | MÉDIA |
+|RNF-007| O banco de dados deve suportar crescimento de 10k registros/mês | BAIXA |
+|RNF-008| Disponibilidade mínima do sistema de 99,9% | ALTA |
+|RNF-009| As imagens enviadas devem ser comprimidas automaticamente | MÉDIA |
+|RNF-010| O app deve ser compatível com Android 10+ e iOS 15+ | MÉDIA |
 
 ## Restrições
 
