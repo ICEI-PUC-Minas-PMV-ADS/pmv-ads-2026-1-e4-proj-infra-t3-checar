@@ -10,12 +10,12 @@ Checar nasceu da necessidade de pequenas, médias e grandes empresas realizem o 
 
 ## Integrantes
 
-* Gabriel Rodrigues
+* Gabriel Rodrigues Alves
 * Gabriela Aparecida Alcântara Silva
-* Israel Aparecido
-* Marcus
+* Israel Aparecido de Oliveira
+* Marcus Vinicius Alves Quintas
 * Renata Pereira da Rocha
-* Talisson
+* Talisson Augusto Prudêncio Santos
 
 ## Orientador
 
