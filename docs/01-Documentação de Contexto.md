@@ -22,8 +22,6 @@ Como objetivos específicos, podemos destacar:
 
 * Implementar funcionalidades para um registro de inspeções e a consolidação de um histórico por veículo, permitindo consultas favorecendo o acompanhamento de ocorrências.
 
-* Desenvolver mecanismos de alertas e notificações para vencimentos e manutenção, a fim de apoiar o planejamento e execução de intervenções preventivas.
-
 ## Justificativa
 
 Descreva a importância ou a motivação para trabalhar com esta aplicação que você escolheu. Indique as razões pelas quais você escolheu seus objetivos específicos ou as razões para aprofundar em certos aspectos do software.
