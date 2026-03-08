@@ -128,14 +128,9 @@ O projeto está restrito pelos itens apresentados na tabela a seguir.
 
 |ID| Restrição                                             |
 |--|-------------------------------------------------------|
-|01| O projeto deverá ser entregue até o final do semestre |
-|02| Não pode ser desenvolvido um módulo de backend        |
-
-Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
-
-> **Links Úteis**:
-> - [O que são Requisitos Funcionais e Requisitos Não Funcionais?](https://codificar.com.br/requisitos-funcionais-nao-funcionais/)
-> - [O que são requisitos funcionais e requisitos não funcionais?](https://analisederequisitos.com.br/requisitos-funcionais-e-requisitos-nao-funcionais-o-que-sao/)
+|01| Tecnológica: O sistema deve ser desenvolvido utilizando uma arquitetura de microserviços |
+|02| Infraestrutura: A aplicação deve ser hospedada em ambiente de nuvem com suporte a auto-scaling |
+|03| Legal: O sistema deve estar em total conformidade com a Lei Geral de Proteção de Dados (LGPD). |
 
 ## Diagrama de Casos de Uso
 
