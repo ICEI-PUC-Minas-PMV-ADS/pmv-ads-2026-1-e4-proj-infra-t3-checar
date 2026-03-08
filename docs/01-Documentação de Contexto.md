@@ -24,12 +24,11 @@ Como objetivos específicos, podemos destacar:
 
 ## Justificativa
 
-Descreva a importância ou a motivação para trabalhar com esta aplicação que você escolheu. Indique as razões pelas quais você escolheu seus objetivos específicos ou as razões para aprofundar em certos aspectos do software.
+A gestão adequada da manutenção veicular é essencial para garantir segurança, disponibilidade dos veículos e controle de custos operacionais. No entanto, muitas organizações ainda realizam o registro de inspeções e checklists de forma manual ou descentralizada, o que dificulta a padronização das informações, o acompanhamento do histórico de manutenção e a identificação antecipada de falhas.
 
-O grupo de trabalho pode fazer uso de questionários, entrevistas e dados estatísticos, que podem ser apresentados, com o objetivo de esclarecer detalhes do problema que será abordado pelo grupo.
+Esse cenário pode comprometer o planejamento da manutenção preventiva e aumentar a ocorrência de intervenções corretivas, que geralmente possuem maior custo e impacto operacional. Além disso, a falta de registros estruturados dificulta a comunicação entre motoristas, gestores de frota e equipes de manutenção, reduzindo a eficiência na tomada de decisões.
 
-> **Links Úteis**:
-> - [Como montar a justificativa](https://guiadamonografia.com.br/como-montar-justificativa-do-tcc/)
+Diante desse contexto, o desenvolvimento do aplicativo CHECAR justifica-se pela necessidade de digitalizar e padronizar o processo de inspeção veicular, permitindo o registro organizado de checklists, o armazenamento do histórico de manutenções e o acompanhamento das condições dos veículos. A solução busca apoiar a gestão da manutenção preventiva, contribuindo para maior controle da frota, redução de falhas operacionais e aumento da segurança nas operações.
 
 ## Público-Alvo
 
