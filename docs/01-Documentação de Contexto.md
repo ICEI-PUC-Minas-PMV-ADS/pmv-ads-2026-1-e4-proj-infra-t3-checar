@@ -37,7 +37,9 @@ O App **Checar** foi desenvolvida para um público diversificado que transita en
 
 ### Perfil dos Usuários:
 * **Conhecimentos Prévios:** Variam desde o motorista operacional, que possui familiaridade básica com smartphones (uso de GPS e WhatsApp), até gestores de logística com domínio de ferramentas de análise de dados e ERPs.
+  
 * **Relação com a Tecnologia:** A aplicação deve atender tanto o "heavy user" (que busca personalização e dados) quanto o usuário resistente, que necessita de interfaces limpas, botões grandes e processos que não ultrapassem 2 minutos.
+  
 * **Relações Hierárquicas:** O sistema suporta desde o uso **individual** (autônomo) até estruturas de **comando e controle**, onde o motorista reporta o status ao gestor, e este, por sua vez, presta contas a órgãos reguladores ou diretores financeiros.
 
 
