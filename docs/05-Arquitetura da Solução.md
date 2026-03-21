@@ -16,6 +16,10 @@ Definição de como o software é estruturado em termos dos componentes que faze
 Este documento descreve a estrutura e o esquema do banco de dados não relacional utilizado por nosso projeto, baseado em MongoDB. O MongoDB é um banco de dados NoSQL que armazena dados em documentos JSON (ou BSON, internamente), permitindo uma estrutura flexível e escalável para armazenar e consultar dados.
 
 ## Esquema do Banco de Dados
+
+### Criação do banco de dados via compass e pelo shell foi visualizado se realmente o CHECAR foi criado.
+<img width="310" height="140" alt="image" src="https://github.com/user-attachments/assets/c5107746-f26f-4bad-aa70-7ad49b94b393" />
+
 ### Coleção: users
 Armazena as informações dos usuários do sistema.
 
