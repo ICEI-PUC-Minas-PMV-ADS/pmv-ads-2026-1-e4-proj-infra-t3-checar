@@ -208,6 +208,9 @@ Estrutura do Documento
 > - <strong>imagemAssinatura:</strong> Imagem da assinatura do responsável.
 > - <strong>data:</strong> Quando foi realizado a assinatura pelo responsável
 
+
+<img width="367" height="525" alt="image" src="https://github.com/user-attachments/assets/2baa1029-2782-42af-aafc-b49ada392304" />
+
 ## Tecnologias Utilizadas
 
 Descreva aqui qual(is) tecnologias você vai usar para resolver o seu problema, ou seja, implementar a sua solução. Liste todas as tecnologias envolvidas, linguagens a serem utilizadas, serviços web, frameworks, bibliotecas, IDEs de desenvolvimento, e ferramentas.
