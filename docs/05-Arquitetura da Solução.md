@@ -20,20 +20,26 @@ Este documento descreve a estrutura e o esquema do banco de dados não relaciona
 ### Criação do banco de dados via compass e pelo shell foi visualizado se realmente o CHECAR foi criado.
 <img width="310" height="140" alt="image" src="https://github.com/user-attachments/assets/c5107746-f26f-4bad-aa70-7ad49b94b393" />
 
-### Coleção: users
+### Coleção: Usuário
 Armazena as informações dos usuários do sistema.
 
 Estrutura do Documento
 
 ```Json
+/** 
+* usuarios checar
+*/
 {
-    "_id": "ObjectId('5f7e1bbf9b2a4f1a9c38b9a1')",
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "passwordHash": "hash_da_senha",
-    "roles": ["admin", "user"],
-    "createdAt": "2024-08-29T10:00:00Z",
-    "updatedAt": "2024-08-29T12:00:00Z"
+  "_id": {
+    "$oid": "69be8eb670e2e5bbf7d395bc"
+  },
+  "nome": "Gabriela",
+  "email": "gabriela@checar.com.br",
+  "senha": "hash_da_senha",
+  "tipoUsuario": [
+    "admin",
+    "user"
+  ]
 }
 ```
 
@@ -41,10 +47,8 @@ Estrutura do Documento
 > - <strong>_id:</strong> Identificador único do usuário gerado automaticamente pelo MongoDB.
 > - <strong>name:</strong> Nome completo do usuário.
 > - <strong>email:</strong> Endereço de email do usuário.
-> - <strong>passwordHash:</strong> Hash da senha do usuário.
-> - <strong>roles:</strong> Lista de papéis atribuídos ao usuário (por exemplo, admin, user).
-> - <strong>createdAt:</strong> Data e hora de criação do usuário.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do usuário.
+> - <strong>senha:</strong> Hash da senha do usuário.
+> - <strong>tipoUsuario:</strong> Lista de papéis atribuídos ao usuário (por exemplo, admin, user).
 
 ### Coleção: products
 Armazena as informações dos produtos disponíveis no sistema.
