@@ -82,7 +82,8 @@ Estrutura do Documento
   "observacao": "ar condicionado com defeito",
   "status": ["em utilização", "com problema", "disponível"],
   "usuarioId": { "$oid": "69be945b70e2e5bbf7d395c5" },
-  "veiculoId": { "$oid": "69be945b70e2e5bbf7d395c5" }
+  "veiculoId": { "$oid": "69be945b70e2e5bbf7d395c5" }.
+  "modeloId": { "$oid": "69be945b70e2e5bbf7d395c5" }
 }
 ```
 
@@ -94,6 +95,7 @@ Estrutura do Documento
 > - <strong>status:</strong> Status de utilização do veículo caso esteja disponível para uso, um utilização ou com problema.
 > - <strong>usuarioId:</strong> Id do usuário responsável pelo checklist.
 > - <strong>veiculoId:</strong> Id do veículo deste checklist.
+> - <strong>modeloId:</strong> Id do modelo utilizado no checklist.
 
 ### Coleção: ModeloChecklist
 Armazena as informações do checklist realizado pelo usuário.
