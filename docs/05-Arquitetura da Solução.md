@@ -50,30 +50,24 @@ Estrutura do Documento
 > - <strong>senha:</strong> Hash da senha do usuário.
 > - <strong>tipoUsuario:</strong> Lista de papéis atribuídos ao usuário (por exemplo, admin, user).
 
-### Coleção: products
+### Coleção: Veiculo
 Armazena as informações dos produtos disponíveis no sistema.
 
 ```Json
 {
-    "_id": "ObjectId('5f7e1ccf9b2a4f1a9c38b9a2')",
-    "name": "Produto Exemplo",
-    "description": "Descrição detalhada do produto.",
-    "price": 99.99,
-    "category": "Categoria Exemplo",
-    "stock": 100,
-    "createdAt": "2024-08-29T10:30:00Z",
-    "updatedAt": "2024-08-29T11:30:00Z"
+  "placa": "ASHWG-1234",
+  "modelo": "Uno",
+  "ano": 2024,
+  "marca": "Fiat",
+  "cor": "Prata"
 }
 ```
 
 #### Descrição dos Campos
-> - <strong>_id:</strong> Identificador único do usuário gerado automaticamente pelo MongoDB.
-> - <strong>name:</strong> Nome completo do usuário.
-> - <strong>email:</strong> Endereço de email do usuário.
-> - <strong>passwordHash:</strong> Hash da senha do usuário.
-> - <strong>roles:</strong> Lista de papéis atribuídos ao usuário (por exemplo, admin, user).
-> - <strong>createdAt:</strong> Data e hora de criação do usuário.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do usuário.
+> - <strong>_id:</strong> Identificador único do veículo gerado automaticamente pelo MongoDB.
+> - <strong>placa:</strong> Placa do veículo.
+> - <strong>modelo:</strong> Modelo do veículo.
+> - <strong>ano:</strong> Ano do veículo.
 
 ### Coleção: products
 Armazena as informações dos produtos disponíveis no sistema.
