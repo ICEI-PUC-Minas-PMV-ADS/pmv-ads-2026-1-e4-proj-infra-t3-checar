@@ -69,101 +69,144 @@ Armazena as informações dos produtos disponíveis no sistema.
 > - <strong>modelo:</strong> Modelo do veículo.
 > - <strong>ano:</strong> Ano do veículo.
 
-### Coleção: products
+### Coleção: Checklist
 Armazena as informações dos produtos disponíveis no sistema.
 
 Estrutura do Documento
 
 ```Json
 {
-    "_id": "ObjectId('5f7e1ccf9b2a4f1a9c38b9a2')",
-    "name": "Produto Exemplo",
-    "description": "Descrição detalhada do produto.",
-    "price": 99.99,
-    "category": "Categoria Exemplo",
-    "stock": 100,
-    "createdAt": "2024-08-29T10:30:00Z",
-    "updatedAt": "2024-08-29T11:30:00Z"
+  "_id": { "$oid": "69be945b70e2e5bbf7d395c5" },
+  "data": "2026-03-21T00:00:00Z",
+  "conformidade": true,
+  "observacao": "ar condicionado com defeito",
+  "status": ["em utilização", "com problema", "disponível"]
 }
 ```
 
 #### Descrição dos Campos
-> - <strong>_id:</strong> Identificador único do produto gerado automaticamente pelo MongoDB.
-> - <strong>name:</strong> Nome do produto.
-> - <strong>description:</strong> Descrição detalhada do produto.
-> - <strong>price:</strong> Preço do produto.
-> - <strong>category:</strong> Categoria à qual o produto pertence.
-> - <strong>stock:</strong> Quantidade de produtos em estoque.
-> - <strong>createdAt:</strong> Data e hora de criação do produto.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do produto.
+> - <strong>_id:</strong> Identificador único do checklist realizado gerado automaticamente pelo MongoDB.
+> - <strong>data:</strong> Data em que foi realizado o checklist.
+> - <strong>conformidade:</strong> Se o veículo está ou não disponível e em bom estado para a utilização.
+> - <strong>observacao:</strong> Campo de observação para que o usuário possa adicionar indicações sobre o status do veículo.
+> - <strong>status:</strong> Status de utilização do veículo caso esteja disponível para uso, um utilização ou com problema.
 
-### Coleção: orders
-Armazena as informações dos pedidos feitos pelos usuários.
+### Coleção: ModeloChecklist
+Armazena as informações do checklist realizado pelo usuário.
 
 Estrutura do Documento
 
 ```Json
 {
-    "_id": "ObjectId('5f7e1ddf9b2a4f1a9c38b9a3')",
-    "userId": "ObjectId('5f7e1bbf9b2a4f1a9c38b9a1')",
-    "products": [
-        {
-            "productId": "ObjectId('5f7e1ccf9b2a4f1a9c38b9a2')",
-            "quantity": 2,
-            "price": 99.99
-        }
-    ],
-    "totalPrice": 199.98,
-    "status": "pending",
-    "createdAt": "2024-08-29T11:00:00Z",
-    "updatedAt": "2024-08-29T11:30:00Z"
+  "_id": {
+    "$oid": "69be965370e2e5bbf7d395c7"
+  },
+  "nome": "Checklist Diário Veículo",
+  "tipo": "veiculo",
+  "descricao": "Checklist para verificação diária das condições do veículo"
 }
 ```
 
 #### Descrição dos Campos
-> - <strong>_id:</strong> Identificador único do pedido gerado automaticamente pelo MongoDB.
-> - <strong>userId:</strong> Referência ao identificador do usuário que fez o pedido.
-> - <strong>products:</strong> Lista de produtos incluídos no pedido, cada um com:
-> - <strong>productId:</strong> Identificador do produto.
-> - <strong>quantity:</strong> Quantidade do produto pedido.
-> - <strong>price:</strong> Preço unitário do produto no momento do pedido.
-> - <strong>totalPrice:</strong> Preço total do pedido (soma de todos os itens).
-> - <strong>status:</strong> Status atual do pedido (por exemplo, pending, shipped, delivered).
-> - <strong>createdAt:</strong> Data e hora de criação do pedido.
-> - <strong>updatedAt:</strong> Data e hora da última atualização dos dados do pedido.
+> - <strong>_id:</strong> Identificador único do modelo de checklist gerado automaticamente pelo MongoDB.
+> - <strong>nome:</strong> Nome do Checklist.
+> - <strong>tipo:</strong> Tipo de veículo
+> - <strong>descricao:</strong> Descrição do checklist
 
-### Boas Práticas
+### Coleção: Notificação
+Notificações ao usuário
 
-Validação de Dados: Implementar validação de esquema e restrições na aplicação para garantir a consistência dos dados.
+Estrutura do Documento
 
-Monitoramento e Logs: Utilize ferramentas de monitoramento e logging para acompanhar a saúde do banco de dados e diagnosticar problemas.
+```Json
+{
+  "_id": { "$oid": "69bebbbb70e2e5bbf7d39610" },
+  "mensagem": "Veículo com problema no ar condicionado",
+  "data": "2026-03-21T12:30:00Z",
+  "tipo": "ALERTA"
+}
+```
 
-Escalabilidade: Considere estratégias de sharding e replicação para lidar com crescimento do banco de dados e alta disponibilidade.
+#### Descrição dos Campos
+> - <strong>_id:</strong> Identificador único do modelo de checklist gerado automaticamente pelo MongoDB.
+> - <strong>mensagem:</strong> Mensagem deixada pelo usuário que realizou o checklist.
+> - <strong>data:</strong> Data em que foi realizado o checklist
+> - <strong>tipo:</strong> Tipo de notificação
 
-### Material de Apoio da Etapa
+### Coleção: Relatório
+Relatório para acompanhamento do usuário
 
-Na etapa 2, em máterial de apoio, estão disponíveis vídeos com a configuração do mongo.db e a utilização com Bson no C#
+Estrutura do Documento
+
+```Json
+{
+  "_id": { "$oid": "69becccc70e2e5bbf7d39620" },
+  "dataGeracao": "2026-03-21T13:00:00Z",
+  "tipo": "CHECKLIST"
+}
+```
+
+#### Descrição dos Campos
+> - <strong>_id:</strong> Identificador único do modelo de checklist gerado automaticamente pelo MongoDB.
+> - <strong>dataGeracao:</strong> Dia que foi gerado o relatório.
+> - <strong>tipo:</strong> Tipo de relatório
 
 
-## Modelo ER (Somente se tiver mais de um banco e outro for relacional)
+### Coleção: ItemChecklist
+Itens individuais que compõe o checklist
 
-O Modelo ER representa através de um diagrama como as entidades (coisas, objetos) se relacionam entre si na aplicação interativa.
+Estrutura do Documento
 
-As referências abaixo irão auxiliá-lo na geração do artefato “Modelo ER”.
+```Json
+{
+  "_id": { "$oid": "69bedddd70e2e5bbf7d39630" },
+  "descricao": "Ar condicionado funcionando",
+  "status": "OK"
+}
+```
 
-> - [Como fazer um diagrama entidade relacionamento | Lucidchart](https://www.lucidchart.com/pages/pt/como-fazer-um-diagrama-entidade-relacionamento)
+#### Descrição dos Campos
+> - <strong>_id:</strong> Identificador único dos itens de atividade de checklist gerado automaticamente pelo MongoDB.
+> - <strong>descricao:</strong> Descrição do item do checklist.
+> - <strong>status:</strong> status do item, ok, em condições razoáveis ou não funcionando
 
-## Esquema Relacional (Somente se tiver mais de um banco e outro for relacional)
+### Coleção: Foto
+Foto do veículo
 
-O Esquema Relacional corresponde à representação dos dados em tabelas juntamente com as restrições de integridade e chave primária.
- 
-As referências abaixo irão auxiliá-lo na geração do artefato “Esquema Relacional”.
+Estrutura do Documento
 
-> - [Criando um modelo relacional - Documentação da IBM](https://www.ibm.com/docs/pt-br/cognos-analytics/10.2.2?topic=designer-creating-relational-model)
+```Json
+{
+  "_id": { "$oid": "69beeeee70e2e5bbf7d39640" },
+  "titulo": "Ar condicionado",
+  "url": "https://meusite.com/uploads/foto1.jpg",
+  "dataUpload": "2026-03-21T13:30:00Z"
+}
+```
 
-## Modelo Físico (Somente se tiver mais de um banco e outro for relacional)
+#### Descrição dos Campos
+> - <strong>_id:</strong> Identificador único dos itens de atividade de checklist gerado automaticamente pelo MongoDB.
+> - <strong>titulo:</strong> Titulo dado pelo usuário no momento da foto.
+> - <strong>url:</strong> endereço da foto
+> - <strong>dataUpload:</strong> Quando foi realizado o upload da foto
 
-Entregar um arquivo banco.sql contendo os scripts de criação das tabelas do banco de dados. Este arquivo deverá ser incluído dentro da pasta src\bd.
+### Coleção: Assinatura
+Assinatura do responsável do checklist
+
+Estrutura do Documento
+
+```Json
+{
+  "_id": { "$oid": "69beffff70e2e5bbf7d39650" },
+  "imagemAssinatura": "https://meusite.com/uploads/assinatura.png",
+  "data": "2026-03-21T13:40:00Z"
+}
+```
+
+#### Descrição dos Campos
+> - <strong>_id:</strong> Identificador único dos itens de atividade de checklist gerado automaticamente pelo MongoDB.
+> - <strong>imagemAssinatura:</strong> Imagem da assinatura do responsável.
+> - <strong>data:</strong> Quando foi realizado a assinatura pelo responsável
 
 ## Tecnologias Utilizadas
 
