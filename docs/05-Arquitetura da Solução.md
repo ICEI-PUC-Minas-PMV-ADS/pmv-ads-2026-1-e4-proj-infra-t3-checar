@@ -45,7 +45,7 @@ Estrutura do Documento
 
 #### Descrição dos Campos
 > - <strong>_id:</strong> Identificador único do usuário gerado automaticamente pelo MongoDB.
-> - <strong>name:</strong> Nome completo do usuário.
+> - <strong>nome:</strong> Nome completo do usuário.
 > - <strong>email:</strong> Endereço de email do usuário.
 > - <strong>senha:</strong> Hash da senha do usuário.
 > - <strong>tipoUsuario:</strong> Lista de papéis atribuídos ao usuário (por exemplo, admin, user).
