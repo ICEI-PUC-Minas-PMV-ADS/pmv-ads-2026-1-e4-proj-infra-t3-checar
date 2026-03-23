@@ -189,6 +189,7 @@ Estrutura do Documento
 ```Json
 {
   "_id": { "$oid": "69beeeee70e2e5bbf7d39640" },
+  "checklistId": { "$oid": "69be945b70e2e5bbf7d395c5" },
   "titulo": "Ar condicionado",
   "url": "https://meusite.com/uploads/foto1.jpg",
   "dataUpload": "2026-03-21T13:30:00Z"
@@ -209,6 +210,7 @@ Estrutura do Documento
 ```Json
 {
   "_id": { "$oid": "69beffff70e2e5bbf7d39650" },
+  "checklistId": { "$oid": "69be945b70e2e5bbf7d395c5" },
   "imagemAssinatura": "https://meusite.com/uploads/assinatura.png",
   "data": "2026-03-21T13:40:00Z"
 }
