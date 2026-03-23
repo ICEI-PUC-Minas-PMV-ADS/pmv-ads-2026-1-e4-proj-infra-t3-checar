@@ -170,6 +170,7 @@ Estrutura do Documento
 ```Json
 {
   "_id": { "$oid": "69bedddd70e2e5bbf7d39630" },
+  "checklistId": { "$oid": "69be945b70e2e5bbf7d395c5" },
   "descricao": "Ar condicionado funcionando",
   "status": "OK"
 }
