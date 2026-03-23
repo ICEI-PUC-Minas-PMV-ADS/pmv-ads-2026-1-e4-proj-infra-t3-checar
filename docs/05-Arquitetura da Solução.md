@@ -82,7 +82,7 @@ Estrutura do Documento
   "observacao": "ar condicionado com defeito",
   "status": ["em utilização", "com problema", "disponível"],
   "usuarioId": { "$oid": "69be945b70e2e5bbf7d395c5" },
-  "veiculoId": { "$oid": "69be945b70e2e5bbf7d395c5" }.
+  "veiculoId": { "$oid": "69be945b70e2e5bbf7d395c5" },
   "modeloId": { "$oid": "69be945b70e2e5bbf7d395c5" }
 }
 ```
