@@ -106,6 +106,7 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 |RF-010| Enviar notificações de falhas críticas via sistema | ALTA | Lucas |
 |RF-011| Permitir a busca de histórico de inspeções por placa | MÉDIA | Jorge |
 |RF-012| Permitir a exportação de dados em formato CSV | BAIXA | Ricardo |
+|RF-013| Permitir realizar login | ALTA | TODOS |
 
 ### Requisitos não Funcionais
 
