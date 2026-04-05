@@ -22,7 +22,12 @@ As referências abaixo irão auxiliá-lo na geração do artefato “Diagramas d
 
 ## Wireframes
 
-![Exemplo de Wireframe](img/wireframe-example.png)
+<img width="2400" height="1800" alt="1" src="https://github.com/user-attachments/assets/0b732bc6-b693-4d88-8b13-17ebfd527380" />
+<img width="2400" height="1800" alt="2" src="https://github.com/user-attachments/assets/33670433-d8a2-4910-9297-a9fd0f401d74" />
+<img width="2400" height="1800" alt="3" src="https://github.com/user-attachments/assets/b4e2a109-7fed-4234-81aa-551124d7f33a" />
+<img width="2400" height="1800" alt="4" src="https://github.com/user-attachments/assets/a4ab7312-89f2-4b69-8f05-d78cbfae173c" />
+<img width="2400" height="1800" alt="5" src="https://github.com/user-attachments/assets/9216a882-c50f-418d-b0da-df635f12abfe" />
+
 
 São protótipos usados em design de interface para sugerir a estrutura de um site web e seu relacionamentos entre suas páginas. Um wireframe web é uma ilustração semelhante do layout de elementos fundamentais na interface.
  
