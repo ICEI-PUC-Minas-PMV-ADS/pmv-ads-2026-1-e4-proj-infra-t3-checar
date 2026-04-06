@@ -1,0 +1,9 @@
+Plaintext
+# Ignorar arquivos de variáveis de ambiente
+.env
+
+# Ignorar dependências
+node_modules/
+
+# Ignorar logs
+npm-debug.log*
