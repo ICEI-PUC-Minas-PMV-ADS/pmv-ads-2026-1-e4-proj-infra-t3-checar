@@ -27,7 +27,7 @@ const connectDB = async () => {
 
 connectDB();
 
-// 🔥 ROTA POST (A QUE IMPORTA)
+// CREATE
 app.post("/usuariocadastrados", async (req, res) => {
     try {
         console.log("BODY:", req.body);
@@ -39,6 +39,58 @@ app.post("/usuariocadastrados", async (req, res) => {
         console.log(error);
         res.status(500).json({ erro: error.message });
 
+    }
+});
+
+// GET
+app.get("/usuariocadastrados/:id", async (req, res) => {
+    try {
+        const usuario = await Usuario.findById(req.params.id);
+
+        if (!usuario) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        res.status(200).json(usuario);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ erro: error.message });
+    }
+});
+
+// PUT
+app.put("/usuariocadastrados/:id", async (req, res) => {
+    try {
+        const usuarioAtualizado = await Usuario.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+
+        if (!usuarioAtualizado) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        res.status(200).json(usuarioAtualizado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ erro: error.message });
+    }
+});
+
+// DELETE
+app.delete("/usuariocadastrados/:id", async (req, res) => {
+    try {
+        const usuarioDeletado = await Usuario.findByIdAndDelete(req.params.id);
+
+        if (!usuarioDeletado) {
+            return res.status(404).json({ mensagem: "Usuário não encontrado" });
+        }
+
+        res.status(200).json({ mensagem: "Usuário deletado com sucesso" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ erro: error.message });
     }
 });
 
