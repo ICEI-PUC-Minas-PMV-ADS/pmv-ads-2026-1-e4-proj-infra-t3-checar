@@ -2,6 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import Usuario from "./usuariocadastrados.js";
 import dotenv from "dotenv";
+import {
+  getAllVehicles,
+  getVehicleById,
+  createVehicle,
+  updateVehicle,
+  deleteVehicle,
+} from "./controllers/vehicleController.js";
+import { validateVehicleCreate} from "./middlewares/validateVehicle.js";
 
 dotenv.config();
 
@@ -26,6 +34,12 @@ const connectDB = async () => {
 };
 
 connectDB();
+//VEHICLES
+app.get("/vehicles", getAllVehicles)
+app.get("/vehicles/:id", getVehicleById)
+app.post("/vehicles", validateVehicleCreate, createVehicle)
+app.put("/vehicles/:id", validateVehicleCreate, updateVehicle)
+app.delete("/vehicles/:id", deleteVehicle)
 
 // CREATE
 app.post("/usuariocadastrados", async (req, res) => {
