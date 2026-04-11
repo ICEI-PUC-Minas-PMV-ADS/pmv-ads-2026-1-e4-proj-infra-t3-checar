@@ -7,7 +7,8 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/api_cadastro.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,7 @@
     "bcrypt": "^6.0.0",
     "dotenv": "^17.4.0",
     "express": "^5.2.1",
-    "mongoose": "^9.4.1"
+    "mongoose": "^9.4.1",
+    "swagger-ui-express": "^4.6.3"
   }
 }
