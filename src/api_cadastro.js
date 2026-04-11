@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import Usuario from "./usuariocadastrados.js";
 import dotenv from "dotenv";
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
 import {
   getAllVehicles,
   getVehicleById,
@@ -17,6 +19,8 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.get('/api-docs/swagger.json', (_req, res) => res.json(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, { swaggerOptions: { url: '/api-docs/swagger.json' } }));
 
 //  ROTA
 app.get("/", (req, res) => {
