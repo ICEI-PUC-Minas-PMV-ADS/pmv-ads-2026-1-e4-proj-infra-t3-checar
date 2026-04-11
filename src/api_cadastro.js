@@ -40,7 +40,6 @@ const startServer = async () => {
     }
 };
 
-connectDB();
 //VEHICLES
 app.get("/vehicles", getAllVehicles)
 app.get("/vehicles/:id", getVehicleById)
