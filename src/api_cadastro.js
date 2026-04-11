@@ -4,6 +4,8 @@ import Usuario from "./usuariocadastrados.js";
 import dotenv from "dotenv";
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
+import itemChecklistRoutes from "./api_itemchecklist.js";
+import modeloChecklistRoutes from "./api_modelochecklist.js";
 import {
   getAllVehicles,
   getVehicleById,
@@ -50,6 +52,8 @@ app.get("/vehicles/:id", getVehicleById)
 app.post("/vehicles", validateVehicleCreate, createVehicle)
 app.put("/vehicles/:id", validateVehicleCreate, updateVehicle)
 app.delete("/vehicles/:id", deleteVehicle)
+app.use(itemChecklistRoutes)
+app.use(modeloChecklistRoutes)
 
 startServer();
 

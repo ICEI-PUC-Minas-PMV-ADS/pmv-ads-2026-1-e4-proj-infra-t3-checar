@@ -5,48 +5,56 @@ import ItemChecklist from "./itemchecklist.js";
 
 dotenv.config();
 
-const app = express();
-const PORT = 3002;
+const router = express.Router();
 
-app.use(express.json());
+router.use(express.json());
 
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
     res.send("API ItemChecklist OK");
 });
 
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("Mongo conectado para ItemChecklist");
-    } catch (error) {
-        console.log("Erro ao conectar no Mongo", error);
-    }
-};
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-connectDB();
-
-app.post("/itemchecklists", async (req, res) => {
+router.post("/itemchecklists", async (req, res) => {
     try {
         const novoItemChecklist = await ItemChecklist.create(req.body);
         res.status(201).json(novoItemChecklist);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ erro: error.message });
+        res.status(400).json({ erro: error.message });
     }
 });
 
-app.get("/itemchecklists", async (req, res) => {
+router.get("/itemchecklists", async (req, res) => {
     try {
-        const itensChecklist = await ItemChecklist.find();
+        const filtros = {};
+
+        if (req.query.checklistId) {
+            if (!isValidObjectId(req.query.checklistId)) {
+                return res.status(400).json({ erro: "checklistId invalido" });
+            }
+
+            filtros.checklistId = req.query.checklistId;
+        }
+
+        if (req.query.status) {
+            filtros.status = req.query.status;
+        }
+
+        const itensChecklist = await ItemChecklist.find(filtros);
         res.status(200).json(itensChecklist);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ erro: error.message });
+        res.status(400).json({ erro: error.message });
     }
 });
 
-app.get("/itemchecklists/:id", async (req, res) => {
+router.get("/itemchecklists/:id", async (req, res) => {
     try {
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ erro: "ID invalido" });
+        }
+
         const itemChecklist = await ItemChecklist.findById(req.params.id);
 
         if (!itemChecklist) {
@@ -56,12 +64,16 @@ app.get("/itemchecklists/:id", async (req, res) => {
         res.status(200).json(itemChecklist);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ erro: error.message });
+        res.status(400).json({ erro: error.message });
     }
 });
 
-app.put("/itemchecklists/:id", async (req, res) => {
+router.put("/itemchecklists/:id", async (req, res) => {
     try {
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ erro: "ID invalido" });
+        }
+
         const itemChecklistAtualizado = await ItemChecklist.findByIdAndUpdate(
             req.params.id,
             req.body,
@@ -75,12 +87,16 @@ app.put("/itemchecklists/:id", async (req, res) => {
         res.status(200).json(itemChecklistAtualizado);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ erro: error.message });
+        res.status(400).json({ erro: error.message });
     }
 });
 
-app.delete("/itemchecklists/:id", async (req, res) => {
+router.delete("/itemchecklists/:id", async (req, res) => {
     try {
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ erro: "ID invalido" });
+        }
+
         const itemChecklistDeletado = await ItemChecklist.findByIdAndDelete(req.params.id);
 
         if (!itemChecklistDeletado) {
@@ -90,10 +106,8 @@ app.delete("/itemchecklists/:id", async (req, res) => {
         res.status(200).json({ mensagem: "Item de checklist deletado com sucesso" });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ erro: error.message });
+        res.status(400).json({ erro: error.message });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor ItemChecklist rodando na porta ${PORT}`);
-});
+export default router;

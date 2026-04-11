@@ -18,4 +18,4 @@ const modeloChecklistSchema = new mongoose.Schema({
     }
 });
 
-export default mongoose.model("ModeloChecklist", modeloChecklistSchema);
+export default mongoose.model("ModeloChecklist", modeloChecklistSchema, "ModeloChecklist");
