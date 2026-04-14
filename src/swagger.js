@@ -13,7 +13,10 @@ const options = {
       version: '1.0.0',
       description: 'Sistema completo de CRUD de veículos e Checklist de inspeção com fotos.',
     },
-    servers: [{ url: 'http://localhost:3000', description: 'Servidor local' }],
+    servers: [
+      { url: 'https://checar-fpf7e0ecd9hdcrf2.canadacentral-01.azurewebsites.net', description: 'Produção' },
+      { url: 'http://localhost:8080', description: 'Local' }
+    ],
     components: {
       schemas: {
         Vehicle: {
@@ -52,11 +55,8 @@ const options = {
             fotos: {
               type: 'object',
               properties: {
-                frente: { type: 'string' },
-                traseira: { type: 'string' },
-                lateralEsquerda: { type: 'string' },
-                lateralDireita: { type: 'string' },
-                topo: { type: 'string' }
+                frente: { type: 'string' }, traseira: { type: 'string' },
+                lateralEsquerda: { type: 'string' }, lateralDireita: { type: 'string' }, topo: { type: 'string' }
               }
             }
           }
@@ -67,47 +67,23 @@ const options = {
             status: { type: 'string', enum: ['error'] },
             message: { type: 'string' },
           },
-        },
-        ErrorsArrayResponse: {
-          type: 'object',
-          properties: {
-            status: { type: 'string', enum: ['error'] },
-            errors: { type: 'array', items: { type: 'string' } },
-          },
-        },
+        }
       }
     },
     paths: {
-      '/health': {
-        get: {
-          tags: ['Health'],
-          summary: 'Health check',
-          responses: { 200: { description: 'OK' } }
-        }
-      },
+      '/health': { get: { tags: ['Health'], summary: 'Check', responses: { 200: { description: 'OK' } } } },
       '/vehicles': {
-        get: {
-          tags: ['Vehicles'],
-          summary: 'Listar todos os veículos',
-          responses: { 200: { description: 'Sucesso' } }
-        },
-        post: {
-          tags: ['Vehicles'],
-          summary: 'Cadastrar um veículo',
-          requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/VehicleInput' } } } },
-          responses: { 201: { description: 'Criado' } }
-        }
+        get: { tags: ['Vehicles'], summary: 'Listar', responses: { 200: { description: 'OK' } } },
+        post: { tags: ['Vehicles'], summary: 'Cadastrar', requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/VehicleInput' } } } }, responses: { 201: { description: 'Criado' } } }
       },
       '/vehicles/{id}': {
         parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        get: { tags: ['Vehicles'], summary: 'Buscar por ID', responses: { 200: { description: 'OK' } } },
-        put: { tags: ['Vehicles'], summary: 'Atualizar', responses: { 200: { description: 'OK' } } },
+        get: { tags: ['Vehicles'], summary: 'Buscar', responses: { 200: { description: 'OK' } } },
         delete: { tags: ['Vehicles'], summary: 'Remover', responses: { 204: { description: 'OK' } } }
       }
     }
   },
-  apis: [path.resolve(__dirname, 'routes_upload.js')], 
+  apis: [path.resolve(__dirname, './routes_upload.js'), path.resolve(__dirname, './api_cadastro.js')], 
 };
 
-const swaggerSpec = swaggerJsdoc(options);
-export default swaggerSpec;
+export default swaggerJsdoc(options);
