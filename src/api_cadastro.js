@@ -13,6 +13,15 @@ import Vehicle from './models/Vehicle.js';
 import Inspecao from './models/Inspecao.js';
 import Usuario from './models/Usuario.js';
 
+// ==========================================
+// LOG PARA DEBUG DO SWAGGER
+// ==========================================
+console.log('=== DEBUG SWAGGER ===');
+console.log('Rotas documentadas no Swagger:', Object.keys(swaggerSpec.paths || {}));
+console.log('Total de rotas:', Object.keys(swaggerSpec.paths || {}).length);
+console.log('Swagger Spec válido:', !!swaggerSpec);
+console.log('=====================');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -23,6 +32,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Rota para ver o JSON do Swagger (debug)
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+// Rota de debug do Swagger
+app.get('/debug/swagger', (req, res) => {
+  res.json({
+    rotas_documentadas: Object.keys(swaggerSpec.paths || {}),
+    total_rotas: Object.keys(swaggerSpec.paths || {}).length,
+    servidor: process.env.NODE_ENV || 'development',
+    swagger_valido: !!swaggerSpec,
+    timestamp: new Date().toISOString()
+  });
+});
 
 app.post('/usuarios', async (req, res) => {
     try {

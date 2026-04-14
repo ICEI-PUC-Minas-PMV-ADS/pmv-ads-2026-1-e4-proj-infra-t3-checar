@@ -89,24 +89,14 @@ const options = {
         }
       }
     },
-    // Paths manuais (opcional, já que o JSDoc lerá os arquivos abaixo)
-    paths: {
-      '/health': {
-        get: {
-          tags: ['Health'],
-          summary: 'Verificar status da API',
-          responses: { 200: { description: 'OK' } }
-        }
-      }
-    }
   },
-  // Onde o Swagger vai procurar os comentários /** @swagger */
-apis: [
-    './api_cadastro.js',    // Arquivo principal
-    './routes_upload.js',   // Arquivo de rotas de upload
-    './src/routes/*.js',    // Se tiver pasta de rotas dentro de src
-    './routes/*.js'         // Se tiver pasta de rotas na raiz
-  ],
+  apis: ['./api_cadastro.js'],  // arquivo principal com as rotas
 };
 
-export default swaggerJsdoc(options);
+const swaggerSpec = swaggerJsdoc(options);
+
+// Log para debug
+console.log('🔍 Swagger: Arquivos analisados:', options.apis);
+console.log('📝 Swagger: Rotas encontradas:', Object.keys(swaggerSpec.paths || {}).length);
+
+export default swaggerSpec;
