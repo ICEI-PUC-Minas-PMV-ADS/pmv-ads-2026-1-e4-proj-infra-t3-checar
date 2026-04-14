@@ -14,11 +14,27 @@ const options = {
       description: 'Sistema completo de CRUD de veículos e Checklist de inspeção com fotos.',
     },
     servers: [
-      { url: 'https://checar-fpf7e0ecd9hdcrf2.canadacentral-01.azurewebsites.net', description: 'Produção' },
-      { url: 'http://localhost:8080', description: 'Local' }
+      { 
+        url: 'https://checar-fpf7e0ecd9hdcrf2.canadacentral-01.azurewebsites.net', 
+        description: 'Produção (Azure)' 
+      },
+      { 
+        url: 'http://localhost:3000', 
+        description: 'Local' 
+      }
     ],
     components: {
       schemas: {
+        Usuario: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            nome: { type: 'string', example: 'João Silva' },
+            email: { type: 'string', example: 'joao@checar.com' },
+            tipoUsuario: { type: 'string', enum: ['Motorista', 'Gestor'] },
+            createdAt: { type: 'string', format: 'date-time' }
+          }
+        },
         Vehicle: {
           type: 'object',
           required: ['plate', 'model'],
@@ -55,8 +71,11 @@ const options = {
             fotos: {
               type: 'object',
               properties: {
-                frente: { type: 'string' }, traseira: { type: 'string' },
-                lateralEsquerda: { type: 'string' }, lateralDireita: { type: 'string' }, topo: { type: 'string' }
+                frente: { type: 'string' },
+                traseira: { type: 'string' },
+                lateralEsquerda: { type: 'string' },
+                lateralDireita: { type: 'string' },
+                topo: { type: 'string' }
               }
             }
           }
@@ -70,20 +89,24 @@ const options = {
         }
       }
     },
+    // Paths manuais (opcional, já que o JSDoc lerá os arquivos abaixo)
     paths: {
-      '/health': { get: { tags: ['Health'], summary: 'Check', responses: { 200: { description: 'OK' } } } },
-      '/vehicles': {
-        get: { tags: ['Vehicles'], summary: 'Listar', responses: { 200: { description: 'OK' } } },
-        post: { tags: ['Vehicles'], summary: 'Cadastrar', requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/VehicleInput' } } } }, responses: { 201: { description: 'Criado' } } }
-      },
-      '/vehicles/{id}': {
-        parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
-        get: { tags: ['Vehicles'], summary: 'Buscar', responses: { 200: { description: 'OK' } } },
-        delete: { tags: ['Vehicles'], summary: 'Remover', responses: { 204: { description: 'OK' } } }
+      '/health': {
+        get: {
+          tags: ['Health'],
+          summary: 'Verificar status da API',
+          responses: { 200: { description: 'OK' } }
+        }
       }
     }
   },
-  apis: [path.resolve(__dirname, './routes_upload.js'), path.resolve(__dirname, './api_cadastro.js')], 
+  // Onde o Swagger vai procurar os comentários /** @swagger */
+apis: [
+    './api_cadastro.js',    // Arquivo principal
+    './routes_upload.js',   // Arquivo de rotas de upload
+    './src/routes/*.js',    // Se tiver pasta de rotas dentro de src
+    './routes/*.js'         // Se tiver pasta de rotas na raiz
+  ],
 };
 
 export default swaggerJsdoc(options);

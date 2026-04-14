@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerSpec from './swagger.js';
 import upload from './config/multer.js';
 import Vehicle from './models/Vehicle.js';
 import Inspecao from './models/Inspecao.js';
@@ -21,106 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
-// Configuração do Swagger
-const swaggerOptions = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'API de Inspeção Veicular',
-            version: '1.0.0',
-            description: 'Sistema para gerenciamento de inspeções veiculares'
-        },
-        servers: [
-            {
-                url: `http://localhost:${PORT}`,
-                description: 'Servidor de desenvolvimento'
-            }
-        ],
-        components: {
-            schemas: {
-                Usuario: {
-                    type: 'object',
-                    properties: {
-                        id: { type: 'string' },
-                        nome: { type: 'string', example: 'João Silva' },
-                        email: { type: 'string', example: 'joao@checar.com' },
-                        tipoUsuario: { type: 'string', enum: ['Motorista', 'Gestor'] },
-                        createdAt: { type: 'string', format: 'date-time' },
-                        updatedAt: { type: 'string', format: 'date-time' }
-                    }
-                },
-                Vehicle: {
-                    type: 'object',
-                    properties: {
-                        placa: { type: 'string', example: 'ABC1234' },
-                        modelo: { type: 'string', example: 'Civic' },
-                        marca: { type: 'string', example: 'Honda' },
-                        ano: { type: 'number', example: 2020 },
-                        cor: { type: 'string', example: 'Preto' }
-                    }
-                },
-                Inspecao: {
-                    type: 'object',
-                    properties: {
-                        placa: { type: 'string', example: 'ABC1234' },
-                        fotos: {
-                            type: 'object',
-                            properties: {
-                                frente: { type: 'string' },
-                                traseira: { type: 'string' },
-                                lateralEsquerda: { type: 'string' },
-                                lateralDireita: { type: 'string' },
-                                topo: { type: 'string' }
-                            }
-                        },
-                        createdAt: { type: 'string', format: 'date-time' }
-                    }
-                }
-            }
-        }
-    },
-    apis: ['./api_cadastro.js']
-};
-
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// ==========================================
-// CRUD COMPLETO DE USUÁRIOS
-// ==========================================
-
-/**
- * @swagger
- * /usuarios:
- *   post:
- *     summary: Criar um novo usuário
- *     tags: [Usuários]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - nome
- *               - email
- *               - senha
- *             properties:
- *               nome:
- *                 type: string
- *               email:
- *                 type: string
- *               senha:
- *                 type: string
- *               tipoUsuario:
- *                 type: string
- *                 enum: [Motorista, Gestor]
- *     responses:
- *       201:
- *         description: Usuário criado com sucesso
- *       400:
- *         description: Email já cadastrado ou dados inválidos
- */
 app.post('/usuarios', async (req, res) => {
     try {
         const { nome, email, senha, tipoUsuario } = req.body;
