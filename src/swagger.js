@@ -111,7 +111,6 @@ const swaggerSpec = {
         }
       }
     },
-    // ⭐ NOVA ROTA: Buscar veículo por PLACA
     '/vehicles/plate/{plate}': {
       get: {
         summary: 'Busca veículo pela placa',
@@ -140,10 +139,11 @@ const swaggerSpec = {
       }
     },
 
-    // ==================== USUÁRIOS ====================
+    // ==================== USUÁRIOS (CRUD COMPLETO) ====================
     '/usuariocadastrados': {
+      // CREATE - Cadastrar novo usuário
       post: {
-        summary: 'Cadastra um novo usuário',
+        summary: 'Cadastrar novo usuário',
         tags: ['Usuários'],
         requestBody: {
           required: true,
@@ -164,13 +164,61 @@ const swaggerSpec = {
         },
         responses: {
           201: { description: 'Usuário criado com sucesso' },
-          400: { description: 'Campos obrigatórios faltando ou email já cadastrado' }
+          400: { description: 'Dados inválidos ou email já existe' }
+        }
+      },
+      // READ ALL - Listar todos os usuários
+      get: {
+        summary: 'Listar todos os usuários',
+        tags: ['Usuários'],
+        responses: {
+          200: {
+            description: 'Lista de usuários retornada com sucesso',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    total: { type: 'integer' },
+                    usuarios: {
+                      type: 'array',
+                      items: { $ref: '#/components/schemas/Usuario' }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      // DELETE ALL - Deletar todos os usuários
+      delete: {
+        summary: 'Deletar todos os usuários (requer confirmação)',
+        tags: ['Usuários'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['confirmacao'],
+                properties: {
+                  confirmacao: { type: 'string', example: 'DELETAR_TODOS' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Usuários deletados com sucesso' },
+          400: { description: 'Confirmação necessária' }
         }
       }
     },
     '/usuariocadastrados/{id}': {
+      // READ ONE - Buscar usuário por ID
       get: {
-        summary: 'Busca um usuário pelo ID',
+        summary: 'Buscar usuário por ID',
         tags: ['Usuários'],
         parameters: [
           {
@@ -185,11 +233,60 @@ const swaggerSpec = {
           200: { description: 'Usuário encontrado' },
           404: { description: 'Usuário não encontrado' }
         }
+      },
+      // UPDATE - Atualizar usuário
+      put: {
+        summary: 'Atualizar usuário',
+        tags: ['Usuários'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' }
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  nome: { type: 'string', example: 'João Silva Atualizado' },
+                  email: { type: 'string', format: 'email', example: 'joao.novo@email.com' },
+                  senha: { type: 'string', format: 'password', example: 'novaSenha123' },
+                  tipoUsuario: { type: 'string', enum: ['Motorista', 'Gestor'], example: 'Gestor' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Usuário atualizado com sucesso' },
+          404: { description: 'Usuário não encontrado' }
+        }
+      },
+      // DELETE - Deletar usuário
+      delete: {
+        summary: 'Deletar usuário',
+        tags: ['Usuários'],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' }
+          }
+        ],
+        responses: {
+          200: { description: 'Usuário deletado com sucesso' },
+          404: { description: 'Usuário não encontrado' }
+        }
       }
     },
 
     // ==================== INSPEÇÕES ====================
-    // ⭐ ROTA DE UPLOAD DE FOTOS (Checklist)
     '/inspecao/upload': {
       post: {
         summary: 'Realizar inspeção com fotos obrigatórias',
@@ -234,7 +331,6 @@ const swaggerSpec = {
         }
       }
     },
-    // ⭐ Histórico de inspeções por placa
     '/inspecoes/historico/{placa}': {
       get: {
         summary: 'Buscar histórico de inspeções por placa',
@@ -265,7 +361,6 @@ const swaggerSpec = {
         }
       }
     },
-    // Listar todas as inspeções
     '/inspecoes': {
       get: {
         summary: 'Listar todas as inspeções realizadas',
@@ -285,7 +380,6 @@ const swaggerSpec = {
         }
       }
     },
-    // Deletar inspeção por ID
     '/inspecoes/{id}': {
       delete: {
         summary: 'Deletar uma inspeção por ID',
@@ -305,7 +399,6 @@ const swaggerSpec = {
         }
       }
     },
-    // Deletar todas as inspeções de uma placa
     '/inspecoes/placa/{placa}': {
       delete: {
         summary: 'Deletar todas as inspeções de uma placa',
@@ -402,9 +495,9 @@ const swaggerSpec = {
   }
 };
 
-console.log('Swagger configurado com todas as rotas:');
-console.log('Veículos:', Object.keys(swaggerSpec.paths).filter(p => p.includes('/vehicles')));
-console.log('Usuários:', Object.keys(swaggerSpec.paths).filter(p => p.includes('/usuarios')));
-console.log('Inspeções:', Object.keys(swaggerSpec.paths).filter(p => p.includes('/inspec')));
+console.log('✅ Swagger configurado com todas as rotas:');
+console.log('🚗 Veículos:', Object.keys(swaggerSpec.paths).filter(p => p.includes('/vehicles')));
+console.log('👤 Usuários:', Object.keys(swaggerSpec.paths).filter(p => p.includes('/usuarios')));
+console.log('📸 Inspeções:', Object.keys(swaggerSpec.paths).filter(p => p.includes('/inspec')));
 
 export default swaggerSpec;

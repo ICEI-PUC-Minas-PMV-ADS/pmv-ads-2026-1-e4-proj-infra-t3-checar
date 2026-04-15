@@ -50,7 +50,128 @@ app.get('/debug/swagger', (req, res) => {
   });
 });
 
+// ==========================================
+// CRUD DE USUÁRIOS (CORRIGIDO)
+// ==========================================
+
+/**
+ * @swagger
+ * /usuarios:
+ *   post:
+ *     summary: Cadastrar um novo usuário
+ *     tags: [Usuários]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - nome
+ *               - email
+ *               - senha
+ *             properties:
+ *               nome:
+ *                 type: string
+ *                 example: "João Silva"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "joao@email.com"
+ *               senha:
+ *                 type: string
+ *                 format: password
+ *                 example: "123456"
+ *               tipoUsuario:
+ *                 type: string
+ *                 enum: [Motorista, Gestor]
+ *                 default: Motorista
+ *                 example: "Motorista"
+ *     responses:
+ *       201:
+ *         description: Usuário criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensagem:
+ *                   type: string
+ *                 usuario:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     nome:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     tipoUsuario:
+ *                       type: string
+ *                     createdAt:
+ *                       type: string
+ *       400:
+ *         description: Erro na validação dos dados
+ *       500:
+ *         description: Erro interno do servidor
+ */
 app.post('/usuarios', async (req, res) => {
+    try {
+        const { nome, email, senha, tipoUsuario } = req.body;
+
+        // Validação de campos obrigatórios
+        if (!nome || !email || !senha) {
+            return res.status(400).json({ 
+                erro: "Campos obrigatórios",
+                mensagem: "Nome, email e senha são obrigatórios." 
+            });
+        }
+
+        // Verificar se email já está cadastrado
+        const usuarioExistente = await Usuario.findOne({ email });
+        if (usuarioExistente) {
+            return res.status(400).json({ 
+                erro: "Email já cadastrado",
+                mensagem: "Este email já está em uso." 
+            });
+        }
+
+        // Criar novo usuário
+        const novoUsuario = new Usuario({
+            nome,
+            email,
+            senha,
+            tipoUsuario: tipoUsuario || "Motorista"
+        });
+
+        await novoUsuario.save();
+
+        // Remover a senha da resposta
+        const usuarioResponse = {
+            id: novoUsuario._id,
+            nome: novoUsuario.nome,
+            email: novoUsuario.email,
+            tipoUsuario: novoUsuario.tipoUsuario,
+            createdAt: novoUsuario.createdAt
+        };
+
+        res.status(201).json({ 
+            mensagem: "Usuário criado com sucesso!",
+            usuario: usuarioResponse
+        });
+
+    } catch (error) {
+        console.error('Erro ao criar usuário:', error);
+        res.status(500).json({ 
+            erro: "Erro ao criar usuário",
+            detalhe: error.message 
+        });
+    }
+});
+
+// Rota alternativa para compatibilidade com versões anteriores
+app.post('/usuariocadastrados', async (req, res) => {
+    console.log('⚠️ Rota /usuariocadastrados está obsoleta. Use POST /usuarios');
     try {
         const { nome, email, senha, tipoUsuario } = req.body;
 
@@ -88,7 +209,8 @@ app.post('/usuarios', async (req, res) => {
 
         res.status(201).json({ 
             mensagem: "Usuário criado com sucesso!",
-            usuario: usuarioResponse
+            usuario: usuarioResponse,
+            aviso: "Esta rota está obsoleta. Use POST /usuarios"
         });
 
     } catch (error) {
@@ -321,8 +443,10 @@ app.delete('/usuarios/:id', async (req, res) => {
  *             properties:
  *               email:
  *                 type: string
+ *                 example: "joao@email.com"
  *               senha:
  *                 type: string
+ *                 example: "123456"
  *     responses:
  *       200:
  *         description: Login realizado com sucesso
@@ -812,8 +936,16 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
         console.log('✅ Conectado ao MongoDB Atlas com sucesso!');
         app.listen(PORT, () => {
-            console.log(`🚀 Servidor rodando na porta ${PORT}`);
-            console.log(`📚 Swagger UI: http://localhost:${PORT}/api-docs`);
+            console.log(`Servidor rodando na porta ${PORT}`);
+            console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
+            console.log(`\nRotas de usuários disponíveis:`);
+            console.log(`   POST   /usuarios          - Criar novo usuário (recomendado)`);
+            console.log(`   POST   /usuariocadastrados - Rota obsoleta (compatibilidade)`);
+            console.log(`   GET    /usuarios          - Listar todos usuários`);
+            console.log(`   GET    /usuarios/:id      - Buscar usuário por ID`);
+            console.log(`   PUT    /usuarios/:id      - Atualizar usuário`);
+            console.log(`   DELETE /usuarios/:id      - Deletar usuário`);
+            console.log(`   POST   /login             - Fazer login\n`);
         });
     })
     .catch(err => {
