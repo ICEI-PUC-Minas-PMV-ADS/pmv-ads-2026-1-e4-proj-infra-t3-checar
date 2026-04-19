@@ -12,6 +12,7 @@ import upload from './config/multer.js';
 import Vehicle from './models/Vehicle.js';
 import Inspecao from './models/Inspecao.js';
 import Usuario from './models/Usuario.js';
+import reportRoutes from "./api_reports.js";
 
 // ==========================================
 // LOG PARA DEBUG DO SWAGGER
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(reportRoutes);
 
 // Rota para ver o JSON do Swagger (debug)
 app.get('/api-docs.json', (req, res) => {
