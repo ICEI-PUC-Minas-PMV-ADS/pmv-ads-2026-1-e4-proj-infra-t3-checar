@@ -933,24 +933,27 @@ app.get('/', (req, res) => {
     });
 });
 
-// Conectar ao MongoDB e iniciar servidor
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => {
-        console.log('✅ Conectado ao MongoDB Atlas com sucesso!');
-        app.listen(PORT, () => {
-            console.log(`Servidor rodando na porta ${PORT}`);
-            console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
-            console.log(`\nRotas de usuários disponíveis:`);
-            console.log(`   POST   /usuarios          - Criar novo usuário (recomendado)`);
-            console.log(`   POST   /usuariocadastrados - Rota obsoleta (compatibilidade)`);
-            console.log(`   GET    /usuarios          - Listar todos usuários`);
-            console.log(`   GET    /usuarios/:id      - Buscar usuário por ID`);
-            console.log(`   PUT    /usuarios/:id      - Atualizar usuário`);
-            console.log(`   DELETE /usuarios/:id      - Deletar usuário`);
-            console.log(`   POST   /login             - Fazer login\n`);
+export default app;
+
+if (process.env.NODE_ENV !== 'test') {
+    mongoose.connect(process.env.MONGODB_URI)
+        .then(() => {
+            console.log('✅ Conectado ao MongoDB Atlas com sucesso!');
+            app.listen(PORT, () => {
+                console.log(`Servidor rodando na porta ${PORT}`);
+                console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
+                console.log(`\nRotas de usuários disponíveis:`);
+                console.log(`   POST   /usuarios          - Criar novo usuário (recomendado)`);
+                console.log(`   POST   /usuariocadastrados - Rota obsoleta (compatibilidade)`);
+                console.log(`   GET    /usuarios          - Listar todos usuários`);
+                console.log(`   GET    /usuarios/:id      - Buscar usuário por ID`);
+                console.log(`   PUT    /usuarios/:id      - Atualizar usuário`);
+                console.log(`   DELETE /usuarios/:id      - Deletar usuário`);
+                console.log(`   POST   /login             - Fazer login\n`);
+            });
+        })
+        .catch(err => {
+            console.error('❌ Erro ao conectar ao MongoDB:', err.message);
+            process.exit(1);
         });
-    })
-    .catch(err => {
-        console.error('❌ Erro ao conectar ao MongoDB:', err.message);
-        process.exit(1);
-    });
+}
