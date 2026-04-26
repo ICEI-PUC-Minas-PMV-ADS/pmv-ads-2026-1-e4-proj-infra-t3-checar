@@ -1,0 +1,150 @@
+import { useState } from "react";
+
+function Cadastro() {
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState("Motorista");
+
+  const handleCadastro = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/usuarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome,
+          email,
+          senha,
+          tipoUsuario,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.mensagem || "Erro ao cadastrar");
+        return;
+      }
+
+      alert("Usuário cadastrado com sucesso!");
+
+      // limpa o formulário
+      setNome("");
+      setEmail("");
+      setSenha("");
+      setTipoUsuario("Motorista");
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao conectar com o servidor");
+    }
+  };
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <h2>Cadastro</h2>
+
+        <input
+          type="text"
+          placeholder="Nome"
+          style={styles.input}
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
+
+        <input
+          type="email"
+          placeholder="Email"
+          style={styles.input}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Senha"
+          style={styles.input}
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+        />
+
+        <div style={styles.radioGroup}>
+          <label>
+            <input
+              type="radio"
+              value="Motorista"
+              checked={tipoUsuario === "Motorista"}
+              onChange={() => setTipoUsuario("Motorista")}
+            />
+            Motorista
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              value="Gestor"
+              checked={tipoUsuario === "Gestor"}
+              onChange={() => setTipoUsuario("Gestor")}
+            />
+            Gestor
+          </label>
+        </div>
+
+        <button style={styles.button} onClick={handleCadastro}>
+          Cadastre-se
+        </button>
+
+        <p style={styles.link}>Esqueci minha senha</p>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    backgroundColor: "#001F3F",
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: "30px",
+    borderRadius: "10px",
+    width: "300px",
+    textAlign: "center",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+  },
+  radioGroup: {
+    display: "flex",
+    justifyContent: "space-around",
+    margin: "10px 0",
+  },
+  button: {
+    width: "100%",
+    padding: "10px",
+    backgroundColor: "#001F3F",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  link: {
+    marginTop: "10px",
+    color: "#001F3F",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
+};
+
+export default Cadastro;
