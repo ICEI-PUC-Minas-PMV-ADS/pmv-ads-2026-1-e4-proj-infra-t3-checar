@@ -1,6 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert
+} from "react-native";
 
-function Cadastro() {
+export default function Cadastro() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -24,11 +32,11 @@ function Cadastro() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.mensagem || "Erro ao cadastrar");
+        Alert.alert("Erro", data.mensagem || "Erro ao cadastrar");
         return;
       }
 
-      alert("Usuário cadastrado com sucesso!");
+      Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
 
       // limpa o formulário
       setNome("");
@@ -38,113 +46,119 @@ function Cadastro() {
 
     } catch (error) {
       console.error(error);
-      alert("Erro ao conectar com o servidor");
+      Alert.alert("Erro", "Erro ao conectar com o servidor");
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2>Cadastro</h2>
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Cadastro</Text>
 
-        <input
-          type="text"
+        <TextInput
           placeholder="Nome"
           style={styles.input}
           value={nome}
-          onChange={(e) => setNome(e.target.value)}
+          onChangeText={setNome}
         />
 
-        <input
-          type="email"
+        <TextInput
           placeholder="Email"
           style={styles.input}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChangeText={setEmail}
+          keyboardType="email-address"
         />
 
-        <input
-          type="password"
+        <TextInput
           placeholder="Senha"
           style={styles.input}
           value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          onChangeText={setSenha}
+          secureTextEntry
         />
 
-        <div style={styles.radioGroup}>
-          <label>
-            <input
-              type="radio"
-              value="Motorista"
-              checked={tipoUsuario === "Motorista"}
-              onChange={() => setTipoUsuario("Motorista")}
-            />
-            Motorista
-          </label>
+        <View style={styles.radioGroup}>
+          <TouchableOpacity onPress={() => setTipoUsuario("Motorista")}>
+            <Text style={tipoUsuario === "Motorista" ? styles.selected : styles.option}>
+              🚗 Motorista
+            </Text>
+          </TouchableOpacity>
 
-          <label>
-            <input
-              type="radio"
-              value="Gestor"
-              checked={tipoUsuario === "Gestor"}
-              onChange={() => setTipoUsuario("Gestor")}
-            />
-            Gestor
-          </label>
-        </div>
+          <TouchableOpacity onPress={() => setTipoUsuario("Gestor")}>
+            <Text style={tipoUsuario === "Gestor" ? styles.selected : styles.option}>
+              🧑‍💼 Gestor
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-        <button style={styles.button} onClick={handleCadastro}>
-          Cadastre-se
-        </button>
+        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+          <Text style={styles.buttonText}>Cadastre-se</Text>
+        </TouchableOpacity>
 
-        <p style={styles.link}>Esqueci minha senha</p>
-      </div>
-    </div>
+        <Text style={styles.link}>Esqueci minha senha</Text>
+      </View>
+    </View>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "#001F3F",
-    height: "100vh",
-    display: "flex",
     justifyContent: "center",
     alignItems: "center",
   },
   card: {
     backgroundColor: "#fff",
-    padding: "30px",
-    borderRadius: "10px",
-    width: "300px",
-    textAlign: "center",
+    padding: 30,
+    borderRadius: 10,
+    width: "85%",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   input: {
     width: "100%",
-    padding: "10px",
-    margin: "10px 0",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
+    padding: 10,
+    marginVertical: 8,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   radioGroup: {
-    display: "flex",
+    flexDirection: "row",
     justifyContent: "space-around",
-    margin: "10px 0",
+    width: "100%",
+    marginVertical: 10,
+  },
+  option: {
+    fontSize: 16,
+    color: "#555",
+  },
+  selected: {
+    fontSize: 16,
+    color: "#001F3F",
+    fontWeight: "bold",
   },
   button: {
     width: "100%",
-    padding: "10px",
+    padding: 12,
     backgroundColor: "#001F3F",
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
     color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
+    fontWeight: "bold",
   },
   link: {
-    marginTop: "10px",
+    marginTop: 10,
     color: "#001F3F",
-    cursor: "pointer",
-    fontSize: "14px",
+    fontSize: 14,
   },
-};
-
-export default Cadastro;
+});
