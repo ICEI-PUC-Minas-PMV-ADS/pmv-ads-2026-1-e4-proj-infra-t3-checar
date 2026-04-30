@@ -1,0 +1,91 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+/* Fundo da tela */
+body {
+  background: linear-gradient(180deg, #0b2c5a, #001f3f);
+  height: 100vh;
+}
+
+/* Container central */
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Formulário */
+form {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Título */
+form h1 {
+  color: white;
+  margin-bottom: 10px;
+  line-height: 1.2;
+  font-size: 40px;
+}
+
+/* Labels */
+form label {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+/* Inputs */
+form input {
+  padding: 15px;
+  border-radius: 25px;
+  border: none;
+  background-color: #e5e7eb;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Link */
+form a {
+  color: #38bdf8;
+  text-decoration: none;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Botão */
+form button {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background-color: #ff7a1a;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Hover do botão */
+form button:hover {
+  background-color: #e66910;
+}
+
+/*selecionar no formulário */
+form select {
+  padding: 15px;
+  border-radius: 25px;
+  border: none;
+  background-color: #000000;
+  outline: none;
+  font-size: 14px;
+  appearance: none; /* remove estilo padrão */
+  cursor: pointer;
+}
