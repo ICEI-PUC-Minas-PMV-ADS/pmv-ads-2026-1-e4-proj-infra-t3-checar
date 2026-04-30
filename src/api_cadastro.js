@@ -13,6 +13,7 @@ import Vehicle from './models/Vehicle.js';
 import Inspecao from './models/Inspecao.js';
 import Usuario from './models/Usuario.js';
 import reportRoutes from "./api_reports.js";
+import { getAllVehicles, getVehicleById, createVehicle, updateVehicle, deleteVehicle } from './controllers/vehicleController.js';
 
 // ==========================================
 // LOG PARA DEBUG DO SWAGGER
@@ -526,18 +527,7 @@ app.post('/login', async (req, res) => {
  *       400:
  *         description: Erro na validação dos dados
  */
-app.post('/vehicles', async (req, res) => {
-    try {
-        const novoVeiculo = new Vehicle(req.body);
-        await novoVeiculo.save();
-        res.status(201).json(novoVeiculo);
-    } catch (error) {
-        if (error.code === 11000) {
-            return res.status(400).json({ erro: "Placa já cadastrada no sistema" });
-        }
-        res.status(400).json({ erro: error.message });
-    }
-});
+app.post('/vehicles', createVehicle);
 
 /**
  * @swagger
@@ -549,14 +539,7 @@ app.post('/vehicles', async (req, res) => {
  *       200:
  *         description: Lista de veículos retornada com sucesso
  */
-app.get('/vehicles', async (req, res) => {
-    try {
-        const veiculos = await Vehicle.find();
-        res.json(veiculos);
-    } catch (error) {
-        res.status(500).json({ erro: "Erro ao listar veículos", detalhe: error.message });
-    }
-});
+app.get('/vehicles', getAllVehicles);
 
 /**
  * @swagger
@@ -576,15 +559,7 @@ app.get('/vehicles', async (req, res) => {
  *       404:
  *         description: Veículo não encontrado
  */
-app.get('/vehicles/:id', async (req, res) => {
-    try {
-        const veiculo = await Vehicle.findById(req.params.id);
-        if (!veiculo) return res.status(404).json({ mensagem: "Veículo não encontrado" });
-        res.json(veiculo);
-    } catch (error) {
-        res.status(400).json({ erro: "ID inválido" });
-    }
-});
+app.get('/vehicles/:id', getVehicleById);
 
 /**
  * @swagger
@@ -610,19 +585,7 @@ app.get('/vehicles/:id', async (req, res) => {
  *       404:
  *         description: Veículo não encontrado
  */
-app.put('/vehicles/:id', async (req, res) => {
-    try {
-        const veiculo = await Vehicle.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
-        if (!veiculo) return res.status(404).json({ mensagem: "Veículo não encontrado" });
-        res.json(veiculo);
-    } catch (error) {
-        res.status(400).json({ erro: error.message });
-    }
-});
+app.put('/vehicles/:id', updateVehicle);
 
 /**
  * @swagger
@@ -640,15 +603,7 @@ app.put('/vehicles/:id', async (req, res) => {
  *       404:
  *         description: Veículo não encontrado
  */
-app.delete('/vehicles/:id', async (req, res) => {
-    try {
-        const deletado = await Vehicle.findByIdAndDelete(req.params.id);
-        if (!deletado) return res.status(404).json({ mensagem: "Veículo não encontrado" });
-        res.status(204).send();
-    } catch (error) {
-        res.status(400).json({ erro: "Erro ao deletar veículo" });
-    }
-});
+app.delete('/vehicles/:id', deleteVehicle);
 
 // ==========================================
 // INSPEÇÃO E UPLOAD (Checklist Fotográfico)
