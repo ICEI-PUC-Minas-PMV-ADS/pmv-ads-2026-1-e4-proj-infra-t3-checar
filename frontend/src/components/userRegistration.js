@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 function Home() {
 
@@ -12,10 +11,12 @@ function Home() {
     tipoUsuario: ''
   })
 
+  // 🔹 Buscar usuários
   async function getUsers() {
     try {
-      const response = await api.get('/usuarios')
-      setUsers(response.data)
+      const response = await fetch('http://localhost:3000/usuarios')
+      const data = await response.json()
+      setUsers(data)
     } catch (error) {
       console.error('Erro ao buscar usuários:', error)
     }
@@ -25,6 +26,7 @@ function Home() {
     getUsers()
   }, [])
 
+  // 🔹 Atualizar inputs
   function handleChange(e) {
     const { name, value } = e.target
     setFormData({
@@ -33,13 +35,20 @@ function Home() {
     })
   }
 
+  // 🔹 Enviar formulário
   async function handleSubmit(e) {
     e.preventDefault()
 
     console.log('Enviando dados:', formData)
 
     try {
-      await api.post('/usuarios', formData)
+      await fetch('http://localhost:3000/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
 
       alert('Usuário cadastrado!')
 
