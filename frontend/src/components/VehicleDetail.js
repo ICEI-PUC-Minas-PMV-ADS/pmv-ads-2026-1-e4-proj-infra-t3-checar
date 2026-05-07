@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import vehicleService from '../services/vehicleService';
+import {
+  VEHICLE_TYPE_OPTIONS,
+  OPERATIONAL_STATUS_OPTIONS,
+  getOperationalStatusLabel,
+} from '../config/vehicleEnums';
 
 export default function VehicleDetail({ navigation, route }) {
   const { vehicle } = route.params || {};
@@ -12,8 +17,8 @@ export default function VehicleDetail({ navigation, route }) {
     model: vehicle?.model || '',
     year: vehicle?.year?.toString() || new Date().getFullYear().toString(),
     mileage: vehicle?.mileage?.toString() || '0',
-    vehicleType: vehicle?.vehicleType || 'Van',
-    operationalStatus: vehicle?.operationalStatus || 'Operacional',
+    vehicleType: vehicle?.vehicleType || 'van',
+    operationalStatus: vehicle?.operationalStatus || 'active',
   });
 
   const [loading, setLoading] = useState(false);
@@ -152,22 +157,22 @@ export default function VehicleDetail({ navigation, route }) {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Tipo de Veículo</Text>
           <View style={styles.statusOptions}>
-            {['Van', 'Caminhão', 'Utilitário', 'Carro'].map((type) => (
+            {VEHICLE_TYPE_OPTIONS.map(({ label, value }) => (
               <TouchableOpacity
-                key={type}
+                key={value}
                 style={[
                   styles.statusButton,
-                  formData.vehicleType === type && styles.statusButtonActive,
+                  formData.vehicleType === value && styles.statusButtonActive,
                 ]}
-                onPress={() => handleChange('vehicleType', type)}
+                onPress={() => handleChange('vehicleType', value)}
               >
                 <Text
                   style={[
                     styles.statusButtonText,
-                    formData.vehicleType === type && styles.statusButtonTextActive,
+                    formData.vehicleType === value && styles.statusButtonTextActive,
                   ]}
                 >
-                  {type}
+                  {label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -177,22 +182,22 @@ export default function VehicleDetail({ navigation, route }) {
         <View style={styles.formGroup}>
           <Text style={styles.label}>Status Operacional</Text>
           <View style={styles.statusOptions}>
-            {['Operacional', 'Em Manutenção', 'Inativo'].map((status) => (
+            {OPERATIONAL_STATUS_OPTIONS.map(({ label, value }) => (
               <TouchableOpacity
-                key={status}
+                key={value}
                 style={[
                   styles.statusButton,
-                  formData.operationalStatus === status && styles.statusButtonActive,
+                  formData.operationalStatus === value && styles.statusButtonActive,
                 ]}
-                onPress={() => handleChange('operationalStatus', status)}
+                onPress={() => handleChange('operationalStatus', value)}
               >
                 <Text
                   style={[
                     styles.statusButtonText,
-                    formData.operationalStatus === status && styles.statusButtonTextActive,
+                    formData.operationalStatus === value && styles.statusButtonTextActive,
                   ]}
                 >
-                  {status}
+                  {label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -212,7 +217,7 @@ export default function VehicleDetail({ navigation, route }) {
             </View>
             <View style={styles.previewStatus}>
               <Text style={styles.previewStatusLabel}>Status:</Text>
-              <Text style={styles.previewStatusValue}>{formData.operationalStatus}</Text>
+              <Text style={styles.previewStatusValue}>{getOperationalStatusLabel(formData.operationalStatus)}</Text>
             </View>
           </View>
         </View>
