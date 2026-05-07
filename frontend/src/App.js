@@ -8,6 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import VehicleList from './components/VehicleList';
 import VehicleDetail from './components/VehicleDetail';
 import Menu from './components/Menu';
+import Header from './components/Header';
+import SearchBar from './components/SearchBar';
+import UserRegistration from './components/userRegistration';
+import VehicleCard from './components/VehicleCard';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,4 +77,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     paddingBottom: 20,
   },
+  container: { flex: 1, backgroundColor: '#001233', paddingTop: 20 },
+  listContainer: { paddingHorizontal: 20 },
+  emptyText: { color: '#fff', textAlign: 'center', marginTop: 20 }
 });
