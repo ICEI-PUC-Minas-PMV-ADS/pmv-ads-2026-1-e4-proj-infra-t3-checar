@@ -14,7 +14,7 @@ export default function Header({ onMenuPress, showMenuButton = true }) {
       )}
       <View style={styles.headerTitleContainer}>
         <View style={styles.badge}><Text style={styles.badgeText}>L O G O B U S C A R</Text></View>
-        <Text style={styles.headerTitle}>Frota de <Text style={styles.headerTitleBlue}>Veículos</Text></Text>
+        <Text style={styles.headerTitle}>Cadastro de <Text style={styles.headerTitleBlue}>Veículos</Text></Text>
       </View>
     </View>
   );

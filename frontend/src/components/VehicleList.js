@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, StyleSheet, Alert, Modal, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, StyleSheet, Modal, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,6 +8,7 @@ import Header from './Header';
 import SearchBar from './SearchBar';
 import VehicleCard from './VehicleCard';
 import Menu from './Menu';
+import { showAlert, showConfirm } from '../config/alertUtils';
 import vehicleService from '../services/vehicleService';
 
 export default function VehicleList({ navigation }) {
@@ -26,11 +27,7 @@ export default function VehicleList({ navigation }) {
       setVehicles(data);
     } catch (err) {
       setError(err.message);
-      if (Platform.OS === 'web') {
-        window.alert(`Erro\n\nFalha ao carregar veículos: ${err.message}`);
-      } else {
-        Alert.alert('Erro', `Falha ao carregar veículos: ${err.message}`);
-      }
+      showAlert('Erro', `Falha ao carregar veículos: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -52,30 +49,9 @@ export default function VehicleList({ navigation }) {
     v.plate?.toLowerCase().replace('-', '').includes(searchText.toLowerCase().replace('-', ''))
   );
 
-  const confirmDelete = (plate) => {
+  const confirmDelete = async (plate) => {
     const message = `Tem certeza que deseja deletar o veículo ${plate}?`;
-    if (Platform.OS === 'web') {
-      return Promise.resolve(window.confirm(message));
-    }
-    return new Promise((resolve) => {
-      Alert.alert(
-        'Confirmar Deleção',
-        message,
-        [
-          { text: 'Cancelar', onPress: () => resolve(false), style: 'cancel' },
-          { text: 'Deletar', onPress: () => resolve(true), style: 'destructive' },
-        ],
-        { cancelable: false }
-      );
-    });
-  };
-
-  const notify = (title, message) => {
-    if (Platform.OS === 'web') {
-      window.alert(`${title}\n\n${message}`);
-    } else {
-      Alert.alert(title, message);
-    }
+    return await showConfirm(message);
   };
 
   const handleDeleteVehicle = async (id, plate) => {
@@ -84,9 +60,9 @@ export default function VehicleList({ navigation }) {
     try {
       await vehicleService.deleteVehicle(id);
       setVehicles((prev) => prev.filter((v) => v._id !== id));
-      notify('Sucesso', 'Veículo deletado com sucesso');
+      showAlert('Sucesso', 'Veículo deletado com sucesso');
     } catch (err) {
-      notify('Erro', `Falha ao deletar veículo: ${err.message}`);
+      showAlert('Erro', `Falha ao deletar veículo: ${err.message}`);
     }
   };
 

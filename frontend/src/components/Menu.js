@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { showAlert } from '../config/alertUtils';
 
 export default function Menu({ navigation, onClose }) {
   const menuItems = [
@@ -27,7 +28,7 @@ export default function Menu({ navigation, onClose }) {
       label: 'Configurações',
       icon: 'settings',
       onPress: () => {
-        alert('Configurações em desenvolvimento');
+        showAlert('Aviso', 'Configurações em desenvolvimento');
         onClose();
       },
     },
