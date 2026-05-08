@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { showAlert } from '../config/alertUtils'
 
 function Home() {
 
@@ -50,7 +51,7 @@ function Home() {
         body: JSON.stringify(formData)
       })
 
-      alert('Usuário cadastrado!')
+      showAlert('Sucesso', 'Usuário cadastrado!')
 
       getUsers()
 
@@ -63,7 +64,7 @@ function Home() {
 
     } catch (error) {
       console.error('Erro ao cadastrar:', error)
-      alert('Erro ao cadastrar usuário')
+      showAlert('Erro', 'Erro ao cadastrar usuário')
     }
   }
 

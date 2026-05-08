@@ -14,6 +14,7 @@ import Inspecao from './models/Inspecao.js';
 import Usuario from './models/Usuario.js';
 import reportRoutes from "./api_reports.js";
 import { getAllVehicles, getVehicleById, createVehicle, updateVehicle, deleteVehicle } from './controllers/vehicleController.js';
+import { validateVehicleCreate } from './middlewares/validateVehicle.js';
 
 // ==========================================
 // LOG PARA DEBUG DO SWAGGER
@@ -527,7 +528,7 @@ app.post('/login', async (req, res) => {
  *       400:
  *         description: Erro na validação dos dados
  */
-app.post('/vehicles', createVehicle);
+app.post('/vehicles', validateVehicleCreate, createVehicle);
 
 /**
  * @swagger
@@ -585,7 +586,7 @@ app.get('/vehicles/:id', getVehicleById);
  *       404:
  *         description: Veículo não encontrado
  */
-app.put('/vehicles/:id', updateVehicle);
+app.put('/vehicles/:id', validateVehicleCreate, updateVehicle);
 
 /**
  * @swagger
