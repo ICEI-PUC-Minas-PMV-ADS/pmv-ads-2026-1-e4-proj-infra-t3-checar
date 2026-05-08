@@ -115,10 +115,6 @@ export const vehicleService = {
     try {
       const response = await fetch(`${API_BASE_URL}/vehicles/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 123654',
-        },
       });
       
       if (!response.ok) {
