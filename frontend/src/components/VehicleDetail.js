@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import vehicleService from '../services/vehicleService';
+import { showAlert } from '../config/alertUtils';
 import {
   VEHICLE_TYPE_OPTIONS,
   OPERATIONAL_STATUS_OPTIONS,
@@ -19,6 +20,7 @@ export default function VehicleDetail({ navigation, route }) {
     mileage: vehicle?.mileage?.toString() || '0',
     vehicleType: vehicle?.vehicleType || 'van',
     operationalStatus: vehicle?.operationalStatus || 'active',
+    observation: vehicle?.observation || '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -32,11 +34,11 @@ export default function VehicleDetail({ navigation, route }) {
 
   const handleSave = async () => {
     if (!formData.plate.trim()) {
-      Alert.alert('Erro', 'Por favor, preencha a placa do veículo');
+      showAlert('Erro', 'Por favor, preencha a placa do veículo');
       return;
     }
     if (!formData.model.trim()) {
-      Alert.alert('Erro', 'Por favor, preencha o modelo do veículo');
+      showAlert('Erro', 'Por favor, preencha o modelo do veículo');
       return;
     }
 
@@ -50,6 +52,7 @@ export default function VehicleDetail({ navigation, route }) {
       mileage,
       vehicleType: formData.vehicleType,
       operationalStatus: formData.operationalStatus,
+      observation: formData.observation.trim() || null,
     };
 
     try {
@@ -57,7 +60,7 @@ export default function VehicleDetail({ navigation, route }) {
 
       if (isNewVehicle) {
         await vehicleService.createVehicle(vehicleData);
-        Alert.alert(
+        showAlert(
           'Sucesso',
           'Veículo criado com sucesso',
           [
@@ -69,7 +72,7 @@ export default function VehicleDetail({ navigation, route }) {
         );
       } else {
         await vehicleService.updateVehicle(vehicle._id, vehicleData);
-        Alert.alert(
+        showAlert(
           'Sucesso',
           'Veículo atualizado com sucesso',
           [
@@ -81,7 +84,7 @@ export default function VehicleDetail({ navigation, route }) {
         );
       }
     } catch (err) {
-      Alert.alert('Erro', `Falha ao salvar veículo: ${err.message}`);
+      showAlert('Erro', `Falha ao salvar veículo: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -204,6 +207,19 @@ export default function VehicleDetail({ navigation, route }) {
           </View>
         </View>
 
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Informações Adicionais</Text>
+          <TextInput
+            style={[styles.input, styles.observationInput]}
+            placeholder="Ex: Observações adicionais sobre o veículo"
+            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            value={formData.observation}
+            onChangeText={(value) => handleChange('observation', value)}
+            multiline
+            numberOfLines={4}
+          />
+        </View>
+
         <View style={styles.previewSection}>
           <Text style={styles.previewLabel}>Preview:</Text>
           <View style={styles.previewCard}>
@@ -285,6 +301,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     color: '#fff',
     fontSize: 16,
+  },
+  observationInput: {
+    minHeight: 100,
+    paddingTop: 12,
+    paddingBottom: 12,
+    textAlignVertical: 'top',
   },
   statusOptions: {
     flexDirection: 'row',
