@@ -149,11 +149,11 @@ function ChecklistExecution() {
           <ArrowLeft size={22} />
         </button>
         <h1 className="text-3xl font-bold tracking-normal">
-          Checklist <span className="text-[#00b4d8]">em Andamento</span>
+          Checklist <span className="text-[#00b4d8]">em andamento</span>
         </h1>
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-base text-white/90">
           <span>
-            <strong className="text-[#00b4d8]">Veiculo</strong> {vehicle?.model || '-'}
+            <strong className="text-[#00b4d8]">Veículo</strong> {vehicle?.model || '-'}
           </span>
           <span>
             <strong className="text-[#00b4d8]">Placa</strong> {vehicle?.plate || '-'}
@@ -196,7 +196,7 @@ function ChecklistExecution() {
                             item.status === status ? 'bg-[#00b4d8] text-[#001233]' : 'text-white hover:bg-white/10'
                           }`}
                         >
-                          {status === 'Conforme' ? 'Conforme' : 'Nao conforme'}
+                          {status === 'Conforme' ? 'Conforme' : 'Não conforme'}
                         </button>
                       ))}
                     </div>
@@ -208,7 +208,7 @@ function ChecklistExecution() {
                       value={notes[item.id] || ''}
                       onChange={(event) => handleNoteChange(item.id, event.target.value)}
                       disabled={loading}
-                      placeholder="Adicione observacoes"
+                      placeholder="Adicione observações"
                       className="min-h-11 rounded-lg border-2 border-[#00b4d8] bg-[#001233] px-4 text-white outline-none placeholder:text-white/45"
                     />
                   ) : (
@@ -218,7 +218,7 @@ function ChecklistExecution() {
                       disabled={loading}
                       className="inline-flex w-fit min-h-9 items-center gap-2 text-sm font-bold text-[#5bc4f1]"
                     >
-                      Adicionar observacao
+                      Adicionar observação
                     </button>
                   )}
                 </div>

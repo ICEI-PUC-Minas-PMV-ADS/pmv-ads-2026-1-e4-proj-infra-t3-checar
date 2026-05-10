@@ -9,7 +9,7 @@ const INITIAL_SECTIONS = [
     id: 'motor',
     titulo: 'MOTOR',
     campos: [
-      { id: 'nivel-oleo', nome: 'Nivel de oleo' },
+      { id: 'nivel-oleo', nome: 'Nível de óleo' },
       { id: 'vazamentos-aparentes', nome: 'Vazamentos aparentes' },
     ],
   },
@@ -24,7 +24,7 @@ const INITIAL_SECTIONS = [
   },
   {
     id: 'seguranca',
-    titulo: 'SEGURANCA',
+    titulo: 'SEGURANÇA',
     campos: [
       { id: 'freios', nome: 'Freios' },
       { id: 'luzes', nome: 'Luzes' },
@@ -196,14 +196,14 @@ function ModeloChecklistEdit() {
   const validate = () => {
     if (!formData.nome.trim()) return 'Preencha o nome do modelo.';
     if (!formData.tipo) return 'Selecione o tipo do modelo.';
-    if (!formData.descricao.trim()) return 'Preencha a descricao do modelo.';
-    if (secoesPayload.length === 0) return 'Adicione pelo menos uma secao com itens.';
+    if (!formData.descricao.trim()) return 'Preencha a descrição do modelo.';
+    if (secoesPayload.length === 0) return 'Adicione pelo menos uma seção com itens.';
 
     const hasBlankField = sections.some(
       (section) => !section.titulo.trim() || section.campos.some((field) => !field.nome.trim())
     );
 
-    if (hasBlankField) return 'Preencha todas as secoes e itens antes de salvar.';
+    if (hasBlankField) return 'Preencha todas as seções e itens antes de salvar.';
     return '';
   };
 
@@ -264,7 +264,7 @@ function ModeloChecklistEdit() {
           {isEditing ? 'Editar Modelo' : 'Novo Modelo'} <span className="text-[#00b4d8]">de Checklist</span>
         </h1>
         <p className="mt-2 max-w-2xl text-white/80">
-          Estruture inspecoes padronizadas para diferentes cenarios.
+          Estruture inspeções padronizadas para diferentes cenários.
         </p>
       </header>
 
@@ -305,19 +305,19 @@ function ModeloChecklistEdit() {
                     formData.tipo === tipo ? 'bg-[#00b4d8] text-[#001233]' : 'text-white hover:bg-white/10'
                   }`}
                 >
-                  {tipo}
+                  {tipo === 'Diario' ? 'Diário' : tipo}
                 </button>
               ))}
             </div>
           </div>
 
           <label className="grid gap-2">
-            <span className="font-bold text-[#00b4d8]">Descricao</span>
+            <span className="font-bold text-[#00b4d8]">Descrição</span>
             <textarea
               value={formData.descricao}
               onChange={(event) => handleChange('descricao', event.target.value)}
               disabled={loading}
-              placeholder="Descreva quando e como este modelo sera usado"
+              placeholder="Descreva quando e como este modelo será usado"
               className="min-h-32 resize-y rounded-lg border-2 border-[#00b4d8] bg-[#004aad] px-4 py-3 text-white outline-none placeholder:text-white/45"
             />
           </label>
@@ -326,7 +326,7 @@ function ModeloChecklistEdit() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-light">
-                  Secoes <span className="font-extrabold text-[#00b4d8]">do Checklist</span>
+                  Seções <span className="font-extrabold text-[#00b4d8]">do Checklist</span>
                 </h2>
                 <p className="mt-1 text-white/75">Organize os itens por categorias.</p>
               </div>
@@ -335,7 +335,7 @@ function ModeloChecklistEdit() {
                 onClick={addSection}
                 disabled={loading}
                 className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#00b4d8] text-white transition hover:bg-[#5bc4f1]"
-                aria-label="Adicionar secao"
+                aria-label="Adicionar seção"
               >
                 <Plus size={22} />
               </button>
@@ -349,7 +349,7 @@ function ModeloChecklistEdit() {
                     value={section.titulo}
                     onChange={(event) => handleSectionChange(section.id, event.target.value)}
                     disabled={loading}
-                    placeholder={`Secao ${sectionIndex + 1}`}
+                    placeholder={`Seção ${sectionIndex + 1}`}
                     className="min-h-11 rounded-lg border-2 border-[#00b4d8] bg-[#003b8a] px-3 font-extrabold text-white outline-none placeholder:text-white/45"
                   />
                   <button
@@ -357,7 +357,7 @@ function ModeloChecklistEdit() {
                     onClick={() => removeSection(section.id)}
                     disabled={loading || sections.length === 1}
                     className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#7a0800] text-white disabled:opacity-40"
-                    aria-label="Remover secao"
+                    aria-label="Remover seção"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -406,7 +406,7 @@ function ModeloChecklistEdit() {
             Modelo <span className="font-extrabold text-[#00b4d8]">do Checklist</span>
           </h2>
           <p className="mt-2 text-white/80">
-            {formData.descricao || 'A descricao do modelo aparece aqui para revisao antes de salvar.'}
+            {formData.descricao || 'A descrição do modelo aparece aqui para revisão antes de salvar.'}
           </p>
 
           <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -416,7 +416,7 @@ function ModeloChecklistEdit() {
             </div>
             <div>
               <dt className="font-extrabold text-[#00b4d8]">TIPO</dt>
-              <dd className="mt-1 text-white">{formData.tipo}</dd>
+              <dd className="mt-1 text-white">{formData.tipo === 'Diario' ? 'Diário' : formData.tipo}</dd>
             </div>
           </dl>
 

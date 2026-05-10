@@ -92,7 +92,7 @@ function ModeloChecklistSelection() {
         </h1>
         <p className="mt-2 text-white/75">
           {isChecklistFlow
-            ? `Veiculo: ${vehicle?.model || '-'} | Placa: ${vehicle?.plate || '-'}`
+            ? `Veículo: ${vehicle?.model || '-'} | Placa: ${vehicle?.plate || '-'}`
             : 'Selecione um modelo para editar ou crie um novo.'}
         </p>
       </header>
@@ -102,7 +102,7 @@ function ModeloChecklistSelection() {
           type="search"
           value={busca}
           onChange={(event) => setBusca(event.target.value)}
-          placeholder="Buscar por nome, tipo ou descricao"
+          placeholder="Buscar por nome, tipo ou descrição"
           className="min-h-12 w-full rounded-lg border border-[#00b4d8] bg-[#004aad] px-4 pr-12 text-white outline-none placeholder:text-white/50 focus:ring-2 focus:ring-[#00b4d8]"
         />
         <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-[#5bc4f1]" size={20} />
@@ -127,7 +127,7 @@ function ModeloChecklistSelection() {
               <span className="min-w-0">
                 <span className="block text-xl font-extrabold text-white">{modelo.nome}</span>
                 <span className="mt-1 block text-sm font-bold text-[#5bc4f1]">
-                  {modelo.tipo} | {modelo.secoes?.length || 0} secoes
+                  {modelo.tipo === 'Diario' ? 'Diário' : modelo.tipo} | {modelo.secoes?.length || 0} seções
                 </span>
                 {modelo.descricao && (
                   <span className="mt-2 block text-sm leading-5 text-white/80">{modelo.descricao}</span>
