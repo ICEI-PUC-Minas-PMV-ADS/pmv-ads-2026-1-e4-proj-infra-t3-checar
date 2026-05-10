@@ -50,12 +50,6 @@ function ChecklistExecution() {
 
   const allItems = useMemo(() => sections.flatMap((section) => section.items), [sections]);
 
-  const conformity = useMemo(() => {
-    if (allItems.length === 0) return 0;
-    const conformingItems = allItems.filter((item) => item.status === 'Conforme').length;
-    return Math.round((conformingItems / allItems.length) * 100);
-  }, [allItems]);
-
   const handleStatusChange = (itemId, status) => {
     setStatusByItem((current) => ({ ...current, [itemId]: status }));
   };
@@ -69,11 +63,13 @@ function ChecklistExecution() {
   };
 
   const createChecklist = async () => {
+    const isConforme = allItems.every((item) => item.status === 'Conforme');
+
     const checklistData = {
       data: new Date().toISOString(),
-      conformidade: allItems.every((item) => item.status === 'Conforme'),
+      conformidade: isConforme,
       observacao: Object.values(notes).filter(Boolean).join('\n'),
-      status: conformity === 100 ? ['disponivel'] : ['com problema'],
+      status: isConforme ? ['disponivel'] : ['com problema'],
       modeloId: modeloChecklist?._id,
     };
 
@@ -226,10 +222,6 @@ function ChecklistExecution() {
             </div>
           </section>
         ))}
-      </div>
-
-      <div className="rounded-lg border border-white/15 bg-white/5 px-4 py-3 text-lg">
-        Conformidade atual: <strong className="text-[#00b4d8]">{conformity}%</strong>
       </div>
 
       {message.text && (

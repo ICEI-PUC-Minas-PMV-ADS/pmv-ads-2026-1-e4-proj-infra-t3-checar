@@ -40,6 +40,20 @@ const cloneInitialSections = () => INITIAL_SECTIONS.map((section) => ({
 
 const createLocalId = (prefix) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
+const sortByOrder = (a, b) => (a.ordem || 0) - (b.ordem || 0);
+const orderByOrder = (items = []) => [...items].sort(sortByOrder);
+
+const mapFieldToForm = (field) => ({
+  id: field._id || createLocalId('campo'),
+  nome: field.nome || '',
+});
+
+const mapSectionToForm = (section) => ({
+  id: section._id || createLocalId('secao'),
+  titulo: section.titulo || '',
+  campos: orderByOrder(section.campos).map(mapFieldToForm),
+});
+
 const mapModeloToFormSections = (modelo) => {
   const secoes = modelo?.secoes || [];
 
@@ -47,20 +61,7 @@ const mapModeloToFormSections = (modelo) => {
     return cloneInitialSections();
   }
 
-  return secoes
-    .slice()
-    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
-    .map((section) => ({
-      id: section._id || createLocalId('secao'),
-      titulo: section.titulo || '',
-      campos: (section.campos || [])
-        .slice()
-        .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
-        .map((field) => ({
-          id: field._id || createLocalId('campo'),
-          nome: field.nome || '',
-        })),
-    }));
+  return orderByOrder(secoes).map(mapSectionToForm);
 };
 
 function ModeloChecklistEdit() {
@@ -78,8 +79,6 @@ function ModeloChecklistEdit() {
   const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
-    let mounted = true;
-
     const carregarModelo = async () => {
       if (!isEditing) {
         setPageLoading(false);
@@ -92,8 +91,6 @@ function ModeloChecklistEdit() {
         const response = await axios.get(`/api/modelochecklists/${modeloId}`);
         const modelo = response.data;
 
-        if (!mounted) return;
-
         setFormData({
           nome: modelo.nome || '',
           tipo: modelo.tipo || TIPO_OPTIONS[0],
@@ -101,19 +98,13 @@ function ModeloChecklistEdit() {
         });
         setSections(mapModeloToFormSections(modelo));
       } catch (err) {
-        if (mounted) {
-          setMessage({ type: 'error', text: `Falha ao carregar modelo: ${err.response?.data?.erro || err.message}` });
-        }
+        setMessage({ type: 'error', text: `Falha ao carregar modelo: ${err.response?.data?.erro || err.message}` });
       } finally {
-        if (mounted) setPageLoading(false);
+        setPageLoading(false);
       }
     };
 
     carregarModelo();
-
-    return () => {
-      mounted = false;
-    };
   }, [isEditing, modeloId]);
 
   const secoesPayload = useMemo(() =>
