@@ -6,6 +6,7 @@ import UploadFotos from './pages/UploadFotos';
 import ModeloChecklistSelection from './pages/ModeloChecklistSelection';
 import ModeloChecklistEdit from './pages/ModeloChecklistEdit';
 import ChecklistExecution from './pages/ChecklistExecution';
+import UserRegistration from './pages/userRegistration';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/modelos/novo" element={<ModeloChecklistEdit />} />
           <Route path="/modelos/:modeloId" element={<ModeloChecklistEdit />} />
           <Route path="/checklist" element={<ChecklistExecution />} />
+          <Route path="/cadastro" element={<UserRegistration />} />
         </Routes>
       </Layout>
     </Router>
