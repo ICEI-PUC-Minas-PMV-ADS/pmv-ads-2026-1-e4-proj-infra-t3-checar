@@ -109,6 +109,7 @@ function ChecklistExecution() {
         itemsToSave.map((itemChecklist) => axios.post('/api/itemchecklists', itemChecklist))
       );
       setMessage({ type: 'success', text: 'Inspeção registrada com sucesso.' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setMessage({ type: 'error', text: `Falha ao registrar checklist: ${err.response?.data?.erro || err.message}` });
     } finally {
