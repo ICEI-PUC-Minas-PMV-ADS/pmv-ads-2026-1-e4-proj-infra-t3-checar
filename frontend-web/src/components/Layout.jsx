@@ -12,7 +12,7 @@ function Layout({ children }) {
             <div className="bg-[#00b7eb] w-8 h-8 rounded-full flex items-center justify-center">
               <span className="text-[#00112b] font-bold">C</span>
             </div>
-            <span className="font-bold text-white uppercase tracking-wider">Checar Frota</span>
+            <span className="font-bold text-white uppercase tracking-wider">Checar</span>
           </div>
           
           <div className="flex gap-4">
