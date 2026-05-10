@@ -15,6 +15,11 @@ const itemChecklistSchema = new mongoose.Schema({
         type: String,
         enum: ["Conforme", "Nao Conforme"],
         required: true
+    },
+    observacao: {
+        type: String,
+        trim: true,
+        default: ""
     }
 });
 

@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import BuscarVeiculos from './pages/BuscarVeiculos';
 import UploadFotos from './pages/UploadFotos';
+import ModeloChecklistSelection from './pages/ModeloChecklistSelection';
+import ModeloChecklistEdit from './pages/ModeloChecklistEdit';
+import ChecklistExecution from './pages/ChecklistExecution';
 
 function App() {
   return (
@@ -12,6 +15,10 @@ function App() {
           <Route path="/" element={<BuscarVeiculos />} />
           <Route path="/veiculos" element={<BuscarVeiculos />} />
           <Route path="/upload" element={<UploadFotos />} />
+          <Route path="/modelos" element={<ModeloChecklistSelection />} />
+          <Route path="/modelos/novo" element={<ModeloChecklistEdit />} />
+          <Route path="/modelos/:modeloId" element={<ModeloChecklistEdit />} />
+          <Route path="/checklist" element={<ChecklistExecution />} />
         </Routes>
       </Layout>
     </Router>

@@ -14,10 +14,13 @@ function Layout({ children }) {
             </div>
             <span className="font-bold text-white uppercase tracking-wider">Checar</span>
           </div>
-          
+
           <div className="flex gap-4">
             <Link to="/veiculos" className="px-4 py-2 rounded-full hover:bg-[#0052cc] transition-colors">
               Veículos
+            </Link>
+            <Link to="/modelos" className="px-4 py-2 rounded-full hover:bg-[#0052cc] transition-colors">
+              Modelos
             </Link>
             <Link to="/upload" className="bg-[#00b7eb] text-[#00112b] px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-white transition-colors">
               <Camera size={16} />
