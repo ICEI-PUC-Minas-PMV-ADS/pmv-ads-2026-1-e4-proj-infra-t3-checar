@@ -1,8 +1,10 @@
 # Videos de acompanhamento/apresentação das etapas
 
-Faça um vídeo para cada etapa para demonstrar a participação de cada membro do grupo. Utilize esta pasta para salvar cada arquivo de vídeo ou a url de hospedagem.
+# 3º Etapa - Desenvolvimento Front-End
 
-https://github.com/user-attachments/assets/22e7bef5-0e0e-4343-b977-e27e6a2c5b73
+https://github.com/user-attachments/assets/01265153-547b-4216-b75f-a0bc912db82d
+
+
 
 
 
