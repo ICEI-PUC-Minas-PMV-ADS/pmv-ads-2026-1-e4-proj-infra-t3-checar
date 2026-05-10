@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Search, ChevronLeft, Car } from 'lucide-react';
 
@@ -115,6 +116,12 @@ const BuscarVeiculos = () => {
                       <span>•</span>
                       <span>{veiculo.quilometragem?.toLocaleString()} km</span>
                     </div>
+                    <Link
+                      to={`/modelos?vehicleId=${veiculo._id}`}
+                      className="mt-2 inline-flex rounded-lg bg-[#00b7eb] px-2.5 py-1 text-[10px] font-black uppercase tracking-tighter text-[#00112b] transition-colors hover:bg-white"
+                    >
+                      Iniciar Checklist
+                    </Link>
                   </div>
 
                   {/* Status Minimalista */}
