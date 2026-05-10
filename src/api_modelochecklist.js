@@ -37,6 +37,10 @@ router.get("/modelochecklists", async (req, res) => {
             filtros.nome = { $regex: req.query.nome, $options: "i" };
         }
 
+        if (req.query.ativo !== undefined) {
+            filtros.ativo = req.query.ativo === "true";
+        }
+
         const modelosChecklist = await ModeloChecklist.find(filtros);
         res.status(200).json(modelosChecklist);
     } catch (error) {

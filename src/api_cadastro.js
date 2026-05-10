@@ -13,6 +13,9 @@ import Vehicle from './models/Vehicle.js';
 import Inspecao from './models/Inspecao.js';
 import Usuario from './models/Usuario.js';
 import reportRoutes from "./api_reports.js";
+import modeloChecklistRoutes from "./api_modelochecklist.js";
+import itemChecklistRoutes from "./api_itemchecklist.js";
+import checklistRoutes from "./api_checklist.js";
 import { getAllVehicles, getVehicleById, createVehicle, updateVehicle, deleteVehicle } from './controllers/vehicleController.js';
 
 // ==========================================
@@ -35,6 +38,9 @@ app.use('/uploads', express.static('uploads'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(reportRoutes);
+app.use(modeloChecklistRoutes);
+app.use(itemChecklistRoutes);
+app.use(checklistRoutes);
 
 // Rota para ver o JSON do Swagger (debug)
 app.get('/api-docs.json', (req, res) => {
