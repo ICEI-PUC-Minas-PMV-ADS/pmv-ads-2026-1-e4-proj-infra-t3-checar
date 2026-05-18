@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
-    "react-native-paper": "4.9.2"
+    "axios": "^1.16.1",
+    "expo": "^55.0.24",
+    "react-dom": "^19.2.6",
+    "react-native-paper": "4.9.2",
+    "react-native-web": "^0.21.0"
   }
 }
