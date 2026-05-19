@@ -52,7 +52,7 @@ const BuscarVeiculos = () => {
             <ChevronLeft size={24} />
           </button>
           <span className="bg-[#002b45] px-3 py-0.5 rounded-full text-[9px] uppercase border border-[#003d5c] mb-1 font-bold tracking-[0.2em] text-[#00b7eb]">
-            Controle de Frota
+            B U S C A R
           </span>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">
             Gestão de <span className="text-[#00b7eb]">Veículos</span>

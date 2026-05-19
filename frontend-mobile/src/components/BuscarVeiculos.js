@@ -86,7 +86,7 @@ export default function BuscarVeiculos({ aoTrocarTela }) {
       {/* Cabeçalho sem o botão de adicionar */}
       <View style={styles.header}>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Controle de Frota</Text>
+          <Text style={styles.badgeText}>B U S C A R</Text>
         </View>
         <Text style={styles.headerTitle}>
           Gestão de <Text style={styles.headerTitleBlue}>Veículos</Text>
