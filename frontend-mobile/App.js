@@ -1,37 +1,88 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, StatusBar, Platform, View } from 'react-native';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  StyleSheet,
+  StatusBar,
+  Platform,
+  View
+} from 'react-native';
 
-// Importando as duas telas principais
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets
+} from 'react-native-safe-area-context';
+
+// Importando telas
 import BuscarVeiculos from './src/components/BuscarVeiculos';
 import UploadFotos from './src/components/UploadFotos';
+import UserRegistration from './pages/UserRegistration';
+
+// Importando TabBar
 import TabBar from './src/components/TabBar';
 
-// Componente principal com as telas
+// Componente principal
 function AppContent() {
   const insets = useSafeAreaInsets();
-  const [telaAtual, setTelaAtual] = useState('busca'); 
+
+  // Tela inicial
+  const [telaAtual, setTelaAtual] = useState('registro');
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#00112b" />
       
-      {/* Área do Conteúdo da Tela Ativa */}
-      <View style={[styles.content, { marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }]}>
-        {telaAtual === 'busca' ? (
-          <BuscarVeiculos aoTrocarTela={() => setTelaAtual('cadastro')} />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="#00112b"
+      />
+
+      {/* Conteúdo da tela */}
+      <View
+        style={[
+          styles.content,
+          {
+            marginTop:
+              Platform.OS === 'android'
+                ? StatusBar.currentHeight
+                : 0,
+          },
+        ]}
+      >
+
+        {/* Tela de Registro */}
+        {telaAtual === 'registro' ? (
+          <UserRegistration />
+
+        ) : telaAtual === 'busca' ? (
+
+          /* Tela Buscar Veículos */
+          <BuscarVeiculos
+            aoTrocarTela={() =>
+              setTelaAtual('cadastro')
+            }
+          />
+
         ) : (
-          <UploadFotos aoVoltar={() => setTelaAtual('busca')} />
+
+          /* Tela Upload Fotos */
+          <UploadFotos
+            aoVoltar={() =>
+              setTelaAtual('busca')
+            }
+          />
         )}
+
       </View>
 
-      {/* Menu de Abas Inferior */}
-      <TabBar telaAtual={telaAtual} onTabPress={setTelaAtual} />
+      {/* Menu inferior */}
+      <TabBar
+        telaAtual={telaAtual}
+        onTabPress={setTelaAtual}
+      />
+
     </View>
   );
 }
 
-// Componente wrapper com SafeAreaProvider
+// Wrapper principal
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -40,12 +91,14 @@ export default function App() {
   );
 }
 
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#00112b',
   },
+
   content: {
     flex: 1,
-  }
+  },
 });
