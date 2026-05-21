@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PaperProvider } from 'react-native-paper';
 import {
   StyleSheet,
   StatusBar,
@@ -12,12 +13,13 @@ import {
 } from 'react-native-safe-area-context';
 
 // Importando telas
-import BuscarVeiculos from './src/components/BuscarVeiculos';
-import UploadFotos from './src/components/UploadFotos';
-import UserRegistration from './pages/UserRegistration';
+import BuscarVeiculos from './src/components/BuscarVeiculos.js';
+import VehicleDetails from './src/components/VehicleDetails.js';
+import UploadFotos from './src/components/UploadFotos.js';
+import UserRegistration from './src/pages/userRegistration.js';
 
 // Importando TabBar
-import TabBar from './src/components/TabBar';
+import TabBar from './src/components/TabBar.js';
 
 // Componente principal
 function AppContent() {
@@ -25,6 +27,27 @@ function AppContent() {
 
   // Tela inicial
   const [telaAtual, setTelaAtual] = useState('registro');
+  const [vehicleIdSelecionado, setVehicleIdSelecionado] = useState(null);
+
+  const handleSelectVehicle = (vehicleId) => {
+    setVehicleIdSelecionado(vehicleId);
+    setTelaAtual('detalhes');
+  };
+
+  const handleCreateNewVehicle = () => {
+    setVehicleIdSelecionado(null);
+    setTelaAtual('detalhes');
+  };
+
+  const handleCloseDetails = () => {
+    setVehicleIdSelecionado(null);
+    setTelaAtual('busca');
+  };
+
+  const handleSaveVehicle = () => {
+    setVehicleIdSelecionado(null);
+    setTelaAtual('busca');
+  };
 
   return (
     <View style={styles.container}>
@@ -58,6 +81,18 @@ function AppContent() {
             aoTrocarTela={() =>
               setTelaAtual('cadastro')
             }
+            onSelectVehicle={handleSelectVehicle}
+            onCreateNew={handleCreateNewVehicle}
+          />
+
+        ) : telaAtual === 'detalhes' ? (
+
+          /* Tela de Detalhes do Veículo */
+          <VehicleDetails
+            vehicleId={vehicleIdSelecionado}
+            isNew={!vehicleIdSelecionado}
+            onClose={handleCloseDetails}
+            onSave={handleSaveVehicle}
           />
 
         ) : (
@@ -72,11 +107,13 @@ function AppContent() {
 
       </View>
 
-      {/* Menu inferior */}
-      <TabBar
-        telaAtual={telaAtual}
-        onTabPress={setTelaAtual}
-      />
+      {/* Menu inferior (só mostra se não estiver em detalhes) */}
+      {telaAtual !== 'detalhes' && (
+        <TabBar
+          telaAtual={telaAtual}
+          onTabPress={setTelaAtual}
+        />
+      )}
 
     </View>
   );
@@ -85,9 +122,11 @@ function AppContent() {
 // Wrapper principal
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <AppContent />
-    </SafeAreaProvider>
+    <PaperProvider>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </PaperProvider>
   );
 }
 
