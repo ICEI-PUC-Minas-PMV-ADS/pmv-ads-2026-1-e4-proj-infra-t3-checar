@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import BuscarVeiculos from './pages/BuscarVeiculos';
+import VehicleDetails from './pages/VehicleDetails';
 import UploadFotos from './pages/UploadFotos';
 import ModeloChecklistSelection from './pages/ModeloChecklistSelection';
 import ModeloChecklistEdit from './pages/ModeloChecklistEdit';
@@ -15,6 +16,8 @@ function App() {
         <Routes>
           <Route path="/" element={<BuscarVeiculos />} />
           <Route path="/veiculos" element={<BuscarVeiculos />} />
+          <Route path="/veiculos/novo" element={<VehicleDetails />} />
+          <Route path="/veiculos/:vehicleId" element={<VehicleDetails />} />
           <Route path="/upload" element={<UploadFotos />} />
           <Route path="/modelos" element={<ModeloChecklistSelection />} />
           <Route path="/modelos/novo" element={<ModeloChecklistEdit />} />
