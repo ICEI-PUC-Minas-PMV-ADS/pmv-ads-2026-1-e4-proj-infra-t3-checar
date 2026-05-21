@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Search, ChevronLeft, Car } from 'lucide-react';
+import { Search, ChevronLeft, Plus } from 'lucide-react';
+import VehicleCard from '../components/VehicleCard';
 
 const BuscarVeiculos = () => {
   const [veiculos, setVeiculos] = useState([]);
@@ -51,6 +52,14 @@ const BuscarVeiculos = () => {
           <button className="absolute left-0 top-1 p-2 hover:bg-white/10 rounded-full transition-all">
             <ChevronLeft size={24} />
           </button>
+          <Link
+            to="/veiculos/novo"
+            title="Cadastrar novo veículo"
+            className="absolute right-0 top-1 inline-flex items-center gap-2 rounded-full border border-white/20 bg-[#00b7eb] px-3 py-2 text-sm font-bold text-[#00112b] transition hover:bg-white"
+          >
+            <Plus size={18} />
+            Novo
+          </Link>
           <span className="bg-[#002b45] px-3 py-0.5 rounded-full text-[9px] uppercase border border-[#003d5c] mb-1 font-bold tracking-[0.2em] text-[#00b7eb]">
             B U S C A R
           </span>
@@ -89,57 +98,7 @@ const BuscarVeiculos = () => {
               </div>
             ) : veiculosFiltrados.length > 0 ? (
               veiculosFiltrados.map((veiculo) => (
-                <div 
-                  key={veiculo._id} 
-                  className="group bg-gradient-to-r from-[#0052cc] to-[#0041a3] rounded-3xl p-3 md:p-4 flex items-center gap-4 border border-white/10 hover:border-[#00b7eb]/50 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-lg"
-                >
-                  {/* Foto/Ícone */}
-                  <div className="relative w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl shrink-0 overflow-hidden flex items-center justify-center shadow-inner border border-white/20">
-                    {veiculo.fotoUrl ? (
-                      <img src={veiculo.fotoUrl} alt={veiculo.nome} className="object-cover w-full h-full" />
-                    ) : (
-                      <Car className="text-[#00112b]/20 w-10 h-10" />
-                    )}
-                    <div className={`absolute top-0 left-0 w-1 h-full ${veiculo.status === 'OK' ? 'bg-green-400' : 'bg-red-500'}`} />
-                  </div>
-
-                  {/* Infos Principais - Tamanho Reduzido para Caber */}
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-sm md:text-base font-black leading-tight uppercase truncate group-hover:text-[#00b7eb] transition-colors">
-                      {veiculo.nome}
-                    </h2>
-                    <p className="text-xs md:text-sm font-mono font-bold text-[#00b7eb] tracking-tighter">
-                      {veiculo.placa}
-                    </p>
-                    <div className="flex flex-wrap gap-x-2 mt-1 opacity-60 text-[10px] md:text-xs">
-                      <span>{veiculo.ano}</span>
-                      <span>•</span>
-                      <span>{veiculo.quilometragem?.toLocaleString()} km</span>
-                    </div>
-                    <Link
-                      to={`/modelos?vehicleId=${veiculo._id}`}
-                      className="mt-2 inline-flex rounded-lg bg-[#00b7eb] px-2.5 py-1 text-[10px] font-black uppercase tracking-tighter text-[#00112b] transition-colors hover:bg-white"
-                    >
-                      Iniciar Checklist
-                    </Link>
-                  </div>
-
-                  {/* Status Minimalista */}
-                  <div className="flex flex-col items-end shrink-0">
-                    <div className={`px-2.5 py-1 rounded-lg text-[10px] font-black tracking-tighter uppercase ${
-                      veiculo.status === 'ALERTA' 
-                        ? 'bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse' 
-                        : 'bg-green-500/20 text-green-400 border border-green-500/50'
-                    }`}>
-                      {veiculo.status}
-                    </div>
-                    {veiculo.observacao && veiculo.status === 'ALERTA' && (
-                      <span className="text-[9px] text-red-300/70 mt-1 max-w-[80px] truncate text-right italic">
-                        {veiculo.observacao}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <VehicleCard key={veiculo._id} vehicle={veiculo} />
               ))
             ) : (
               <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
