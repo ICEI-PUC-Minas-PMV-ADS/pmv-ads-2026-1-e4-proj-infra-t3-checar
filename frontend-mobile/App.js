@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import {
   StyleSheet,
   StatusBar,
@@ -11,30 +12,31 @@ import {
   useSafeAreaInsets
 } from 'react-native-safe-area-context';
 
-// Importando telas
+// Telas
 import BuscarVeiculos from './src/components/BuscarVeiculos';
 import UploadFotos from './src/components/UploadFotos';
 import UserRegistration from './pages/UserRegistration';
+import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 
-// Importando TabBar
+// Menu
 import TabBar from './src/components/TabBar';
 
-// Componente principal
 function AppContent() {
   const insets = useSafeAreaInsets();
 
   // Tela inicial
-  const [telaAtual, setTelaAtual] = useState('registro');
+  const [telaAtual, setTelaAtual] =
+    useState('registro');
 
   return (
     <View style={styles.container}>
-      
+
       <StatusBar
         barStyle="light-content"
         backgroundColor="#00112b"
       />
 
-      {/* Conteúdo da tela */}
       <View
         style={[
           styles.content,
@@ -47,32 +49,45 @@ function AppContent() {
         ]}
       >
 
-        {/* Tela de Registro */}
-        {telaAtual === 'registro' ? (
-          <UserRegistration />
+        {/* Cadastro */}
+        {telaAtual === 'registro' && (
+          <UserRegistration
+            navegar={setTelaAtual}
+          />
+        )}
 
-        ) : telaAtual === 'busca' ? (
+        {/* Login */}
+        {telaAtual === 'login' && (
+          <Login
+            navegar={setTelaAtual}
+          />
+        )}
 
-          /* Tela Buscar Veículos */
+        {/* Buscar veículos */}
+        {telaAtual === 'busca' && (
           <BuscarVeiculos
             aoTrocarTela={() =>
-              setTelaAtual('cadastro')
+              setTelaAtual('upload')
             }
           />
+        )}
 
-        ) : (
-
-          /* Tela Upload Fotos */
+        {/* Upload */}
+        {telaAtual === 'upload' && (
           <UploadFotos
             aoVoltar={() =>
               setTelaAtual('busca')
             }
           />
         )}
+        
+        {/* Recuperar Senha */}
+        {telaAtual === 'recuperarSenha' && (
+  <ForgotPassword navegar={setTelaAtual} />
+)}
 
       </View>
 
-      {/* Menu inferior */}
       <TabBar
         telaAtual={telaAtual}
         onTabPress={setTelaAtual}
@@ -82,7 +97,6 @@ function AppContent() {
   );
 }
 
-// Wrapper principal
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -91,7 +105,6 @@ export default function App() {
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,

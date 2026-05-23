@@ -9,79 +9,69 @@ import {
 
 import {
   TextInput,
-  Menu,
   Button,
 } from 'react-native-paper';
 
 import {
-  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
 
 import { auth } from '../firebaseConfig';
 
-const UserRegistration = ({ navegar }) => {
-  const [nome, setNome] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [senha, setSenha] = React.useState('');
-  const [tipoUsuario, setTipoUsuario] =
+const Login = ({ navegar }) => {
+
+  const [email, setEmail] =
     React.useState('');
 
-  const [visible, setVisible] =
-    React.useState(false);
+  const [senha, setSenha] =
+    React.useState('');
 
   const [loading, setLoading] =
     React.useState(false);
 
-  const openMenu = () => setVisible(true);
+  const login = async () => {
 
-  const closeMenu = () => setVisible(false);
+    if (!email || !senha) {
 
-  const cadastrar = async () => {
-
-    if (
-      !nome ||
-      !email ||
-      !senha ||
-      !tipoUsuario
-    ) {
       Alert.alert(
         'Atenção',
-        'Preencha todos os campos'
+        'Preencha email e senha'
       );
 
       return;
     }
 
     try {
+
       setLoading(true);
 
       const userCredential =
-        await createUserWithEmailAndPassword(
+        await signInWithEmailAndPassword(
           auth,
           email,
           senha
         );
 
       console.log(
-        'Usuário criado:',
+        'Usuário logado:',
         userCredential.user
       );
 
       Alert.alert(
         'Sucesso',
-        'Cadastro realizado com sucesso'
+        'Login realizado com sucesso'
       );
 
-      // Ir para login
-      navegar('login');
+      // Ir para tela de busca
+      navegar('busca');
 
     } catch (error) {
 
       console.log(error);
 
       Alert.alert(
-        'Erro',
-        'Não foi possível realizar o cadastro'
+        'Erro ao entrar',
+        'Email ou senha inválidos'
       );
 
     } finally {
@@ -94,8 +84,8 @@ const UserRegistration = ({ navegar }) => {
     <View
       style={{
         flex: 1,
-        padding: 20,
         justifyContent: 'center',
+        padding: 20,
         gap: 15,
       }}
     >
@@ -107,15 +97,8 @@ const UserRegistration = ({ navegar }) => {
           textAlign: 'center',
         }}
       >
-        Cadastro
+        Login
       </Text>
-
-      <TextInput
-        label="Nome"
-        value={nome}
-        onChangeText={setNome}
-        mode="outlined"
-      />
 
       <TextInput
         label="Email"
@@ -134,45 +117,52 @@ const UserRegistration = ({ navegar }) => {
         mode="outlined"
       />
 
-      <Menu
-        visible={visible}
-        onDismiss={closeMenu}
-        anchor={
-          <Button
-            mode="outlined"
-            onPress={openMenu}
-          >
-            {tipoUsuario ||
-              'Selecione o tipo de usuário'}
-          </Button>
-        }
-      >
-
-        <Menu.Item
-          onPress={() => {
-            setTipoUsuario('Gestor');
-            closeMenu();
-          }}
-          title="Gestor"
-        />
-
-        <Menu.Item
-          onPress={() => {
-            setTipoUsuario('Funcionário');
-            closeMenu();
-          }}
-          title="Funcionário"
-        />
-
-      </Menu>
-
       <Button
         mode="contained"
-        onPress={cadastrar}
+        onPress={login}
         loading={loading}
         disabled={loading}
       >
-        Cadastrar
+        Entrar
+      </Button>
+
+      {/* Recuperar senha */}
+      <TouchableOpacity
+        onPress={() =>
+          navegar('recuperarSenha')
+        }
+      >
+        <Text
+          style={{
+            textAlign: 'center',
+            color: '#6200ee',
+          }}
+        >
+          Esqueceu sua senha?
+        </Text>
+      </TouchableOpacity>
+
+      <Text
+        style={{
+          textAlign: 'center',
+          marginTop: 10,
+        }}
+      >
+        ───── OU ─────
+      </Text>
+
+      <Button
+        mode="outlined"
+        icon="google"
+      >
+        Entrar com Google
+      </Button>
+
+      <Button
+        mode="outlined"
+        icon="linkedin"
+      >
+        Entrar com LinkedIn
       </Button>
 
       <View
@@ -184,11 +174,13 @@ const UserRegistration = ({ navegar }) => {
       >
 
         <Text>
-          Já possui cadastro?
+          Não possui conta?
         </Text>
 
         <TouchableOpacity
-          onPress={() => navegar('login')}
+          onPress={() =>
+            navegar('registro')
+          }
         >
           <Text
             style={{
@@ -196,7 +188,7 @@ const UserRegistration = ({ navegar }) => {
               fontWeight: 'bold',
             }}
           >
-            {' '}Entre por aqui
+            {' '}Cadastre-se
           </Text>
         </TouchableOpacity>
 
@@ -206,4 +198,4 @@ const UserRegistration = ({ navegar }) => {
   );
 };
 
-export default UserRegistration;
+export default Login;
