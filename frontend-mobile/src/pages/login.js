@@ -16,6 +16,10 @@ import {
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 
+import * as LocalAuthentication from 'expo-local-authentication';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { auth } from '../firebaseConfig';
 
 const Login = ({ navegar }) => {
@@ -29,6 +33,37 @@ const Login = ({ navegar }) => {
   const [loading, setLoading] =
     React.useState(false);
 
+  const [biometriaDisponivel, setBiometriaDisponivel] =
+    React.useState(false);
+
+  // Verificar biometria ao abrir tela
+  React.useEffect(() => {
+
+    verificarBiometria();
+
+  }, []);
+
+  const verificarBiometria = async () => {
+
+    const compativel =
+      await LocalAuthentication.hasHardwareAsync();
+
+    const cadastrada =
+      await LocalAuthentication.isEnrolledAsync();
+
+    const usuarioSalvo =
+      await AsyncStorage.getItem('usuarioLogado');
+
+    if (
+      compativel &&
+      cadastrada &&
+      usuarioSalvo
+    ) {
+      setBiometriaDisponivel(true);
+    }
+  };
+
+  // Login normal
   const login = async () => {
 
     if (!email || !senha) {
@@ -57,12 +92,17 @@ const Login = ({ navegar }) => {
         userCredential.user
       );
 
+      // Salvar login para biometria futura
+      await AsyncStorage.setItem(
+        'usuarioLogado',
+        email
+      );
+
       Alert.alert(
         'Sucesso',
         'Login realizado com sucesso'
       );
 
-      // Ir para tela de busca
       navegar('busca');
 
     } catch (error) {
@@ -77,6 +117,45 @@ const Login = ({ navegar }) => {
     } finally {
 
       setLoading(false);
+    }
+  };
+
+  // Login biométrico
+  const loginBiometrico = async () => {
+
+    try {
+
+      const resultado =
+        await LocalAuthentication.authenticateAsync({
+          promptMessage: 'Entrar com biometria',
+          fallbackLabel: 'Usar senha',
+        });
+
+      if (resultado.success) {
+
+        Alert.alert(
+          'Sucesso',
+          'Biometria reconhecida'
+        );
+
+        navegar('busca');
+
+      } else {
+
+        Alert.alert(
+          'Falha',
+          'Biometria não reconhecida'
+        );
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert(
+        'Erro',
+        'Não foi possível autenticar'
+      );
     }
   };
 
@@ -126,7 +205,17 @@ const Login = ({ navegar }) => {
         Entrar
       </Button>
 
-      {/* Recuperar senha */}
+      {/* Botão biometria */}
+      {biometriaDisponivel && (
+        <Button
+          mode="outlined"
+          icon="fingerprint"
+          onPress={loginBiometrico}
+        >
+          Entrar com biometria
+        </Button>
+      )}
+
       <TouchableOpacity
         onPress={() =>
           navegar('recuperarSenha')
