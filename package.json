@@ -9,7 +9,11 @@
   "scripts": {
     "test": "jest",
     "test:routes": "node --test src/tests/itemchecklist.test.js src/tests/modelochecklist.test.js src/tests/checklist.test.js",
-    "start": "node src/api_cadastro.js"
+    "start": "node src/api_cadastro.js",
+    "install:all": "npm install && cd frontend-mobile && npm install && cd .. && cd frontend-web && npm install",
+    "update:all": "git pull origin main && npm run install:all",
+    "start:web": "cd frontend-web && npm run dev",
+    "start:mobile": "cd frontend-mobile && npm start"
   },
   "repository": {
     "type": "git",
