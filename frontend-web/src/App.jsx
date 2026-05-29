@@ -7,6 +7,8 @@ import ModeloChecklistSelection from './pages/ModeloChecklistSelection';
 import ModeloChecklistEdit from './pages/ModeloChecklistEdit';
 import ChecklistExecution from './pages/ChecklistExecution';
 import UserRegistration from './pages/userRegistration';
+import Login from './pages/Login';
+import RecuperarSenha from './pages/RecuperarSenha';
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<BuscarVeiculos />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/recuperar-senha" element={<RecuperarSenha />} />
           <Route path="/veiculos" element={<BuscarVeiculos />} />
           <Route path="/upload" element={<UploadFotos />} />
           <Route path="/modelos" element={<ModeloChecklistSelection />} />

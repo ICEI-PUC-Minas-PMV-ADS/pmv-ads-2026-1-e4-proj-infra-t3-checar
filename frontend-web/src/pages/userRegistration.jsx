@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './userRegistration.css';
 
 function UserRegistration() {
 
@@ -64,80 +65,63 @@ function UserRegistration() {
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <form onSubmit={handleSubmit}>
-        <h1>Cadastro de Usuários</h1>
+    <div className="registration-container">
+      <div className="registration-card">
+        <form onSubmit={handleSubmit}>
+          <h1>Cadastro de Usuários</h1>
 
-        <label>Nome</label>
-        <br />
+          <div className="form-group">
+            <label>Nome</label>
+            <input
+              name='nome'
+              type='text'
+              placeholder='Insira seu nome'
+              value={formData.nome}
+              onChange={handleChange}
+            />
+          </div>
 
-        <input
-          name='nome'
-          type='text'
-          placeholder='Insira seu nome'
-          value={formData.nome}
-          onChange={handleChange}
-        />
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              name='email'
+              type='email'
+              placeholder='Insira seu email'
+              value={formData.email}
+              onChange={handleChange}
+            />
+          </div>
 
-        <br /><br />
+          <div className="form-group">
+            <label>Senha</label>
+            <input
+              name='senha'
+              type='password'
+              placeholder='Insira sua senha'
+              value={formData.senha}
+              onChange={handleChange}
+            />
+          </div>
 
-        <label>Email</label>
-        <br />
+          <div className="form-group">
+            <label>Tipo de Usuário</label>
+            <select
+              name="tipoUsuario"
+              value={formData.tipoUsuario}
+              onChange={handleChange}
+              className="tipo-usuario-select"
+            >
+              <option value="">Selecione</option>
+              <option value="motorista">Motorista</option>
+              <option value="gestor">Gestor</option>
+            </select>
+          </div>
 
-        <input
-          name='email'
-          type='email'
-          placeholder='Insira seu email'
-          value={formData.email}
-          onChange={handleChange}
-        />
-
-        <br /><br />
-
-        <label>Senha</label>
-        <br />
-
-        <input
-          name='senha'
-          type='password'
-          placeholder='Insira sua senha'
-          value={formData.senha}
-          onChange={handleChange}
-        />
-
-        <br /><br />
-
-        <label>Tipo de Usuário</label>
-        <br />
-
-        <select
-          name="tipoUsuario"
-          value={formData.tipoUsuario}
-          onChange={handleChange}
-        >
-          <option value="">Selecione</option>
-          <option value="motorista">Motorista</option>
-          <option value="gestor">Gestor</option>
-        </select>
-
-        <br /><br />
-
-        <button type="submit">
-          Cadastrar
-        </button>
-      </form>
-
-      <hr />
-
-      <h2>Usuários cadastrados</h2>
-
-      <ul>
-        {users.map((user, index) => (
-          <li key={index}>
-            {user.nome}
-          </li>
-        ))}
-      </ul>
+          <button type="submit" className="btn-cadastrar">
+            Cadastrar
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

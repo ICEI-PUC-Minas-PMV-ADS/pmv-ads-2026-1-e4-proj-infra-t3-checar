@@ -1,98 +1,51 @@
 import React, { useState } from 'react';
+import { StyleSheet, StatusBar, Platform, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import {
-  StyleSheet,
-  StatusBar,
-  Platform,
-  View
-} from 'react-native';
-
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets
-} from 'react-native-safe-area-context';
-
-// Telas
+// Telas e Componentes
 import BuscarVeiculos from './src/components/BuscarVeiculos';
 import UploadFotos from './src/components/UploadFotos';
-import UserRegistration from './pages/UserRegistration';
-import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-
-// Menu
+import UserRegistration from './src/pages/userRegistration';
+import Login from './src/pages/login';
+import ForgotPassword from './src/pages/forgotPassword';
+import Header from './src/components/Header';
 import TabBar from './src/components/TabBar';
 
 function AppContent() {
-  const insets = useSafeAreaInsets();
+  const [telaAtual, setTelaAtual] = useState('login');
 
-  // Tela inicial
-  const [telaAtual, setTelaAtual] =
-    useState('registro');
+  // Configurações de exibição
+  const telasLogadas = ['busca', 'upload'];
+  const telasComHeader = ['busca', 'upload'];
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#00112b" />
 
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor="#00112b"
-      />
+      {/* 1. Header Fixo no topo (apenas telas logadas) */}
+      {telasComHeader.includes(telaAtual) && (
+        <Header navegar={setTelaAtual} />
+      )}
 
-      <View
-        style={[
-          styles.content,
-          {
-            marginTop:
-              Platform.OS === 'android'
-                ? StatusBar.currentHeight
-                : 0,
-          },
-        ]}
-      >
-
-        {/* Cadastro */}
-        {telaAtual === 'registro' && (
-          <UserRegistration
-            navegar={setTelaAtual}
-          />
-        )}
-
-        {/* Login */}
-        {telaAtual === 'login' && (
-          <Login
-            navegar={setTelaAtual}
-          />
-        )}
-
-        {/* Buscar veículos */}
+      {/* 2. Área de Conteúdo Dinâmico */}
+      <View style={[styles.content, { marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }]}>
+        {telaAtual === 'registro' && <UserRegistration navegar={setTelaAtual} />}
+        {telaAtual === 'login' && <Login navegar={setTelaAtual} />}
+        {telaAtual === 'recuperarSenha' && <ForgotPassword navegar={setTelaAtual} />}
+        
         {telaAtual === 'busca' && (
-          <BuscarVeiculos
-            aoTrocarTela={() =>
-              setTelaAtual('upload')
-            }
-          />
-        )}
-
-        {/* Upload */}
-        {telaAtual === 'upload' && (
-          <UploadFotos
-            aoVoltar={() =>
-              setTelaAtual('busca')
-            }
-          />
+          <BuscarVeiculos aoTrocarTela={() => setTelaAtual('upload')} />
         )}
         
-        {/* Recuperar Senha */}
-        {telaAtual === 'recuperarSenha' && (
-  <ForgotPassword navegar={setTelaAtual} />
-)}
-
+        {telaAtual === 'upload' && (
+          <UploadFotos aoVoltar={() => setTelaAtual('busca')} />
+        )}
       </View>
 
-      <TabBar
-        telaAtual={telaAtual}
-        onTabPress={setTelaAtual}
-      />
-
+      {/* 3. TabBar na base (apenas telas logadas) */}
+      {telasLogadas.includes(telaAtual) && (
+        <TabBar telaAtual={telaAtual} onTabPress={setTelaAtual} />
+      )}
     </View>
   );
 }
@@ -110,7 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#00112b',
   },
-
   content: {
     flex: 1,
   },

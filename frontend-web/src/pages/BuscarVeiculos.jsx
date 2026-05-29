@@ -51,11 +51,9 @@ const BuscarVeiculos = () => {
           <button className="absolute left-0 top-1 p-2 hover:bg-white/10 rounded-full transition-all">
             <ChevronLeft size={24} />
           </button>
-          <span className="bg-[#002b45] px-3 py-0.5 rounded-full text-[9px] uppercase border border-[#003d5c] mb-1 font-bold tracking-[0.2em] text-[#00b7eb]">
-            B U S C A R
-          </span>
+
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">
-            Gestão de <span className="text-[#00b7eb]">Veículos</span>
+             Buscar Veículo por <span className="text-[#00b7eb]">Placa</span>
           </h1>
         </header>
 

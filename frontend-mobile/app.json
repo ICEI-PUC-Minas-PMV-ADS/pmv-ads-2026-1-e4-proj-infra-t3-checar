@@ -1,34 +1,29 @@
 {
   "expo": {
     "name": "Checar",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
     "slug": "frontend-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "updates": {
       "enabled": false
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "package": "com.grasfaria.src"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "plugins": [
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8671b42a-3b33-4592-adbf-edccfd6b6d6f"
+      }
     }
   }
 }
