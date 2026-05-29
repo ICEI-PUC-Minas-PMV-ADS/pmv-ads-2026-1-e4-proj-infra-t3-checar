@@ -18,14 +18,22 @@ const Login = ({ navegar }) => {
   }, []);
 
   const verificarBiometria = async () => {
-    const compativel = await LocalAuthentication.hasHardwareAsync();
-    const cadastrada = await LocalAuthentication.isEnrolledAsync();
-    const usuarioSalvo = await AsyncStorage.getItem("usuarioLogado");
+    try {
+      const compativel = await LocalAuthentication.hasHardwareAsync();
+      const cadastrada = await LocalAuthentication.isEnrolledAsync();
+      const credencialsSalvas = await AsyncStorage.getItem("credenciais_salvas");
 
-    console.log("Debug Biometria:", { compativel, cadastrada, usuarioSalvo }); // ADICIONE ISSO
+      console.log("Debug Biometria:", { compativel, cadastrada, credencialsSalvas });
 
-    if (compativel && cadastrada && usuarioSalvo) {
-      setBiometriaDisponivel(true);
+      // Biometria só fica disponível se TODOS os requisitos forem atendidos
+      if (compativel && cadastrada && credencialsSalvas) {
+        setBiometriaDisponivel(true);
+      } else {
+        setBiometriaDisponivel(false);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar biometria:", error);
+      setBiometriaDisponivel(false);
     }
   };
 
@@ -33,30 +41,29 @@ const Login = ({ navegar }) => {
   const login = async () => {
     if (!email || !senha) {
       Alert.alert("Atenção", "Preencha email e senha");
-
       return;
     }
 
     try {
       setLoading(true);
 
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        senha,
-      );
-
+      const userCredential = await signInWithEmailAndPassword(auth, email, senha);
       console.log("Usuário logado:", userCredential.user);
 
-      // Salvar login para biometria futura
-      await AsyncStorage.setItem("usuarioLogado", email);
+      // Salvar credenciais de forma segura para biometria futura
+      try {
+        await AsyncStorage.setItem("credenciais_salvas", JSON.stringify({
+          email: email,
+          uid: userCredential.user.uid
+        }));
+      } catch (storageError) {
+        console.warn("Aviso: Não foi possível salvar credenciais para biometria", storageError);
+      }
 
       Alert.alert("Sucesso", "Login realizado com sucesso");
-
       navegar("busca");
     } catch (error) {
-      console.log(error);
-
+      console.error("Erro ao fazer login:", error);
       Alert.alert("Erro ao entrar", "Email ou senha inválidos");
     } finally {
       setLoading(false);
@@ -66,22 +73,44 @@ const Login = ({ navegar }) => {
   // Login biométrico
   const loginBiometrico = async () => {
     try {
+      setLoading(true);
+
+      // Passo 1: Autenticar com biometria do dispositivo
       const resultado = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Entrar com biometria",
+        promptMessage: "Autenticar com biometria",
         fallbackLabel: "Usar senha",
+        disableDeviceFallback: false,
       });
 
-      if (resultado.success) {
-        Alert.alert("Sucesso", "Biometria reconhecida");
-
-        navegar("busca");
-      } else {
-        Alert.alert("Falha", "Biometria não reconhecida");
+      if (!resultado.success) {
+        Alert.alert("Falha", "Autenticação biométrica não reconhecida");
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.log(error);
 
-      Alert.alert("Erro", "Não foi possível autenticar");
+      // Passo 2: Recuperar credenciais armazenadas
+      const credenciaisJson = await AsyncStorage.getItem("credenciais_salvas");
+      if (!credenciaisJson) {
+        Alert.alert("Erro", "Nenhuma credencial armazenada. Faça login normalmente primeiro.");
+        setLoading(false);
+        return;
+      }
+
+      const credenciais = JSON.parse(credenciaisJson);
+      console.log("Biometria bem-sucedida para:", credenciais.email);
+
+      // Biometria bem-sucedida, usuário pode acessar
+      Alert.alert("Sucesso", "Autenticado via biometria");
+      navegar("busca");
+    } catch (error) {
+      console.error("Erro na autenticação biométrica:", error);
+      if (error.name === "NotAvailable") {
+        Alert.alert("Indisponível", "Biometria não disponível neste dispositivo");
+      } else {
+        Alert.alert("Erro", "Não foi possível autenticar com biometria");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,6 +140,7 @@ const Login = ({ navegar }) => {
         mode="outlined"
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={!loading}
       />
 
       <TextInput
@@ -119,6 +149,7 @@ const Login = ({ navegar }) => {
         onChangeText={setSenha}
         secureTextEntry
         mode="outlined"
+        editable={!loading}
       />
 
       <Button
@@ -130,9 +161,14 @@ const Login = ({ navegar }) => {
         Entrar
       </Button>
 
-      {/* Botão biometria */}
+      {/* Botão biometria - apenas se disponível e tiver credenciais salvas */}
       {biometriaDisponivel && (
-        <Button mode="outlined" icon="fingerprint" onPress={loginBiometrico}>
+        <Button 
+          mode="outlined" 
+          icon="fingerprint" 
+          onPress={loginBiometrico}
+          disabled={loading}
+        >
           Entrar com biometria
         </Button>
       )}
