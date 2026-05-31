@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // URL apontando para a rota do seu backend local
 const API_URL = 'http://192.168.15.2:3000/vehicles'; 
 
-export default function BuscarVeiculos({ aoTrocarTela }) {
+export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
   const insets = useSafeAreaInsets();
   const [veiculos, setVeiculos] = useState([]);
   const [busca, setBusca] = useState('');
@@ -172,6 +172,13 @@ export default function BuscarVeiculos({ aoTrocarTela }) {
                   <Text style={styles.metaText}>•</Text>
                   <Text style={styles.metaText}>{veiculo.quilometragem?.toLocaleString()} km</Text>
                 </View>
+                <TouchableOpacity
+                  onPress={() => navegar?.('modelos', { vehicleId: veiculo._id, vehicle: veiculo })}
+                  style={styles.checklistButton}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.checklistButtonText}>Iniciar Checklist</Text>
+                </TouchableOpacity>
               </View>
 
               {/* Status e Alertas laterais */}
@@ -352,6 +359,20 @@ const styles = StyleSheet.create({
   metaText: { 
     color: '#fff', 
     fontSize: 11 
+  },
+  checklistButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#00b7eb',
+    borderRadius: 8,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    marginTop: 7,
+  },
+  checklistButtonText: {
+    color: '#00112b',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
   },
   statusBadgeContainer: { 
     alignItems: 'flex-end', 

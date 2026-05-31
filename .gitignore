@@ -1,3 +1,5 @@
+ignore 
+
 Plaintext
 # Ignorar arquivos de variáveis de ambiente
 .env
@@ -7,3 +9,9 @@ node_modules/
 
 # Ignorar logs
 npm-debug.log*
+*.out.log
+*.err.log
+frontend-mobile/expo-start.*.log
+
+# Expo generated native project
+frontend-mobile/android/
