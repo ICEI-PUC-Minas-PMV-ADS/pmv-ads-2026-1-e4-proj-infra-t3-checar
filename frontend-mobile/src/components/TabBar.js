@@ -34,19 +34,37 @@ export default function TabBar({ telaAtual, onTabPress }) {
 
       <TouchableOpacity 
         style={styles.tabItem} 
-        onPress={() => onTabPress('cadastro')}
+        onPress={() => onTabPress('upload')}
         activeOpacity={0.7}
       >
         <Ionicons 
           name="camera" 
           size={24} 
-          color={telaAtual === 'cadastro' ? '#00b7eb' : 'rgba(255,255,255,0.5)'} 
+          color={telaAtual === 'upload' ? '#00b7eb' : 'rgba(255,255,255,0.5)'} 
         />
         <Text style={[
           styles.tabText, 
-          { color: telaAtual === 'cadastro' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
+          { color: telaAtual === 'upload' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
         ]}>
           Upload
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.tabItem} 
+        onPress={() => onTabPress('modelos')}
+        activeOpacity={0.7}
+      >
+        <Ionicons 
+          name="clipboard" 
+          size={24} 
+          color={telaAtual === 'modelos' ? '#00b7eb' : 'rgba(255,255,255,0.5)'} 
+        />
+        <Text style={[
+          styles.tabText, 
+          { color: telaAtual === 'modelos' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
+        ]}>
+          Modelos
         </Text>
       </TouchableOpacity>
     </View>

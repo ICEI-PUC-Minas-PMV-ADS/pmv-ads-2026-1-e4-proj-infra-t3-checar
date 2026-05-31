@@ -1,22 +1,31 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import axios from 'axios';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  ActivityIndicator,
+  Button,
+  Card,
+  IconButton,
+  SegmentedButtons,
+  TextInput as PaperTextInput,
+} from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const API_BASE_URL = 'http://10.0.2.2:3000';
 const TIPO_OPTIONS = ['Diario', 'Preventivo'];
+const paperInputTheme = {
+  colors: {
+    background: '#00112b',
+    onSurfaceVariant: 'rgba(255,255,255,0.55)',
+  },
+};
 
 const INITIAL_SECTIONS = [
   {
@@ -261,10 +270,17 @@ export default function ModeloChecklistEdit({ navegar, params = {} }) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator
         >
-          <TouchableOpacity onPress={() => navegar('modelos')} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={20} color="white" />
-            <Text style={styles.backButtonText}>Voltar</Text>
-          </TouchableOpacity>
+          <Button
+            mode="contained-tonal"
+            icon="chevron-left"
+            onPress={() => navegar('modelos')}
+            buttonColor="#002b45"
+            textColor="#fff"
+            style={styles.backButton}
+            contentStyle={styles.backButtonContent}
+          >
+            Voltar
+          </Button>
 
           <View style={styles.titleContainer}>
             <Text style={styles.mainTitle}>
@@ -274,122 +290,157 @@ export default function ModeloChecklistEdit({ navegar, params = {} }) {
           </View>
 
           {message.text ? (
-            <View style={[styles.alert, message.type === 'success' ? styles.alertSuccess : styles.alertError]}>
-              <Ionicons
-                name={message.type === 'success' ? 'checkmark-circle' : 'alert-circle'}
-                size={20}
-                color={message.type === 'success' ? '#4ade80' : '#ef4444'}
-              />
+            <Card style={[styles.alert, message.type === 'success' ? styles.alertSuccess : styles.alertError]}>
+              <Card.Content style={styles.alertContent}>
+                <IconButton
+                  icon={message.type === 'success' ? 'check-circle' : 'alert-circle'}
+                  size={20}
+                  iconColor={message.type === 'success' ? '#4ade80' : '#ef4444'}
+                  style={styles.alertIcon}
+                />
               <Text style={message.type === 'success' ? styles.alertSuccessText : styles.alertErrorText}>
                 {message.text}
               </Text>
-            </View>
+              </Card.Content>
+            </Card>
           ) : null}
 
-          <View style={styles.formContainer}>
-            <Text style={styles.label}>Nome</Text>
-            <TextInput
-              style={styles.input}
+          <Card style={styles.formContainer}>
+            <Card.Content>
+            <PaperTextInput
+              mode="outlined"
+              label="Nome"
               placeholder="Checklist da frota"
-              placeholderTextColor="rgba(255,255,255,0.4)"
               value={formData.nome}
               onChangeText={(value) => handleChange('nome', value)}
               editable={!loading}
+              textColor="#fff"
+              outlineColor="rgba(51, 204, 255, 0.35)"
+              activeOutlineColor="#00b7eb"
+              theme={paperInputTheme}
+              style={styles.paperInput}
             />
 
-            <Text style={styles.label}>Tipo</Text>
-            <View style={styles.segmentedControl}>
-              {TIPO_OPTIONS.map((tipo) => (
-                <TouchableOpacity
-                  key={tipo}
-                  onPress={() => handleChange('tipo', tipo)}
-                  disabled={loading}
-                  style={[
-                    styles.segmentButton,
-                    formData.tipo === tipo && styles.segmentButtonActive,
-                  ]}
-                >
-                  <Text style={[
-                    styles.segmentButtonText,
-                    formData.tipo === tipo && styles.segmentButtonTextActive,
-                  ]}>
-                    {tipo}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <SegmentedButtons
+              value={formData.tipo}
+              onValueChange={(value) => handleChange('tipo', value)}
+              buttons={TIPO_OPTIONS.map((tipo) => ({
+                value: tipo,
+                label: tipo,
+                disabled: loading,
+                checkedColor: '#00112b',
+                uncheckedColor: '#fff',
+              }))}
+              style={styles.segmentedButtons}
+              theme={{ colors: { secondaryContainer: '#00b7eb', onSecondaryContainer: '#00112b', outline: '#00b7eb' } }}
+            />
 
-            <Text style={styles.label}>Descricao</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
+            <PaperTextInput
+              mode="outlined"
+              label="Descricao"
               placeholder="Descreva quando e como este modelo sera usado"
-              placeholderTextColor="rgba(255,255,255,0.4)"
               value={formData.descricao}
               onChangeText={(value) => handleChange('descricao', value)}
               editable={!loading}
               multiline
-              textAlignVertical="top"
+              textColor="#fff"
+              outlineColor="rgba(51, 204, 255, 0.35)"
+              activeOutlineColor="#00b7eb"
+              theme={paperInputTheme}
+              style={[styles.paperInput, styles.textArea]}
             />
-          </View>
+            </Card.Content>
+          </Card>
 
           <View style={styles.sectionHeader}>
             <View style={styles.sectionHeaderText}>
               <Text style={styles.sectionTitle}>Secoes <Text style={styles.highlightText}>do Checklist</Text></Text>
               <Text style={styles.subtitleLeft}>Organize os itens por categorias.</Text>
             </View>
-            <TouchableOpacity onPress={addSection} disabled={loading} style={styles.roundAddButton}>
-              <Ionicons name="add" size={24} color="#00112b" />
-            </TouchableOpacity>
+            <IconButton
+              icon="plus"
+              mode="contained"
+              containerColor="#00b7eb"
+              iconColor="#00112b"
+              size={24}
+              onPress={addSection}
+              disabled={loading}
+              style={styles.roundAddButton}
+            />
           </View>
 
           {sections.map((section, sectionIndex) => (
-            <View key={section.id} style={styles.sectionCard}>
+            <Card key={section.id} style={styles.sectionCard}>
+              <Card.Content>
               <View style={styles.sectionInputRow}>
-                <TextInput
-                  style={[styles.input, styles.sectionInput]}
+                <PaperTextInput
+                  mode="outlined"
+                  style={[styles.paperInput, styles.sectionInput]}
                   placeholder={`Secao ${sectionIndex + 1}`}
-                  placeholderTextColor="rgba(255,255,255,0.4)"
                   value={section.titulo}
                   onChangeText={(value) => handleSectionChange(section.id, value)}
                   editable={!loading}
+                  textColor="#fff"
+                  outlineColor="rgba(51, 204, 255, 0.35)"
+                  activeOutlineColor="#00b7eb"
+                  theme={paperInputTheme}
                 />
-                <TouchableOpacity
+                <IconButton
+                  icon="trash-can"
+                  mode="contained"
                   onPress={() => removeSection(section.id)}
                   disabled={loading || sections.length === 1}
-                  style={[styles.iconButtonDanger, (loading || sections.length === 1) && styles.disabledButton]}
-                >
-                  <Ionicons name="trash" size={18} color="white" />
-                </TouchableOpacity>
+                  containerColor="#7a0800"
+                  iconColor="#fff"
+                  size={18}
+                  style={styles.deleteIconButton}
+                />
               </View>
 
               {section.campos.map((field, fieldIndex) => (
                 <View key={field.id} style={styles.fieldInputRow}>
-                  <TextInput
-                    style={[styles.input, styles.fieldInput]}
+                  <PaperTextInput
+                    mode="outlined"
+                    style={[styles.paperInput, styles.fieldInput]}
                     placeholder={`Item ${fieldIndex + 1}`}
-                    placeholderTextColor="rgba(255,255,255,0.4)"
                     value={field.nome}
                     onChangeText={(value) => handleFieldChange(section.id, field.id, value)}
                     editable={!loading}
+                    textColor="#fff"
+                    outlineColor="rgba(51, 204, 255, 0.35)"
+                    activeOutlineColor="#00b7eb"
+                    theme={paperInputTheme}
                   />
-                  <TouchableOpacity
+                  <IconButton
+                    icon="close"
+                    mode="contained-tonal"
                     onPress={() => removeField(section.id, field.id)}
                     disabled={loading || section.campos.length === 1}
-                    style={[styles.iconButton, (loading || section.campos.length === 1) && styles.disabledButton]}
-                  >
-                    <Ionicons name="close" size={18} color="white" />
-                  </TouchableOpacity>
+                    containerColor="#0057c2"
+                    iconColor="#fff"
+                    size={18}
+                    style={styles.itemIconButton}
+                  />
                 </View>
               ))}
 
-              <TouchableOpacity onPress={() => addField(section.id)} disabled={loading} style={styles.addFieldButton}>
-                <Ionicons name="add-circle" size={18} color="#5bc4f1" />
-                <Text style={styles.addFieldText}>Adicionar item</Text>
-              </TouchableOpacity>
-            </View>
+              <Button
+                mode="text"
+                icon="plus-circle"
+                onPress={() => addField(section.id)}
+                disabled={loading}
+                textColor="#5bc4f1"
+                style={styles.addFieldButton}
+                labelStyle={styles.addFieldText}
+              >
+                Adicionar item
+              </Button>
+              </Card.Content>
+            </Card>
           ))}
 
-          <View style={styles.previewCard}>
+          <Card style={styles.previewCard}>
+            <Card.Content>
             <Text style={styles.previewTitle}>Modelo <Text style={styles.highlightText}>do Checklist</Text></Text>
             <Text style={styles.previewDescription}>
               {formData.descricao || 'A descricao do modelo aparece aqui para revisao antes de salvar.'}
@@ -407,32 +458,38 @@ export default function ModeloChecklistEdit({ navegar, params = {} }) {
                 ))}
               </View>
             ))}
-          </View>
+            </Card.Content>
+          </Card>
         </ScrollView>
       </KeyboardAvoidingView>
 
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-        <TouchableOpacity onPress={resetDraft} disabled={loading} style={[styles.footerButton, styles.clearButton]}>
-          <Ionicons name="refresh" size={20} color="white" />
-          <Text style={styles.clearButtonText}>Limpar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleSave} disabled={loading} style={styles.footerButton}>
-          <LinearGradient
-            colors={['#00b7eb', '#0099cc']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.saveButton}
-          >
-            {loading ? (
-              <ActivityIndicator color="#00112b" size="small" />
-            ) : (
-              <>
-                <Ionicons name="checkmark" size={22} color="#00112b" />
-                <Text style={styles.saveButtonText}>Salvar</Text>
-              </>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
+        <Button
+          mode="contained"
+          icon="refresh"
+          onPress={resetDraft}
+          disabled={loading}
+          buttonColor="#7a0800"
+          textColor="#fff"
+          style={styles.footerButton}
+          contentStyle={styles.footerButtonContent}
+          labelStyle={styles.footerButtonLabel}
+        >
+          Limpar
+        </Button>
+        <Button
+          mode="contained"
+          icon={loading ? undefined : 'check'}
+          onPress={handleSave}
+          disabled={loading}
+          buttonColor="#00b7eb"
+          textColor="#00112b"
+          style={styles.footerButton}
+          contentStyle={styles.footerButtonContent}
+          labelStyle={styles.saveButtonText}
+        >
+          {loading ? 'Salvando...' : 'Salvar'}
+        </Button>
       </View>
     </View>
   );
@@ -502,13 +559,18 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   alert: {
-    padding: 12,
     borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
     marginBottom: 16,
     borderWidth: 1,
+  },
+  alertContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  alertIcon: {
+    margin: 0,
+    marginRight: 8,
   },
   alertSuccess: {
     backgroundColor: 'rgba(74, 222, 128, 0.15)',
@@ -552,6 +614,10 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(51, 204, 255, 0.35)',
     marginBottom: 12,
     fontSize: 14,
+  },
+  paperInput: {
+    backgroundColor: '#00112b',
+    marginBottom: 12,
   },
   textArea: {
     minHeight: 110,
@@ -603,6 +669,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#00b7eb',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  deleteIconButton: {
+    margin: 0,
+    marginBottom: 12,
+  },
+  itemIconButton: {
+    margin: 0,
+    marginBottom: 12,
   },
   sectionCard: {
     backgroundColor: '#0041a3',
@@ -723,6 +797,12 @@ const styles = StyleSheet.create({
     minHeight: 50,
     borderRadius: 16,
     overflow: 'hidden',
+  },
+  footerButtonContent: {
+    minHeight: 50,
+  },
+  footerButtonLabel: {
+    fontWeight: '900',
   },
   clearButton: {
     backgroundColor: '#7a0800',

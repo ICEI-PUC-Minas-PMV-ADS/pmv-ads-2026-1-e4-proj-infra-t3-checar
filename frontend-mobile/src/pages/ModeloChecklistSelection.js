@@ -1,18 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  ActivityIndicator,
   FlatList,
   Platform,
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import axios from 'axios';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { ActivityIndicator, Button, Card, IconButton, Searchbar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const API_BASE_URL = 'http://10.0.2.2:3000';
@@ -80,20 +76,31 @@ export default function ModeloChecklistSelection({ navegar, params = {} }) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navegar('busca')} style={styles.backButton}>
-          <Ionicons name="chevron-back" size={20} color="white" />
-          <Text style={styles.backButtonText}>Voltar</Text>
-        </TouchableOpacity>
+        <Button
+          mode="contained-tonal"
+          icon="chevron-left"
+          onPress={() => navegar('busca')}
+          buttonColor="#002b45"
+          textColor="#fff"
+          style={styles.headerButton}
+          contentStyle={styles.headerButtonContent}
+        >
+          Voltar
+        </Button>
 
         {!isChecklistFlow && (
-          <TouchableOpacity
+          <Button
+            mode="contained"
+            icon="plus"
             onPress={() => navegar('modeloEdit', { modeloId: null })}
-            style={styles.createButton}
-            activeOpacity={0.85}
+            buttonColor="#00b7eb"
+            textColor="#00112b"
+            style={styles.headerButton}
+            contentStyle={styles.headerButtonContent}
+            labelStyle={styles.createButtonLabel}
           >
-            <Ionicons name="add" size={20} color="#00112b" />
-            <Text style={styles.createButtonText}>Criar</Text>
-          </TouchableOpacity>
+            Criar
+          </Button>
         )}
       </View>
 
@@ -109,25 +116,24 @@ export default function ModeloChecklistSelection({ navegar, params = {} }) {
         </Text>
       </View>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar por nome, tipo ou descricao"
-          placeholderTextColor="rgba(147, 197, 253, 0.5)"
-          value={busca}
-          onChangeText={setBusca}
-          autoCorrect={false}
-        />
-        <View style={styles.searchIconBadge}>
-          <Ionicons name="search" size={18} color="white" />
-        </View>
-      </View>
+      <Searchbar
+        placeholder="Buscar por nome, tipo ou descricao"
+        value={busca}
+        onChangeText={setBusca}
+        autoCorrect={false}
+        iconColor="#fff"
+        placeholderTextColor="rgba(147, 197, 253, 0.55)"
+        inputStyle={styles.searchInput}
+        style={styles.searchbar}
+      />
 
       {error ? (
-        <View style={styles.alertError}>
-          <Ionicons name="alert-circle" size={18} color="#ef4444" />
+        <Card style={[styles.messageCard, styles.errorCard]}>
+          <Card.Content style={styles.messageContent}>
+            <IconButton icon="alert-circle" size={18} iconColor="#ef4444" style={styles.messageIcon} />
           <Text style={styles.alertErrorText}>{error}</Text>
-        </View>
+          </Card.Content>
+        </Card>
       ) : null}
 
       {loading ? (
@@ -154,15 +160,15 @@ export default function ModeloChecklistSelection({ navegar, params = {} }) {
             />
           }
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => selecionarModelo(item)} activeOpacity={0.85}>
-              <LinearGradient
-                colors={['#0052cc', '#0041a3']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.card}
-              >
+            <Card
+              mode="outlined"
+              onPress={() => selecionarModelo(item)}
+              style={styles.card}
+              contentStyle={styles.cardContent}
+            >
+              <Card.Content style={styles.cardInner}>
                 <View style={styles.iconBox}>
-                  <Ionicons name="clipboard" size={28} color="#00112b" />
+                  <IconButton icon="clipboard-text" size={28} iconColor="#00112b" style={styles.iconButton} />
                 </View>
 
                 <View style={styles.cardInfo}>
@@ -175,13 +181,13 @@ export default function ModeloChecklistSelection({ navegar, params = {} }) {
                   ) : null}
                 </View>
 
-                <Ionicons name="chevron-forward" size={22} color="rgba(255,255,255,0.75)" />
-              </LinearGradient>
-            </TouchableOpacity>
+                <IconButton icon="chevron-right" size={22} iconColor="rgba(255,255,255,0.75)" style={styles.chevron} />
+              </Card.Content>
+            </Card>
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="clipboard-outline" size={48} color="rgba(255,255,255,0.3)" />
+              <IconButton icon="clipboard-outline" size={48} iconColor="rgba(255,255,255,0.3)" />
               <Text style={styles.emptyText}>Nenhum modelo encontrado.</Text>
             </View>
           }
@@ -204,32 +210,14 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? 8 : 0,
     marginBottom: 18,
   },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#002b45',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+  headerButton: {
     borderRadius: 20,
   },
-  backButtonText: {
-    color: 'white',
-    marginLeft: 6,
-    fontSize: 14,
+  headerButtonContent: {
+    minHeight: 38,
   },
-  createButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#00b7eb',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  createButtonText: {
-    color: '#00112b',
+  createButtonLabel: {
     fontWeight: '900',
-    fontSize: 13,
   },
   titleContainer: {
     alignItems: 'center',
@@ -250,41 +238,35 @@ const styles = StyleSheet.create({
     marginTop: 6,
     textAlign: 'center',
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    paddingHorizontal: 16,
-  },
-  input: {
-    flex: 1,
+  searchbar: {
     backgroundColor: 'rgba(0, 153, 204, 0.15)',
     borderRadius: 16,
-    paddingVertical: 12,
-    paddingLeft: 16,
-    paddingRight: 58,
-    color: '#fff',
-    fontSize: 15,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  searchIconBadge: {
-    position: 'absolute',
-    right: 28,
-    backgroundColor: '#00b7eb',
-    padding: 10,
-    borderRadius: 12,
-  },
-  alertError: {
     marginHorizontal: 16,
     marginBottom: 12,
-    padding: 12,
+  },
+  searchInput: {
+    color: '#fff',
+    fontSize: 15,
+  },
+  messageCard: {
+    marginHorizontal: 16,
+    marginBottom: 12,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#ef4444',
+  },
+  errorCard: {
     backgroundColor: 'rgba(239, 68, 68, 0.12)',
+    borderColor: '#ef4444',
+  },
+  messageContent: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  messageIcon: {
+    margin: 0,
+    marginRight: 8,
   },
   alertErrorText: {
     color: '#fca5a5',
@@ -309,11 +291,17 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 20,
-    padding: 14,
+    backgroundColor: '#0041a3',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+  },
+  cardContent: {
+    backgroundColor: '#0041a3',
+    borderRadius: 20,
+  },
+  cardInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: 14,
   },
   iconBox: {
     width: 58,
@@ -322,6 +310,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#00b7eb',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  iconButton: {
+    margin: 0,
   },
   cardInfo: {
     flex: 1,
@@ -344,6 +335,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 6,
     lineHeight: 16,
+  },
+  chevron: {
+    margin: 0,
   },
   emptyContainer: {
     alignItems: 'center',
