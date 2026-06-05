@@ -895,7 +895,13 @@ app.get('/', (req, res) => {
 });
 
 // Conectar ao MongoDB e iniciar servidor
+console.log("MONGO_URI:", !!process.env.MONGO_URI);
+console.log("MONGODB_URI:", !!process.env.MONGODB_URI);
+
 const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+console.log("URI encontrada:", !!mongoUri);
+
 mongoose.connect(mongoUri)
     .then(() => {
         console.log('✅ Conectado ao MongoDB Atlas com sucesso!');
