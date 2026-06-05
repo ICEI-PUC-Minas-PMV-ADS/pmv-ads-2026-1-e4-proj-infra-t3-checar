@@ -895,12 +895,18 @@ app.get('/', (req, res) => {
 });
 
 // Conectar ao MongoDB e iniciar servidor
-console.log("MONGO_URI:", !!process.env.MONGO_URI);
-console.log("MONGODB_URI:", !!process.env.MONGODB_URI);
+console.log("MONGO_URI existe?", !!process.env.MONGO_URI);
+console.log("MONGODB_URI existe?", !!process.env.MONGODB_URI);
 
 const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
-console.log("URI encontrada:", !!mongoUri);
+console.log("Tipo:", typeof mongoUri);
+
+if (mongoUri) {
+  console.log("Início da URI:", mongoUri.substring(0, 15));
+} else {
+  console.log("URI indefinida");
+}
 
 mongoose.connect(mongoUri)
     .then(() => {
