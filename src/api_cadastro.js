@@ -895,7 +895,8 @@ app.get('/', (req, res) => {
 });
 
 // Conectar ao MongoDB e iniciar servidor
-mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+mongoose.connect(mongoUri)
     .then(() => {
         console.log('✅ Conectado ao MongoDB Atlas com sucesso!');
         app.listen(PORT, () => {

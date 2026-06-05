@@ -2,7 +2,10 @@
   "name": "pmv-ads-2026-1-e4-proj-infra-t3-checar",
   "version": "1.0.0",
   "description": "`CURSO` ANÁLISE E DESENVOLVIMENTO DE SISTEMAS",
-  "main": "index.js",
+  "main": "src/api_cadastro.js",
+  "engines": {
+    "node": "18.x"
+  },
   "directories": {
     "doc": "docs"
   },
