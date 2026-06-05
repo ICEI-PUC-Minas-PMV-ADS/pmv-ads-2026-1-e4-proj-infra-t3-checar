@@ -9,9 +9,7 @@ const router = express.Router();
 
 router.use(express.json());
 
-router.get("/", (req, res) => {
-    res.send("API ModeloChecklist OK");
-});
+
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 

@@ -6,16 +6,12 @@ const swaggerSpec = {
     description:
       "Sistema completo de CRUD de veículos e Checklist de inspeção com fotos.",
   },
-  servers: [
-    {
-      url: "http://localhost:3000",
-      description: "Local (Desenvolvimento)",
-    },
-    {
-      url: "https://checar-fpf7e0ecd9hdcrf2.canadacentral-01.azurewebsites.net",
-      description: "Produção (Azure)",
-    },
-  ],
+servers: [
+  {
+    url: process.env.BASE_URL || "http://localhost:3000",
+    description: "Servidor atual",
+  },
+],
     tags: [
     { name: "Vehicles", description: "Operações de veículos" },
     { name: "Usuários", description: "Operações de usuários do sistema" },

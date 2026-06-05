@@ -905,12 +905,16 @@ console.log(
     mongoUri ? mongoUri.substring(0, 15) : "URI NÃO DEFINIDA"
 );
 
+console.log("MONGO_URI:", process.env.MONGO_URI);
+console.log("MONGODB_URI:", process.env.MONGODB_URI);
+console.log("URI FINAL:", mongoUri);
+
 mongoose.connect(mongoUri)
     .then(() => {
         console.log('✅ Conectado ao MongoDB Atlas com sucesso!');
         app.listen(PORT, () => {
             console.log(`Servidor rodando na porta ${PORT}`);
-            console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
+            console.log(`Swagger UI disponível em /api-docs`);            
             console.log(`\nRotas de usuários disponíveis:`);
             console.log(`   POST   /usuarios          - Criar novo usuário (recomendado)`);
             console.log(`   POST   /usuariocadastrados - Rota obsoleta (compatibilidade)`);
