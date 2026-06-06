@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: '20.x'
   AZURE_WEBAPP_NAME: 'checarApp'
   AZURE_WEBAPP_SLOT: 'Production'
 
