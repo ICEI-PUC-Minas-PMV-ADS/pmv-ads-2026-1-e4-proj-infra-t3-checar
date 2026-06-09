@@ -9,9 +9,6 @@ const router = express.Router();
 
 router.use(express.json());
 
-router.get("/", (req, res) => {
-    res.send("API Checklist OK");
-});
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 const objectIdFilters = ["usuarioId", "veiculoId", "modeloId"];
