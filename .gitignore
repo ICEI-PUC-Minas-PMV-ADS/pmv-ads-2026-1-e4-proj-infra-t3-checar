@@ -1,0 +1,36 @@
+# Dependências
+node_modules/
+frontend-web/node_modules/
+frontend-mobile/node_modules/
+
+# Variáveis de ambiente — NUNCA subir
+.env
+.env.local
+.env.production
+frontend-mobile/.env
+
+# Uploads de usuários — não subir arquivos de produção
+src/uploads/*.jpeg
+src/uploads/*.jpg
+src/uploads/*.png
+src/uploads/*.webp
+
+# Build
+frontend-web/dist/
+frontend-mobile/dist/
+
+# Expo
+frontend-mobile/.expo/
+frontend-mobile/src/.expo/
+.expo/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/

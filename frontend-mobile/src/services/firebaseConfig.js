@@ -1,0 +1,25 @@
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyC28fCgrhf7Iy2JnpHR-8zh7Hez7SLmZ4I',
+  authDomain: 'checar-d8205.firebaseapp.com',
+  projectId: 'checar-d8205',
+  storageBucket: 'checar-d8205.firebasestorage.app',
+  messagingSenderId: '883032034365',
+  appId: '1:883032034365:web:2afa2f38bfed1b156eee54',
+};
+
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
+let auth;
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  });
+} catch (e) {
+  auth = getAuth(app);
+}
+
+export { auth };
