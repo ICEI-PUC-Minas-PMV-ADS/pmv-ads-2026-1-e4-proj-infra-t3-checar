@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { onIdTokenChanged, signOut } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
-import { setCurrentUser } from '../services/authState';
+import { setCurrentUser, setOnUnauthorized } from '../services/authState';
 
 // sessionStorage is used ONLY inside this file — never in components
 const SESSION_KEY = 'checar_user';
@@ -74,6 +74,13 @@ export function AuthProvider({ children }) {
     await signOut(auth);
     // onIdTokenChanged fires with null → clears user + singleton automatically
   }, []);
+
+  // Wire up the api.js 401 handler. Uses a stable logout ref so the effect
+  // runs only once and the cleanup removes the callback on unmount.
+  useEffect(() => {
+    setOnUnauthorized(logout);
+    return () => setOnUnauthorized(null);
+  }, [logout]);
 
   // Called after registration or role change to persist tipoUsuario in context
   const setRole = useCallback((role) => {

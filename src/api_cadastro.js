@@ -43,7 +43,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded files with absolute path
+// Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ── Swagger ─────────────────────────────────────────────────────
@@ -53,7 +53,16 @@ app.get('/api-docs.json', (_req, res) => {
   res.send(swaggerSpec);
 });
 
-// ── Sub-routers ──────────────────────────────────────────────────
+// ── /api prefix bridge ───────────────────────────────────────────
+// In dev the Vite proxy strips the /api prefix before forwarding to Express.
+// In production (single Azure App Service), the browser sends /api/* directly.
+// This middleware normalises both cases so route handlers never see /api/.
+app.use((req, _res, next) => {
+  if (req.path.startsWith('/api/')) req.url = req.url.slice(4); // /api/vehicles → /vehicles
+  next();
+});
+
+// ── API routes ───────────────────────────────────────────────────
 app.use(reportRoutes);
 app.use(modeloChecklistRoutes);
 app.use(itemChecklistRoutes);
@@ -61,22 +70,21 @@ app.use(checklistRoutes);
 app.use(usuariosRoutes);
 app.use(inspecoesRoutes);
 
-// ============================================================
-// VEHICLES
-// ============================================================
-
-app.post('/vehicles', validateVehicleCreate, createVehicle);
-app.get('/vehicles', getAllVehicles);
-app.get('/vehicles/:id', getVehicleById);
-app.put('/vehicles/:id', updateVehicle);
+app.post('/vehicles',     validateVehicleCreate, createVehicle);
+app.get('/vehicles',      getAllVehicles);
+app.get('/vehicles/:id',  getVehicleById);
+app.put('/vehicles/:id',  updateVehicle);
 app.delete('/vehicles/:id', deleteVehicle);
 
-// ── Health check / root ──────────────────────────────────────────
-app.get('/', (_req, res) => {
-  res.json({
-    mensagem: 'API de Inspeção Veicular — Checar v2.1',
-    docs: `/api-docs`,
-  });
+// ── Frontend (production) ────────────────────────────────────────
+// Serves the Vite build output. In dev, Vite runs on its own port.
+const distPath = path.join(__dirname, '..', 'frontend-web', 'dist');
+app.use(express.static(distPath));
+
+// SPA fallback — any route the browser navigates to directly must return
+// index.html so React Router can handle it on the client side.
+app.use((_req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // ── Connect & Listen ─────────────────────────────────────────────

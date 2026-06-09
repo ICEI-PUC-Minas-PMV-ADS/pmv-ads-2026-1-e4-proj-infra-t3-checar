@@ -4,7 +4,7 @@
   "description": "`CURSO` ANÁLISE E DESENVOLVIMENTO DE SISTEMAS",
   "main": "src/api_cadastro.js",
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "directories": {
     "doc": "docs"
