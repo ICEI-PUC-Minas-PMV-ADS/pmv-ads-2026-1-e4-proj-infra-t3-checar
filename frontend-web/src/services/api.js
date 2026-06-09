@@ -1,5 +1,6 @@
-// Central API configuration — all requests go through Vite proxy (/api → http://localhost:3000)
+// Central API — all requests go through the Vite dev proxy (/api → http://localhost:3000)
 import axios from 'axios';
+import { getCurrentUser } from './authState';
 
 const api = axios.create({
   baseURL: '/api',
@@ -7,16 +8,12 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach Firebase UID so the backend can identify the caller
+// Auth headers are sourced exclusively from the authState singleton,
+// which is maintained by AuthContext. Zero sessionStorage access here.
 api.interceptors.request.use((config) => {
-  try {
-    const stored = sessionStorage.getItem('checar_user');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      // AuthContext stores { uid, email, displayName } — uid is the Firebase UID
-      if (parsed?.uid) config.headers['X-User-Id'] = parsed.uid;
-    }
-  } catch {/* ignore malformed JSON */}
+  const user = getCurrentUser();
+  if (user?.uid)   config.headers['X-User-Id']    = user.uid;
+  if (user?.token) config.headers['Authorization'] = `Bearer ${user.token}`;
   return config;
 });
 

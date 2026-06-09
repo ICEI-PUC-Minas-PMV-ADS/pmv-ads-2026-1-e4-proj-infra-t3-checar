@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
+import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 
 export default function UserRegistration() {
   const navigate = useNavigate();
+  const { setRole } = useAuth();
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
@@ -47,6 +49,9 @@ export default function UserRegistration() {
 
       // 2. Register in our backend (profile data / role)
       await api.post('/usuarios', { nome, email, senha, tipoUsuario });
+
+      // 3. Persist role in AuthContext so it's available across the session
+      setRole(tipoUsuario);
 
       setSucesso('Cadastro realizado com sucesso! Redirecionando…');
       setTimeout(() => navigate('/veiculos'), 1500);
