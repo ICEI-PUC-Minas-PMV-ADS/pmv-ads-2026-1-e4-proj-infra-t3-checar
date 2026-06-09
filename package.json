@@ -11,7 +11,10 @@
   },
   "scripts": {
     "test": "jest",
-    "test:routes": "node --test src/tests/itemchecklist.test.js src/tests/modelochecklist.test.js src/tests/checklist.test.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:routes": "node --test src/tests/itemchecklist.test.js src/tests/modelochecklist.test.js src/tests/checklist.test.js src/tests/usuarios.test.js src/tests/inspecoes.test.js",
+    "test:all": "npm run test:coverage && npm run test:routes",
     "start": "node src/api_cadastro.js",
     "install:all": "npm install && cd frontend-mobile && npm install && cd .. && cd frontend-web && npm install",
     "update:all": "git pull origin main && npm run install:all",
