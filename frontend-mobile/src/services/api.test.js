@@ -1,10 +1,9 @@
-// Tests for getBaseUrl() logic in api.js
-// Verifies platform detection and EXPO_PUBLIC_API_URL override
+// Tests for getBaseUrl() logic and axios config in api.js.
+// Uses require() (not dynamic import) because jest-expo uses Babel (ESM→CJS).
+// jest.resetModules() clears the module cache so each test gets a fresh evaluation.
 
 jest.mock('react-native', () => ({
-  Platform: {
-    OS: 'android',
-  },
+  Platform: { OS: 'android' },
 }));
 
 jest.mock('axios', () => ({
@@ -18,43 +17,44 @@ describe('api service — getBaseUrl', () => {
     jest.resetModules();
     process.env = { ...ORIGINAL_ENV };
     delete process.env.EXPO_PUBLIC_API_URL;
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
     process.env = ORIGINAL_ENV;
+    console.warn.mockRestore();
   });
 
-  it('returns EXPO_PUBLIC_API_URL when defined', async () => {
+  it('retorna EXPO_PUBLIC_API_URL quando a variável de ambiente está definida', () => {
     process.env.EXPO_PUBLIC_API_URL = 'http://192.168.1.100:3000';
 
-    const { BASE_URL } = await import('./api.js');
+    const { BASE_URL } = require('./api.js');
 
     expect(BASE_URL).toBe('http://192.168.1.100:3000');
   });
 
-  it('returns Android emulator address when platform is android and no env var', async () => {
-    const { Platform } = require('react-native');
-    Platform.OS = 'android';
+  it('retorna endereço do emulador Android quando plataforma é android e sem env var', () => {
+    const rn = require('react-native');
+    rn.Platform.OS = 'android';
 
-    const { BASE_URL } = await import('./api.js');
+    const { BASE_URL } = require('./api.js');
 
     expect(BASE_URL).toBe('http://10.0.2.2:3000');
   });
 
-  it('returns localhost when platform is ios and no env var', async () => {
-    const { Platform } = require('react-native');
-    Platform.OS = 'ios';
+  it('retorna localhost quando plataforma é ios e sem env var', () => {
+    const rn = require('react-native');
+    rn.Platform.OS = 'ios';
 
-    const { BASE_URL } = await import('./api.js');
+    const { BASE_URL } = require('./api.js');
 
     expect(BASE_URL).toBe('http://localhost:3000');
   });
 
-  it('creates axios instance with correct base config', async () => {
+  it('cria instância axios com timeout e Content-Type corretos', () => {
     const axios = require('axios');
-    axios.create.mockReturnValue({});
 
-    await import('./api.js');
+    require('./api.js');
 
     expect(axios.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -64,12 +64,11 @@ describe('api service — getBaseUrl', () => {
     );
   });
 
-  it('uses EXPO_PUBLIC_API_URL as baseURL in axios instance', async () => {
+  it('usa EXPO_PUBLIC_API_URL como baseURL na instância axios', () => {
     process.env.EXPO_PUBLIC_API_URL = 'http://10.0.0.5:3000';
     const axios = require('axios');
-    axios.create.mockReturnValue({});
 
-    await import('./api.js');
+    require('./api.js');
 
     expect(axios.create).toHaveBeenCalledWith(
       expect.objectContaining({ baseURL: 'http://10.0.0.5:3000' })

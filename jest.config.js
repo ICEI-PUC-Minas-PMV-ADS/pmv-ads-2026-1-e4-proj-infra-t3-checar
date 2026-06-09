@@ -12,10 +12,17 @@ export default {
     'src/tests/usuarios.test.js',
     'src/tests/inspecoes.test.js',
   ],
-  // Only collect coverage for files directly exercised by Jest tests
   collectCoverageFrom: [
+    // Controllers — all functions must be covered
     'src/controllers/**/*.js',
+    // Middlewares — validation logic
     'src/middlewares/**/*.js',
+    // Utilities — pure functions + PDF generation
+    'src/utils/**/*.js',
+    // Reports router — CSV and PDF endpoints
+    'src/api_reports.js',
+    // Exclude the corrupted legacy file
+    '!src/test.js',
   ],
   coverageReporters: ['text', 'lcov', 'html'],
 };
