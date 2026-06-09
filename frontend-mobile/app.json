@@ -1,9 +1,6 @@
 {
   "expo": {
     "name": "Checar",
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
     "slug": "frontend-mobile",
     "version": "1.0.0",
     "orientation": "portrait",

@@ -24,7 +24,7 @@ export default function Header({ navegar }) {
         style={styles.checarButton} 
         onPress={() => navegar('login')}
       >
-        <Ionicons name="fingerprint" size={24} color="#00b4d8" />
+        <Ionicons name="finger-print" size={24} color="#00b4d8" />
         <Text style={styles.checarText}>Checar</Text>
       </TouchableOpacity>
     </View>

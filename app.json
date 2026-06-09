@@ -1,29 +1,4 @@
 {
-  "expo": {
-    "name": "Checar",
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
-    "slug": "frontend-mobile",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "updates": {
-      "enabled": false
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "package": "com.grasfaria.src"
-    },
-    "plugins": [
-      "expo-web-browser"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "8671b42a-3b33-4592-adbf-edccfd6b6d6f"
-      }
-    }
-  }
+  "name": "checar-backend",
+  "description": "Backend Node.js - para rodar o app mobile use: cd frontend-mobile && npx expo start"
 }

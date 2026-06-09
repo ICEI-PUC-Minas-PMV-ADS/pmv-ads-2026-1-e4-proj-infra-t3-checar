@@ -133,7 +133,7 @@ export default function ChecklistExecution({ navegar, params = {} }) {
       });
 
       await Promise.all(
-        itemsToSave.map((itemChecklist) => axios.post(`${API_BASE_URL}/itemchecklists`, itemChecklist))
+        itemsToSave.map((itemChecklist) => api.post('/itemchecklists', itemChecklist))
       );
 
       setMessage({ type: 'success', text: 'Inspecao registrada com sucesso.' });

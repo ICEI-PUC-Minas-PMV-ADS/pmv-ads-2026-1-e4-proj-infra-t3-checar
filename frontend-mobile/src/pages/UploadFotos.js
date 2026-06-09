@@ -60,7 +60,7 @@ export default function UploadFotos({ aoVoltar }) {
     }
 
     let resultado = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaType.images,
       allowsEditing: true,
       quality: 0.7,
     });
