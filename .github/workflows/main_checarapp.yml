@@ -11,7 +11,7 @@ on:
 
 env:
   NODE_VERSION: '22.x'
-  AZURE_WEBAPP_NAME: 'checarApp'
+  AZURE_WEBAPP_NAME: 'checarapp'
   AZURE_WEBAPP_SLOT: 'Production'
 
 jobs:
