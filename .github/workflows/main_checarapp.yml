@@ -30,7 +30,7 @@ jobs:
       - name: Install and build frontend
         run: |
           cd frontend-web
-          npm ci --prefer-offline --no-audit
+          npm install --no-audit
           npm run build
 
       - name: Run tests
