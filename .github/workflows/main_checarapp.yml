@@ -47,6 +47,7 @@ jobs:
           path: |
             src/
             frontend-web/dist/
+            node_modules/
             web.config
             package.json
             package-lock.json
