@@ -58,9 +58,10 @@ function ModeloChecklistSelection() {
 
   const selecionarModelo = (modelo) => {
     if (isChecklistFlow) {
-      // Navigate to checklist with URL param + state (no more state-only dependency)
-      navigate(`/checklist/${modelo._id}`, {
-        state: { vehicleId, vehicle, modeloChecklist: modelo },
+      // vehicleId goes in the URL so it survives page refresh — vehicle and modelo
+      // are passed via state as a fast-path (avoids extra API calls on navigation)
+      navigate(`/checklist/${modelo._id}?vehicleId=${vehicleId}`, {
+        state: { vehicle, modeloChecklist: modelo },
       });
       return;
     }

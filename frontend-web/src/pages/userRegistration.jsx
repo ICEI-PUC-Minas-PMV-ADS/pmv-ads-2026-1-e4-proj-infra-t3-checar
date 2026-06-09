@@ -39,16 +39,24 @@ export default function UserRegistration() {
     }
 
     setLoading(true);
+    let firebaseUser = null;
     try {
       // 1. Create Firebase Auth account
-      await createUserWithEmailAndPassword(auth, email, senha);
+      const credential = await createUserWithEmailAndPassword(auth, email, senha);
+      firebaseUser = credential.user;
 
-      // 2. Register in our backend (for profile data / role)
+      // 2. Register in our backend (profile data / role)
       await api.post('/usuarios', { nome, email, senha, tipoUsuario });
 
       setSucesso('Cadastro realizado com sucesso! Redirecionando…');
       setTimeout(() => navigate('/veiculos'), 1500);
     } catch (error) {
+      // Rollback: if the backend call failed after Firebase succeeded,
+      // delete the Firebase account so the two systems stay in sync
+      if (firebaseUser && error.response) {
+        try { await firebaseUser.delete(); } catch { /* best-effort */ }
+      }
+
       const code = error.code;
       if (code === 'auth/email-already-in-use') {
         setErro('Este email já está em uso.');

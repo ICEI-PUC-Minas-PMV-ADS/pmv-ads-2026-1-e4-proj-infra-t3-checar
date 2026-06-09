@@ -7,15 +7,16 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach auth token if present in sessionStorage
+// Attach Firebase UID so the backend can identify the caller
 api.interceptors.request.use((config) => {
-  const user = sessionStorage.getItem('checar_user');
-  if (user) {
-    try {
-      const parsed = JSON.parse(user);
-      if (parsed?.id) config.headers['X-User-Id'] = parsed.id;
-    } catch {/* ignore */}
-  }
+  try {
+    const stored = sessionStorage.getItem('checar_user');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // AuthContext stores { uid, email, displayName } — uid is the Firebase UID
+      if (parsed?.uid) config.headers['X-User-Id'] = parsed.uid;
+    }
+  } catch {/* ignore malformed JSON */}
   return config;
 });
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import api from '../services/api';
 
@@ -30,12 +30,15 @@ function ChecklistExecution() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { modeloId } = useParams();
+  const [searchParams] = useSearchParams();
 
-  // State may come from navigation OR we load it from the API by modeloId
-  const [vehicleId,      setVehicleId]      = useState(location.state?.vehicleId || null);
-  const [vehicle,        setVehicle]        = useState(location.state?.vehicle   || null);
+  // vehicleId: state is the fast-path (from navigation); URL param is the fallback (survives refresh)
+  const vehicleIdFromUrl = searchParams.get('vehicleId');
+  const [vehicleId, setVehicleId] = useState(
+    location.state?.vehicleId || vehicleIdFromUrl || null
+  );
+  const [vehicle,         setVehicle]         = useState(location.state?.vehicle        || null);
   const [modeloChecklist, setModeloChecklist] = useState(location.state?.modeloChecklist || null);
-  const usuarioId = location.state?.usuarioId || null;
 
   const [pageLoading,  setPageLoading]  = useState(!modeloChecklist);
   const [statusByItem, setStatusByItem] = useState({});
@@ -44,7 +47,15 @@ function ChecklistExecution() {
   const [loading,      setLoading]      = useState(false);
   const [message,      setMessage]      = useState({ type: '', text: '' });
 
-  // Load modelo from API if not passed via state (e.g. direct URL access / page refresh)
+  // Load vehicle from API when missing from state (e.g. page refresh)
+  useEffect(() => {
+    if (vehicle || !vehicleId) return;
+    api.get(`/vehicles/${vehicleId}`)
+      .then((res) => setVehicle(res.data?.data || res.data || null))
+      .catch(() => {/* vehicle info unavailable; checklist can still proceed */});
+  }, [vehicle, vehicleId]);
+
+  // Load modelo from API when missing from state (e.g. page refresh or direct URL access)
   useEffect(() => {
     if (modeloChecklist) {
       setPageLoading(false);
@@ -111,8 +122,7 @@ function ChecklistExecution() {
         observacao: Object.values(notes).filter(Boolean).join('\n'),
         status: isConforme ? ['disponivel'] : ['com problema'],
         modeloId: modeloChecklist._id,
-        ...(vehicleId  ? { veiculoId:  vehicleId  } : {}),
-        ...(usuarioId  ? { usuarioId:  usuarioId  } : {}),
+        ...(vehicleId ? { veiculoId: vehicleId } : {}),
       };
 
       const checklistRes = await api.post('/checklists', checklistPayload);
