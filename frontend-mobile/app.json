@@ -15,7 +15,14 @@
       "package": "com.grasfaria.src"
     },
     "plugins": [
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Permissão para acessar sua galeria de fotos para enviar imagens de inspeção.",
+          "cameraPermission": "Permissão para acessar sua câmera para registrar as fotos de inspeção do veículo."
+        }
+      ]
     ],
     "extra": {
       "eas": {

@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView, 
-  Image, 
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Image,
   ActivityIndicator,
   Platform,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Alert,
+  Linking
 } from 'react-native';
-import api, { BASE_URL } from '../services/api';
+import api from '../services/api';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -46,33 +48,84 @@ export default function UploadFotos({ aoVoltar }) {
   ];
 
   const handleInputChange = (name, value) => {
-    setNovoVeiculo(prev => ({ 
-      ...prev, 
-      [name]: name === 'placa' ? value.toUpperCase() : value 
+    setNovoVeiculo(prev => ({
+      ...prev,
+      [name]: name === 'placa' ? value.toUpperCase() : value
     }));
   };
 
-  const tirarFoto = async (tipo) => {
+  const mostrarAlertaPermissao = (recurso) => {
+    Alert.alert(
+      'Permissão Necessária',
+      `O app precisa de acesso à ${recurso}. Habilite nas configurações do dispositivo.`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Abrir Configurações', onPress: () => Linking.openSettings() }
+      ]
+    );
+  };
+
+  const salvarAsset = (tipo, asset) => {
+    setFotos(prev => ({ ...prev, [tipo]: asset.uri }));
+  };
+
+  const abrirCamera = async (tipo) => {
     const permissao = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissao.granted) {
-      alert('Precisamos de permissão para acessar a câmera!');
+      mostrarAlertaPermissao('câmera');
       return;
     }
 
-    let resultado = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaType.images,
+    const resultado = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],  // fix: MediaType.images não existe → usar array de strings
       allowsEditing: true,
       quality: 0.7,
     });
 
-    if (!resultado.canceled && resultado.assets[0]) {
-      const asset = resultado.assets[0];
-      setFotos(prev => ({ ...prev, [tipo]: asset.uri }));
+    if (!resultado.canceled && resultado.assets?.[0]) {
+      salvarAsset(tipo, resultado.assets[0]);
     }
+  };
+
+  const abrirGaleria = async (tipo) => {
+    const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissao.granted) {
+      mostrarAlertaPermissao('galeria de fotos');
+      return;
+    }
+
+    const resultado = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!resultado.canceled && resultado.assets?.[0]) {
+      salvarAsset(tipo, resultado.assets[0]);
+    }
+  };
+
+  const escolherFoto = (tipo) => {
+    Alert.alert(
+      'Adicionar Foto',
+      'Como deseja adicionar a foto?',
+      [
+        { text: 'Tirar foto', onPress: () => abrirCamera(tipo) },
+        { text: 'Escolher da galeria', onPress: () => abrirGaleria(tipo) },
+        { text: 'Cancelar', style: 'cancel' }
+      ]
+    );
   };
 
   const removeFoto = (tipo) => {
     setFotos(prev => ({ ...prev, [tipo]: null }));
+  };
+
+  const getMimeType = (uri) => {
+    const ext = (uri.split('.').pop() || '').toLowerCase();
+    // fix: 'image/jpg' não é MIME válido — o correto é 'image/jpeg'
+    const mimeMap = { jpg: 'jpeg', jpeg: 'jpeg', png: 'png', webp: 'webp', heic: 'heic', heif: 'heic' };
+    return `image/${mimeMap[ext] || 'jpeg'}`;
   };
 
   const cadastrarVeiculo = async () => {
@@ -93,23 +146,20 @@ export default function UploadFotos({ aoVoltar }) {
   const enviarFotos = async (placa) => {
     const formData = new FormData();
     formData.append('placa', placa);
-    
+
     Object.entries(fotos).forEach(([tipo, uri]) => {
       if (uri) {
         const nomeArquivo = uri.split('/').pop();
-        const match = /\.(\w+)$/.exec(nomeArquivo);
-        const tipoMime = match ? `image/${match[1]}` : `image`;
-        
         formData.append(tipo, {
-          uri: uri,
+          uri,
           name: nomeArquivo,
-          type: tipoMime
+          type: getMimeType(uri),
         });
       }
     });
 
     const response = await api.post('/inspecao/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
   };
@@ -136,7 +186,7 @@ export default function UploadFotos({ aoVoltar }) {
     try {
       await cadastrarVeiculo();
       await enviarFotos(novoVeiculo.placa);
-      
+
       setSucesso(true);
       setTimeout(() => aoVoltar(), 2000);
     } catch (error) {
@@ -152,23 +202,23 @@ export default function UploadFotos({ aoVoltar }) {
 
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={[
             styles.scrollContent,
-            { 
+            {
               paddingBottom: Math.max(insets.bottom, 20) + 100,
-              paddingTop: 8 
+              paddingTop: 8
             }
           ]}
           showsVerticalScrollIndicator={true}
           keyboardShouldPersistTaps="handled"
         >
-          
+
           <TouchableOpacity onPress={aoVoltar} style={styles.backButton}>
             <Ionicons name="chevron-back" size={20} color="white" />
             <Text style={styles.backButtonText}>Voltar</Text>
@@ -223,7 +273,7 @@ export default function UploadFotos({ aoVoltar }) {
             </View>
             <View style={styles.progressBarBg}>
               <View style={[
-                styles.progressBarFill, 
+                styles.progressBarFill,
                 { width: `${(totalSelecionadas / 5) * 100}%`, backgroundColor: isCompleto ? '#4ade80' : '#00b7eb' }
               ]} />
             </View>
@@ -236,8 +286,8 @@ export default function UploadFotos({ aoVoltar }) {
                 <View style={styles.photoHeader}>
                   <Text style={styles.photoLabel}>{icon} {label} *</Text>
                   {fotos[id] && (
-                    <TouchableOpacity 
-                      onPress={() => removeFoto(id)} 
+                    <TouchableOpacity
+                      onPress={() => removeFoto(id)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
                       <Ionicons name="close-circle" size={20} color="#f87171" />
@@ -246,16 +296,23 @@ export default function UploadFotos({ aoVoltar }) {
                 </View>
 
                 {fotos[id] ? (
-                  <Image source={{ uri: fotos[id] }} style={styles.previewImage} />
+                  <TouchableOpacity onPress={() => escolherFoto(id)} activeOpacity={0.85}>
+                    <Image source={{ uri: fotos[id] }} style={styles.previewImage} />
+                    <View style={styles.retakeOverlay}>
+                      <Ionicons name="camera-reverse" size={18} color="#fff" />
+                      <Text style={styles.retakeText}>Trocar</Text>
+                    </View>
+                  </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity 
-                    onPress={() => tirarFoto(id)} 
-                    style={styles.cameraPlaceholder} 
+                  <TouchableOpacity
+                    onPress={() => escolherFoto(id)}
+                    style={styles.cameraPlaceholder}
                     disabled={loading}
                     activeOpacity={0.7}
                   >
                     <Ionicons name="camera" size={36} color="rgba(51, 204, 255, 0.6)" />
                     <Text style={styles.cameraText}>Tirar Foto</Text>
+                    <Text style={styles.cameraSubText}>ou escolher da galeria</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -277,8 +334,8 @@ export default function UploadFotos({ aoVoltar }) {
           )}
 
           {/* Botão de Submissão */}
-          <TouchableOpacity 
-            onPress={handleSalvarTudo} 
+          <TouchableOpacity
+            onPress={handleSalvarTudo}
             disabled={loading || !isCompleto}
             style={[
               styles.submitButtonWrapper,
@@ -309,192 +366,212 @@ export default function UploadFotos({ aoVoltar }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#00112b' 
+  container: {
+    flex: 1,
+    backgroundColor: '#00112b'
   },
   keyboardAvoidingView: {
     flex: 1,
   },
-  scrollContent: { 
+  scrollContent: {
     paddingHorizontal: 16,
   },
-  backButton: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    alignSelf: 'flex-start', 
-    backgroundColor: '#002b45', 
-    paddingHorizontal: 16, 
-    paddingVertical: 8, 
-    borderRadius: 20, 
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#002b45',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
     marginBottom: 20,
     zIndex: 1
   },
-  backButtonText: { 
-    color: 'white', 
-    marginLeft: 6, 
-    fontSize: 14 
+  backButtonText: {
+    color: 'white',
+    marginLeft: 6,
+    fontSize: 14
   },
-  titleContainer: { 
-    alignItems: 'center', 
-    marginBottom: 24 
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 24
   },
-  mainTitle: { 
-    fontSize: 26, 
-    fontWeight: 'bold', 
-    color: '#fff' 
+  mainTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#fff'
   },
-  highlightText: { 
-    color: '#00b7eb' 
+  highlightText: {
+    color: '#00b7eb'
   },
-  subtitle: { 
-    color: '#94a3b8', 
-    fontSize: 13, 
-    marginTop: 4, 
-    textAlign: 'center' 
+  subtitle: {
+    color: '#94a3b8',
+    fontSize: 13,
+    marginTop: 4,
+    textAlign: 'center'
   },
-  formContainer: { 
-    backgroundColor: 'rgba(0, 43, 69, 0.5)', 
-    borderRadius: 16, 
-    padding: 16, 
-    marginBottom: 20, 
-    borderWidth: 1, 
-    borderColor: 'rgba(51, 204, 255, 0.3)' 
+  formContainer: {
+    backgroundColor: 'rgba(0, 43, 69, 0.5)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(51, 204, 255, 0.3)'
   },
-  sectionTitle: { 
-    color: '#fff', 
-    fontSize: 16, 
-    fontWeight: 'bold', 
-    marginBottom: 12 
+  sectionTitle: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 12
   },
-  input: { 
-    backgroundColor: '#00112b', 
-    borderRadius: 12, 
-    padding: 12, 
-    color: '#fff', 
-    borderWidth: 1, 
-    borderColor: 'rgba(51, 204, 255, 0.3)', 
-    marginBottom: 12 
+  input: {
+    backgroundColor: '#00112b',
+    borderRadius: 12,
+    padding: 12,
+    color: '#fff',
+    borderWidth: 1,
+    borderColor: 'rgba(51, 204, 255, 0.3)',
+    marginBottom: 12
   },
-  progressContainer: { 
-    marginBottom: 20 
+  progressContainer: {
+    marginBottom: 20
   },
-  progressTextRow: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginBottom: 6 
+  progressTextRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6
   },
-  progressText: { 
-    color: '#fff', 
-    fontSize: 13 
+  progressText: {
+    color: '#fff',
+    fontSize: 13
   },
-  progressCount: { 
-    color: '#fff', 
-    fontWeight: 'bold' 
+  progressCount: {
+    color: '#fff',
+    fontWeight: 'bold'
   },
-  progressBarBg: { 
-    width: '100%', 
-    height: 8, 
-    backgroundColor: '#00112b', 
+  progressBarBg: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#00112b',
     borderRadius: 99,
     overflow: 'hidden'
   },
-  progressBarFill: { 
-    height: 8, 
-    borderRadius: 99 
+  progressBarFill: {
+    height: 8,
+    borderRadius: 99
   },
-  gridContainer: { 
-    gap: 16, 
-    marginBottom: 20 
+  gridContainer: {
+    gap: 16,
+    marginBottom: 20
   },
-  photoCard: { 
-    backgroundColor: 'rgba(0, 82, 204, 0.2)', 
-    borderRadius: 16, 
-    padding: 12, 
-    borderWidth: 2 
+  photoCard: {
+    backgroundColor: 'rgba(0, 82, 204, 0.2)',
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 2
   },
-  photoCardBorder: { 
-    borderColor: 'rgba(51, 204, 255, 0.3)' 
+  photoCardBorder: {
+    borderColor: 'rgba(51, 204, 255, 0.3)'
   },
-  photoCardSuccess: { 
-    borderColor: '#4ade80' 
+  photoCardSuccess: {
+    borderColor: '#4ade80'
   },
-  photoHeader: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    marginBottom: 8 
+  photoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
   },
-  photoLabel: { 
-    color: '#fff', 
-    fontSize: 12, 
-    fontWeight: 'bold', 
-    textTransform: 'uppercase' 
+  photoLabel: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase'
   },
-  cameraPlaceholder: { 
-    width: '100%', 
-    height: 160, 
-    backgroundColor: '#00112b', 
-    borderRadius: 12, 
-    borderStyle: 'dashed', 
-    borderWidth: 2, 
-    borderColor: 'rgba(51, 204, 255, 0.5)', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    gap: 6 
+  cameraPlaceholder: {
+    width: '100%',
+    height: 160,
+    backgroundColor: '#00112b',
+    borderRadius: 12,
+    borderStyle: 'dashed',
+    borderWidth: 2,
+    borderColor: 'rgba(51, 204, 255, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6
   },
-  cameraText: { 
-    color: '#fff', 
-    fontSize: 13, 
-    opacity: 0.7 
+  cameraText: {
+    color: '#fff',
+    fontSize: 13,
+    opacity: 0.7
   },
-  previewImage: { 
-    width: '100%', 
-    height: 160, 
-    borderRadius: 12, 
-    resizeMode: 'cover' 
+  cameraSubText: {
+    color: '#94a3b8',
+    fontSize: 11,
   },
-  alert: { 
-    padding: 12, 
-    borderRadius: 12, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    gap: 10, 
-    marginBottom: 16, 
-    borderWidth: 1 
+  previewImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 12,
+    resizeMode: 'cover'
   },
-  alertSuccess: { 
-    backgroundColor: 'rgba(74, 222, 128, 0.15)', 
-    borderColor: '#4ade80' 
+  retakeOverlay: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
-  alertError: { 
-    backgroundColor: 'rgba(239, 68, 68, 0.15)', 
-    borderColor: '#ef4444' 
+  retakeText: {
+    color: '#fff',
+    fontSize: 12,
   },
-  alertTextSuccess: { 
-    color: '#4ade80', 
-    fontSize: 12, 
-    flex: 1 
+  alert: {
+    padding: 12,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 16,
+    borderWidth: 1
   },
-  alertTextError: { 
-    color: '#ef4444', 
-    fontSize: 12, 
-    flex: 1 
+  alertSuccess: {
+    backgroundColor: 'rgba(74, 222, 128, 0.15)',
+    borderColor: '#4ade80'
+  },
+  alertError: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: '#ef4444'
+  },
+  alertTextSuccess: {
+    color: '#4ade80',
+    fontSize: 12,
+    flex: 1
+  },
+  alertTextError: {
+    color: '#ef4444',
+    fontSize: 12,
+    flex: 1
   },
   submitButtonWrapper: {
     borderRadius: 16,
     marginTop: 8,
     marginBottom: 20,
   },
-  submitButton: { 
-    borderRadius: 16, 
-    padding: 16, 
-    alignItems: 'center', 
-    justifyContent: 'center' 
+  submitButton: {
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  submitButtonText: { 
-    color: '#00112b', 
-    fontSize: 16, 
-    fontWeight: 'bold' 
+  submitButtonText: {
+    color: '#00112b',
+    fontSize: 16,
+    fontWeight: 'bold'
   }
 });
