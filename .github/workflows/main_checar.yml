@@ -4,10 +4,7 @@
 name: Build and deploy Node.js app to Azure Web App - checar
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_dispatch: # manual only — disabled automatic triggers
 
 jobs:
   build:
