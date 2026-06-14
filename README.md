@@ -1,13 +1,22 @@
-> Why do I have a folder named ".expo" in my project?
+## 📌 Nome do Projeto
 
-The ".expo" folder is created when an Expo project is started using "expo start" command.
+**Checar**
 
-> What do the files contain?
+## 🚀 Tecnologias Utilizadas
 
-- "devices.json": contains information about devices that have recently opened this project. This is used to populate the "Development sessions" list in your development builds.
-- "settings.json": contains the server configuration that is used to serve the application manifest.
+O projeto foi desenvolvido utilizando as seguintes tecnologias:
 
-> Should I commit the ".expo" folder?
+* **Backend:** Node.js
+* **Frontend Web:** React
+* **Frontend Mobile:** React Native
 
-No, you should not share the ".expo" folder. It does not contain any information that is relevant for other developers working on the project, it is specific to your machine.
-Upon project creation, the ".expo" folder is already added to your ".gitignore" file.
+## 📖 Apresentação do Projeto
+
+* **Slides de Apresentação**: [CHECAR_Apresentacao.pdf](https://github.com/user-attachments/files/28926925/CHECAR_Apresentacao.pdf)
+* **Vídeo de Apresentação:** *(inserir link)*
+
+## 💬 Feedback sobre a Disciplina
+
+| Aluno                              | Feedback                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gabriela Aparecida Alcântara Silva | A disciplina proporcionou aprendizado significativo sobre as tecnologias utilizadas no projeto, contribuindo para o desenvolvimento de novas competências técnicas. Entretanto, houve desafios relacionados ao engajamento de parte da equipe, o que resultou em uma distribuição desigual das atividades e maior sobrecarga para alguns integrantes. Em relação à linguagem utilizada, apesar do aprendizado adquirido, tive maior afinidade com o desenvolvimento utilizando C# devido às experiências anteriores e à familiaridade com a tecnologia. |
