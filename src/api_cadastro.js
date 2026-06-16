@@ -43,9 +43,12 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── 1. Security headers — RNF-004 / HSTS ────────────────────────
-// contentSecurityPolicy desativado para não quebrar Swagger UI e o SPA React
+// Em produção, CSP é ativado para proteção contra XSS.
+// Em desenvolvimento, CSP é desativado para Swagger UI e o SPA React funcionarem.
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: isProduction,
   crossOriginEmbedderPolicy: false,
   hsts: {
     maxAge: 31536000,
