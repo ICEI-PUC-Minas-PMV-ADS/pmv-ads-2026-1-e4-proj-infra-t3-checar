@@ -14,10 +14,13 @@ export default function TabBar({ telaAtual, onTabPress }) {
         height: Platform.OS === 'ios' ? 75 + insets.bottom : 65 + insets.bottom
       }
     ]}>
-      <TouchableOpacity 
-        style={styles.tabItem} 
+      <TouchableOpacity
+        style={styles.tabItem}
         onPress={() => onTabPress('busca')}
         activeOpacity={0.7}
+        accessibilityLabel="Abrir tela de busca"
+        accessibilityRole="button"
+        accessibilityState={{ selected: telaAtual === 'busca' }}
       >
         <Ionicons 
           name="search" 
@@ -32,10 +35,13 @@ export default function TabBar({ telaAtual, onTabPress }) {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={styles.tabItem} 
+      <TouchableOpacity
+        style={styles.tabItem}
         onPress={() => onTabPress('upload')}
         activeOpacity={0.7}
+        accessibilityLabel="Abrir nova inspeção"
+        accessibilityRole="button"
+        accessibilityState={{ selected: telaAtual === 'upload' }}
       >
         <Ionicons 
           name="camera" 
@@ -54,6 +60,9 @@ export default function TabBar({ telaAtual, onTabPress }) {
         style={styles.tabItem}
         onPress={() => onTabPress('modelos')}
         activeOpacity={0.7}
+        accessibilityLabel="Abrir modelos de checklist"
+        accessibilityRole="button"
+        accessibilityState={{ selected: telaAtual === 'modelos' }}
       >
         <Ionicons
           name="clipboard"
@@ -72,6 +81,9 @@ export default function TabBar({ telaAtual, onTabPress }) {
         style={styles.tabItem}
         onPress={() => onTabPress('historico')}
         activeOpacity={0.7}
+        accessibilityLabel="Abrir tela de histórico"
+        accessibilityRole="button"
+        accessibilityState={{ selected: telaAtual === 'historico' }}
       >
         <Ionicons
           name="time"
@@ -90,6 +102,9 @@ export default function TabBar({ telaAtual, onTabPress }) {
         style={styles.tabItem}
         onPress={() => onTabPress('relatorios')}
         activeOpacity={0.7}
+        accessibilityLabel="Abrir tela de relatórios"
+        accessibilityRole="button"
+        accessibilityState={{ selected: telaAtual === 'relatorios' }}
       >
         <Ionicons
           name="document-text"
@@ -108,6 +123,9 @@ export default function TabBar({ telaAtual, onTabPress }) {
         style={styles.tabItem}
         onPress={() => onTabPress('notificacoes')}
         activeOpacity={0.7}
+        accessibilityLabel="Abrir notificações"
+        accessibilityRole="button"
+        accessibilityState={{ selected: telaAtual === 'notificacoes' }}
       >
         <Ionicons
           name="notifications"

@@ -1,9 +1,18 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import rateLimit from 'express-rate-limit';
 import Inspecao from './models/Inspecao.js';
 import upload, { compressImages } from './config/multer.js';
 
 const router = express.Router();
+
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  message: { error: 'Muitas tentativas de upload. Tente novamente em 1 minuto.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -12,6 +21,7 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 router.post(
   '/inspecao/upload',
+  uploadLimiter,
   upload.fields([
     { name: 'frente',          maxCount: 1 },
     { name: 'traseira',        maxCount: 1 },
