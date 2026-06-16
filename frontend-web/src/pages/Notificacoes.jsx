@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, Bell, Info, ChevronLeft, ChevronRight, CheckCheck, Loader2 } from 'lucide-react';
 import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   const d = new Date(dateStr);
@@ -26,7 +24,6 @@ function IconeTipo({ tipo }) {
 const limit = 20;
 
 function Notificacoes() {
-  const { uid } = useAuth();
   const [notificacoes, setNotificacoes] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -68,7 +65,7 @@ function Notificacoes() {
   const marcarTodasLidas = async () => {
     setMarcandoTodas(true);
     try {
-      await api.patch('/notificacoes/lida/todas', { usuarioId: uid });
+      await api.patch('/notificacoes/lida/todas');
       await carregar(page);
     } catch (err) {
       setErro(err.message || 'Erro ao marcar todas como lidas.');

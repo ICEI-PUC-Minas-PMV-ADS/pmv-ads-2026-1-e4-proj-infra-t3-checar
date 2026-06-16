@@ -12,8 +12,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../services/api';
-import { auth } from '../services/firebaseConfig';
-
 const LIMIT = 20;
 
 const tipoConfig = (tipo) => {
@@ -102,13 +100,8 @@ export default function Notificacoes({ navegar }) {
   };
 
   const marcarTodasComoLidas = async () => {
-    const usuario = auth.currentUser;
-    if (!usuario) {
-      Alert.alert('Erro', 'Usuário não autenticado.');
-      return;
-    }
     try {
-      await api.patch('/notificacoes/lida/todas', { usuarioId: usuario.uid });
+      await api.patch('/notificacoes/lida/todas');
       setNotificacoes((prev) => prev.map((n) => ({ ...n, lida: true, read: true })));
     } catch {
       Alert.alert('Erro', 'Não foi possível marcar todas como lidas.');

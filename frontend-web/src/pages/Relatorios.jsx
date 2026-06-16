@@ -1,28 +1,78 @@
 import { useState } from 'react';
-import { FileText, Download, AlertCircle } from 'lucide-react';
+import { FileText, Download, AlertCircle, Loader2 } from 'lucide-react';
+import api from '../services/api';
+
+const downloadBlob = async (url, filename) => {
+  const res = await api.get(url, { responseType: 'blob' });
+  const href = URL.createObjectURL(res.data);
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(href);
+};
 
 function Relatorios() {
   const [checklistId, setChecklistId] = useState('');
   const [placa, setPlaca] = useState('');
-  const [erroChecklist, setErroChecklist] = useState('');
-  const [erroPlaca, setErroPlaca] = useState('');
 
-  const handleGerarPdfChecklist = () => {
+  const [loadingChecklist, setLoadingChecklist] = useState(false);
+  const [loadingInspecoes, setLoadingInspecoes] = useState(false);
+
+  const [erroChecklist, setErroChecklist] = useState('');
+  const [erroInspecoes, setErroInspecoes] = useState('');
+
+  const handleGerarPdfChecklist = async () => {
     if (!checklistId.trim()) {
       setErroChecklist('Informe o ID do checklist.');
       return;
     }
     setErroChecklist('');
-    window.open(`/api/relatorios/checklists/${checklistId.trim()}/pdf`, '_blank');
+    setLoadingChecklist(true);
+    try {
+      await downloadBlob(
+        `/relatorios/checklists/${checklistId.trim()}/pdf`,
+        `checklist_${checklistId.trim()}.pdf`
+      );
+    } catch (err) {
+      const msg =
+        err.response?.status === 403
+          ? 'Apenas Gestores podem baixar relatórios.'
+          : err.response?.status === 404
+          ? 'Checklist não encontrado.'
+          : 'Erro ao gerar o PDF. Tente novamente.';
+      setErroChecklist(msg);
+    } finally {
+      setLoadingChecklist(false);
+    }
   };
 
-  const handleGerarPdfInspecoes = () => {
+  const handleGerarPdfInspecoes = async () => {
     if (!placa.trim()) {
-      setErroPlaca('Informe a placa do veículo.');
+      setErroInspecoes('Informe a placa do veículo.');
       return;
     }
-    setErroPlaca('');
-    window.open(`/api/relatorios/inspecoes/${placa.trim().toUpperCase()}/pdf`, '_blank');
+    setErroInspecoes('');
+    setLoadingInspecoes(true);
+    try {
+      const placaUpper = placa.trim().toUpperCase();
+      await downloadBlob(
+        `/relatorios/inspecoes/${placaUpper}/pdf`,
+        `inspecoes_${placaUpper}.pdf`
+      );
+    } catch (err) {
+      const msg =
+        err.response?.status === 403
+          ? 'Apenas Gestores podem baixar relatórios.'
+          : err.response?.status === 404
+          ? 'Nenhuma inspeção encontrada para esta placa.'
+          : 'Erro ao gerar o PDF. Tente novamente.';
+      setErroInspecoes(msg);
+    } finally {
+      setLoadingInspecoes(false);
+    }
   };
 
   return (
@@ -72,11 +122,16 @@ function Relatorios() {
 
           <button
             onClick={handleGerarPdfChecklist}
+            disabled={loadingChecklist}
             aria-label="Gerar PDF do checklist"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0052cc] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#00b7eb] hover:text-[#00112b]"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0052cc] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#00b7eb] hover:text-[#00112b] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={16} />
-            Gerar PDF do Checklist
+            {loadingChecklist ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Download size={16} />
+            )}
+            {loadingChecklist ? 'Gerando...' : 'Gerar PDF do Checklist'}
           </button>
         </div>
 
@@ -102,16 +157,16 @@ function Relatorios() {
               value={placa}
               onChange={(e) => {
                 setPlaca(e.target.value);
-                if (erroPlaca) setErroPlaca('');
+                if (erroInspecoes) setErroInspecoes('');
               }}
               placeholder="Ex: ABC1234"
               aria-label="Placa do veículo"
               className="w-full rounded-lg border border-[#33ccff]/30 bg-[#00112b] px-4 py-2.5 text-white placeholder-white/30 outline-none focus:border-[#00b7eb] transition-colors"
             />
             <div aria-live="polite">
-              {erroPlaca && (
+              {erroInspecoes && (
                 <p className="flex items-center gap-1.5 text-sm text-red-400">
-                  <AlertCircle size={14} /> {erroPlaca}
+                  <AlertCircle size={14} /> {erroInspecoes}
                 </p>
               )}
             </div>
@@ -119,11 +174,16 @@ function Relatorios() {
 
           <button
             onClick={handleGerarPdfInspecoes}
+            disabled={loadingInspecoes}
             aria-label="Gerar PDF de inspeções por placa"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0052cc] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#00b7eb] hover:text-[#00112b]"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#0052cc] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#00b7eb] hover:text-[#00112b] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={16} />
-            Gerar PDF de Inspeções
+            {loadingInspecoes ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Download size={16} />
+            )}
+            {loadingInspecoes ? 'Gerando...' : 'Gerar PDF de Inspeções'}
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import Checklist from './checklist.js';
 import Inspecao from './models/Inspecao.js';
 import Notificacao from './models/Notificacao.js';
 import FcmToken from './models/FcmToken.js';
+import { admin, initFirebase } from './config/firebase.js';
 
 const router = express.Router();
 router.use(express.json());
@@ -15,14 +16,18 @@ router.get('/meus-dados', async (req, res) => {
     const usuarioId = req.user?.id;
     if (!usuarioId) return res.status(401).json({ erro: 'Não autenticado' });
 
-    const [usuario, checklists, inspecoes, notificacoes] = await Promise.all([
+    const [usuario, checklists, notificacoes] = await Promise.all([
       Usuario.findById(usuarioId).select('-senha').lean(),
       Checklist.find({ usuarioId }).lean(),
-      Inspecao.find({ }).lean(), // inspeções não têm usuarioId direto
       Notificacao.find({ usuarioId }).lean(),
     ]);
 
     if (!usuario) return res.status(404).json({ erro: 'Usuário não encontrado' });
+
+    const checklistIds = checklists.map(c => c._id);
+    const inspecoes = checklistIds.length > 0
+      ? await Inspecao.find({ checklistId: { $in: checklistIds } }).lean()
+      : [];
 
     res.status(200).json({
       usuario,
@@ -57,6 +62,14 @@ router.delete('/me', async (req, res) => {
 
     // Remove notificações
     await Notificacao.deleteMany({ usuarioId });
+
+    // Remove conta Firebase (melhor esforço — não bloqueia resposta se Firebase falhar)
+    const firebaseUid = req.user?.uid;
+    if (firebaseUid && initFirebase()) {
+      await admin.auth().deleteUser(firebaseUid).catch(err =>
+        console.error('[LGPD] Falha ao deletar conta Firebase:', err.message)
+      );
+    }
 
     res.status(200).json({ mensagem: 'Dados pessoais removidos conforme LGPD' });
   } catch (error) {

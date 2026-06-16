@@ -43,14 +43,9 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/usuarios', async (req, res) => {
-  try {
-    const usuarios = await Usuario.find().select('-senha');
-    res.json({ status: 'success', data: usuarios });
-  } catch (err) {
-    res.status(500).json({ erro: 'Erro interno' });
-  }
-});
+// GET /usuarios removido: expunha lista de usuários sem autenticação.
+// A rota está implementada com RBAC adequado na API principal (src/api_usuarios.js).
+// O NGINX roteia /usuarios → main_api para garantir controle de acesso.
 
 mongoose.connect(process.env.MONGO_URI || 'mongodb://mongo:27017/checar')
   .then(() => app.listen(process.env.AUTH_PORT || 3001, () => console.log('auth-service :3001')))

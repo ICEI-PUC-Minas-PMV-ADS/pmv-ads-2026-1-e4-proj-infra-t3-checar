@@ -44,7 +44,7 @@ const Login = ({ navegar }) => {
       await AsyncStorage.setItem(CREDS_KEY, JSON.stringify({ email, senha }));
 
       // Register FCM push token (non-blocking)
-      registrarTokenPush(userCredential.user.uid).catch(() => {});
+      registrarTokenPush().catch(() => {});
 
 
       navegar('busca');

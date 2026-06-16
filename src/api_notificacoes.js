@@ -7,11 +7,15 @@ const router = express.Router();
 // ── FCM Token ─────────────────────────────────────────────────────
 
 // POST /fcm-tokens — registra ou atualiza token FCM do dispositivo
+// usuarioId vem de req.user (autenticado), nunca do body (evita IDOR)
 router.post('/fcm-tokens', async (req, res) => {
   try {
-    const { usuarioId, token, plataforma } = req.body;
-    if (!usuarioId || !token) {
-      return res.status(400).json({ erro: 'usuarioId e token são obrigatórios' });
+    const usuarioId = req.user?.id;
+    if (!usuarioId) return res.status(401).json({ erro: 'Não autenticado' });
+
+    const { token, plataforma } = req.body;
+    if (!token) {
+      return res.status(400).json({ erro: 'token é obrigatório' });
     }
 
     await FcmToken.findOneAndUpdate(
@@ -38,16 +42,19 @@ router.delete('/fcm-tokens/:token', async (req, res) => {
 
 // ── Notificações ──────────────────────────────────────────────────
 
-// GET /notificacoes?usuarioId=xxx&lida=false&page=1&limit=20
+// GET /notificacoes?lida=false&page=1&limit=20
+// Filtrado automaticamente pelo usuário autenticado (evita IDOR)
 router.get('/notificacoes', async (req, res) => {
   try {
-    const { usuarioId, lida } = req.query;
+    const usuarioId = req.user?.id;
+    if (!usuarioId) return res.status(401).json({ erro: 'Não autenticado' });
+
+    const { lida } = req.query;
     const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
     const limit = Math.min(50,  Math.max(1, parseInt(req.query.limit || '20', 10)));
     const skip  = (page - 1) * limit;
 
-    const filtro = {};
-    if (usuarioId) filtro.usuarioId = usuarioId;
+    const filtro = { usuarioId };
     if (lida !== undefined) filtro.lida = lida === 'true';
 
     const [notificacoes, total] = await Promise.all([
@@ -83,11 +90,12 @@ router.patch('/notificacoes/:id/lida', async (req, res) => {
   }
 });
 
-// PATCH /notificacoes/lida/todas — marca todas do usuário como lidas
+// PATCH /notificacoes/lida/todas — marca todas do usuário autenticado como lidas
+// usuarioId vem de req.user, nunca do body (evita IDOR)
 router.patch('/notificacoes/lida/todas', async (req, res) => {
   try {
-    const { usuarioId } = req.body;
-    if (!usuarioId) return res.status(400).json({ erro: 'usuarioId obrigatório' });
+    const usuarioId = req.user?.id;
+    if (!usuarioId) return res.status(401).json({ erro: 'Não autenticado' });
 
     await Notificacao.updateMany({ usuarioId, lida: false }, { lida: true });
     return res.status(200).json({ mensagem: 'Todas as notificações marcadas como lidas' });

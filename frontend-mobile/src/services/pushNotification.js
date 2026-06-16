@@ -15,9 +15,7 @@ Notifications.setNotificationHandler({
  * Solicita permissão e registra o token FCM no backend.
  * Deve ser chamado após o login do usuário.
  */
-const registrarTokenPush = async (usuarioId) => {
-  if (!usuarioId) return;
-
+const registrarTokenPush = async () => {
   try {
     const { status: existing } = await Notifications.getPermissionsAsync();
     let finalStatus = existing;
@@ -37,7 +35,6 @@ const registrarTokenPush = async (usuarioId) => {
     const token = tokenData.data;
 
     await api.post('/fcm-tokens', {
-      usuarioId,
       token,
       plataforma: Platform.OS,
     });

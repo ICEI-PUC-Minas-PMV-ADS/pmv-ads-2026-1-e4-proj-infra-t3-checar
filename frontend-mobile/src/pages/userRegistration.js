@@ -82,6 +82,9 @@ const UserRegistration = ({ navegar }) => {
         throw backendError;
       }
 
+      // 3. Registra consentimento LGPD (não bloqueia o cadastro se falhar)
+      await api.post('/aceitar-termos', { versaoTermos: '1.0' }).catch(() => {});
+
       Alert.alert(
         'Sucesso',
         'Cadastro realizado com sucesso'

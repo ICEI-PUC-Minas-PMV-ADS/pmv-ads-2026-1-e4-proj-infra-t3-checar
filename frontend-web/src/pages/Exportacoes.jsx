@@ -1,28 +1,70 @@
 import { useState } from 'react';
-import { Download, Table, CheckCircle } from 'lucide-react';
+import { Download, Table, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import api from '../services/api';
+
+const downloadBlob = async (url, filename) => {
+  const res = await api.get(url, { responseType: 'blob' });
+  const href = URL.createObjectURL(res.data);
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(href);
+};
 
 function Exportacoes() {
   const [placaInsp, setPlacaInsp] = useState('');
-  const [clicadoVeiculos, setClicadoVeiculos] = useState(false);
-  const [clicadoInspecoes, setClicadoInspecoes] = useState(false);
 
-  const feedbackTemporario = (setter) => {
+  const [loadingVeiculos, setLoadingVeiculos] = useState(false);
+  const [loadingInspecoes, setLoadingInspecoes] = useState(false);
+
+  const [sucessoVeiculos, setSucessoVeiculos] = useState(false);
+  const [sucessoInspecoes, setSucessoInspecoes] = useState(false);
+
+  const [erroVeiculos, setErroVeiculos] = useState('');
+  const [erroInspecoes, setErroInspecoes] = useState('');
+
+  const feedbackSucesso = (setter) => {
     setter(true);
-    setTimeout(() => setter(false), 2000);
+    setTimeout(() => setter(false), 2500);
   };
 
-  const exportarVeiculos = () => {
-    window.open('/api/exportacoes/vehicles/csv', '_blank');
-    feedbackTemporario(setClicadoVeiculos);
+  const mensagemErro = (err) =>
+    err.response?.status === 403
+      ? 'Apenas Gestores podem exportar dados.'
+      : 'Erro ao exportar. Tente novamente.';
+
+  const exportarVeiculos = async () => {
+    setErroVeiculos('');
+    setLoadingVeiculos(true);
+    try {
+      await downloadBlob('/exportacoes/vehicles/csv', 'veiculos.csv');
+      feedbackSucesso(setSucessoVeiculos);
+    } catch (err) {
+      setErroVeiculos(mensagemErro(err));
+    } finally {
+      setLoadingVeiculos(false);
+    }
   };
 
-  const exportarInspecoes = () => {
-    const placa = placaInsp.trim().toUpperCase();
-    const url = placa
-      ? `/api/exportacoes/inspecoes/csv?placa=${encodeURIComponent(placa)}`
-      : '/api/exportacoes/inspecoes/csv';
-    window.open(url, '_blank');
-    feedbackTemporario(setClicadoInspecoes);
+  const exportarInspecoes = async () => {
+    setErroInspecoes('');
+    setLoadingInspecoes(true);
+    try {
+      const placa = placaInsp.trim().toUpperCase();
+      const url = placa
+        ? `/exportacoes/inspecoes/csv?placa=${encodeURIComponent(placa)}`
+        : '/exportacoes/inspecoes/csv';
+      const filename = placa ? `inspecoes-${placa}.csv` : 'inspecoes.csv';
+      await downloadBlob(url, filename);
+      feedbackSucesso(setSucessoInspecoes);
+    } catch (err) {
+      setErroInspecoes(mensagemErro(err));
+    } finally {
+      setLoadingInspecoes(false);
+    }
   };
 
   return (
@@ -51,31 +93,41 @@ function Exportacoes() {
             Exporta a lista completa de veículos com todos os campos disponíveis.
           </div>
 
+          <div aria-live="polite">
+            {erroVeiculos && (
+              <p className="flex items-center gap-1.5 text-sm text-red-400">
+                <AlertCircle size={14} /> {erroVeiculos}
+              </p>
+            )}
+          </div>
+
           <button
             onClick={exportarVeiculos}
+            disabled={loadingVeiculos}
             aria-label="Baixar CSV de veículos"
-            className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold transition-all ${
-              clicadoVeiculos
+            className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold transition-all disabled:cursor-not-allowed ${
+              sucessoVeiculos
                 ? 'bg-green-600/80 text-white'
-                : 'bg-[#0052cc] text-white hover:bg-[#00b7eb] hover:text-[#00112b]'
+                : 'bg-[#0052cc] text-white hover:bg-[#00b7eb] hover:text-[#00112b] disabled:opacity-50'
             }`}
           >
-            {clicadoVeiculos ? (
-              <>
-                <CheckCircle size={16} />
-                Download iniciado!
-              </>
+            {loadingVeiculos ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : sucessoVeiculos ? (
+              <CheckCircle size={16} />
             ) : (
-              <>
-                <Download size={16} />
-                Baixar CSV
-              </>
+              <Download size={16} />
             )}
+            {loadingVeiculos
+              ? 'Baixando...'
+              : sucessoVeiculos
+              ? 'Download concluído!'
+              : 'Baixar CSV'}
           </button>
 
           <div role="status" aria-live="assertive" aria-atomic="true">
-            {clicadoVeiculos && (
-              <span className="sr-only">Download de veículos iniciado.</span>
+            {sucessoVeiculos && (
+              <span className="sr-only">Download de veículos concluído com sucesso.</span>
             )}
           </div>
         </div>
@@ -107,31 +159,41 @@ function Exportacoes() {
             />
           </div>
 
+          <div aria-live="polite">
+            {erroInspecoes && (
+              <p className="flex items-center gap-1.5 text-sm text-red-400">
+                <AlertCircle size={14} /> {erroInspecoes}
+              </p>
+            )}
+          </div>
+
           <button
             onClick={exportarInspecoes}
+            disabled={loadingInspecoes}
             aria-label="Baixar CSV de inspeções"
-            className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold transition-all ${
-              clicadoInspecoes
+            className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-semibold transition-all disabled:cursor-not-allowed ${
+              sucessoInspecoes
                 ? 'bg-green-600/80 text-white'
-                : 'bg-[#0052cc] text-white hover:bg-[#00b7eb] hover:text-[#00112b]'
+                : 'bg-[#0052cc] text-white hover:bg-[#00b7eb] hover:text-[#00112b] disabled:opacity-50'
             }`}
           >
-            {clicadoInspecoes ? (
-              <>
-                <CheckCircle size={16} />
-                Download iniciado!
-              </>
+            {loadingInspecoes ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : sucessoInspecoes ? (
+              <CheckCircle size={16} />
             ) : (
-              <>
-                <Download size={16} />
-                Baixar CSV
-              </>
+              <Download size={16} />
             )}
+            {loadingInspecoes
+              ? 'Baixando...'
+              : sucessoInspecoes
+              ? 'Download concluído!'
+              : 'Baixar CSV'}
           </button>
 
           <div role="status" aria-live="assertive" aria-atomic="true">
-            {clicadoInspecoes && (
-              <span className="sr-only">Download de inspeções iniciado.</span>
+            {sucessoInspecoes && (
+              <span className="sr-only">Download de inspeções concluído com sucesso.</span>
             )}
           </div>
         </div>

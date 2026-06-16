@@ -278,7 +278,7 @@ function Historico() {
                           <td className="px-4 py-3 text-white/70">
                             <span className="flex items-center gap-1.5">
                               <Camera size={14} className="text-white/40" />
-                              {item.fotos?.length ?? item.qtdFotos ?? 0}
+                              {Object.values(item.fotos || {}).filter(Boolean).length || item.qtdFotos || 0}
                             </span>
                           </td>
                           <td className="px-4 py-3">

@@ -26,9 +26,16 @@ import router from '../api_notificacoes.js';
 import Notificacao from '../models/Notificacao.js';
 import FcmToken from '../models/FcmToken.js';
 
+// Simulates authMiddleware: sets req.user so routes don't return 401
+const fakeAuth = (req, _res, next) => {
+  req.user = { id: 'uid1', uid: 'fb-uid1' };
+  next();
+};
+
 const buildApp = () => {
   const app = express();
   app.use(express.json());
+  app.use(fakeAuth);
   app.use(router);
   return app;
 };
@@ -42,19 +49,14 @@ describe('api_notificacoes', () => {
   // ── FCM Tokens ──────────────────────────────────────────────────
 
   describe('POST /fcm-tokens', () => {
-    it('returns 400 when usuarioId missing', async () => {
-      const res = await request(app).post('/fcm-tokens').send({ token: 'tok1' });
-      expect(res.status).toBe(400);
-    });
-
     it('returns 400 when token missing', async () => {
-      const res = await request(app).post('/fcm-tokens').send({ usuarioId: 'uid1' });
+      const res = await request(app).post('/fcm-tokens').send({});
       expect(res.status).toBe(400);
     });
 
-    it('registers token and returns 200', async () => {
+    it('registers token using req.user.id and returns 200', async () => {
       FcmToken.findOneAndUpdate.mockResolvedValue({});
-      const res = await request(app).post('/fcm-tokens').send({ usuarioId: 'uid1', token: 'tok1', plataforma: 'android' });
+      const res = await request(app).post('/fcm-tokens').send({ token: 'tok1', plataforma: 'android' });
       expect(res.status).toBe(200);
       expect(FcmToken.findOneAndUpdate).toHaveBeenCalledWith(
         { token: 'tok1' },
@@ -65,7 +67,7 @@ describe('api_notificacoes', () => {
 
     it('returns 500 on DB error', async () => {
       FcmToken.findOneAndUpdate.mockRejectedValue(new Error('DB'));
-      const res = await request(app).post('/fcm-tokens').send({ usuarioId: 'uid1', token: 'tok1' });
+      const res = await request(app).post('/fcm-tokens').send({ token: 'tok1' });
       expect(res.status).toBe(500);
     });
   });
@@ -95,17 +97,21 @@ describe('api_notificacoes', () => {
       return chain;
     };
 
-    it('returns paginated list with metadata', async () => {
+    it('returns paginated list filtered by authenticated user', async () => {
       const data = [{ _id: 'n1', mensagem: 'falha' }];
       Notificacao.find.mockReturnValue(makeChain(data));
       Notificacao.countDocuments.mockResolvedValue(1);
 
-      const res = await request(app).get('/notificacoes?usuarioId=uid1&lida=false');
+      const res = await request(app).get('/notificacoes?lida=false');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('data');
       expect(res.body).toHaveProperty('total');
       expect(res.body).toHaveProperty('page');
       expect(res.body).toHaveProperty('totalPages');
+      // Verifica que o filtro usa req.user.id, não query param
+      expect(Notificacao.find).toHaveBeenCalledWith(
+        expect.objectContaining({ usuarioId: 'uid1' })
+      );
     });
 
     it('returns 500 on DB error', async () => {
@@ -131,19 +137,21 @@ describe('api_notificacoes', () => {
   });
 
   describe('PATCH /notificacoes/lida/todas', () => {
-    it('returns 400 when usuarioId missing', async () => {
-      const res = await request(app).patch('/notificacoes/lida/todas').send({});
-      expect(res.status).toBe(400);
-    });
-
-    it('marks all as read for given user', async () => {
+    it('marks all as read for authenticated user without body usuarioId', async () => {
       Notificacao.updateMany.mockResolvedValue({ modifiedCount: 3 });
-      const res = await request(app).patch('/notificacoes/lida/todas').send({ usuarioId: 'uid1' });
+      const res = await request(app).patch('/notificacoes/lida/todas').send({});
       expect(res.status).toBe(200);
+      // Confirma que usuarioId vem de req.user.id, nunca do body
       expect(Notificacao.updateMany).toHaveBeenCalledWith(
         { usuarioId: 'uid1', lida: false },
         { lida: true }
       );
+    });
+
+    it('returns 500 on DB error', async () => {
+      Notificacao.updateMany.mockRejectedValue(new Error('DB'));
+      const res = await request(app).patch('/notificacoes/lida/todas').send({});
+      expect(res.status).toBe(500);
     });
   });
 });
