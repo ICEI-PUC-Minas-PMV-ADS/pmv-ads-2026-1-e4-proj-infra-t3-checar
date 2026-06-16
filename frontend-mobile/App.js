@@ -12,6 +12,11 @@ import ForgotPassword from './src/pages/forgotPassword';
 import ModeloChecklistSelection from './src/pages/ModeloChecklistSelection';
 import ModeloChecklistEdit from './src/pages/ModeloChecklistEdit';
 import ChecklistExecution from './src/pages/ChecklistExecution';
+import Relatorios from './src/pages/Relatorios';
+import Historico from './src/pages/Historico';
+import Notificacoes from './src/pages/Notificacoes';
+import Exportacoes from './src/pages/Exportacoes';
+import PoliticaPrivacidade from './src/pages/PoliticaPrivacidade';
 import Header from './src/components/Header';
 import TabBar from './src/components/TabBar';
 
@@ -25,7 +30,7 @@ function AppContent() {
   };
 
   // Configurações de exibição
-  const telasLogadas = ['busca', 'upload', 'modelos'];
+  const telasLogadas = ['busca', 'upload', 'modelos', 'relatorios', 'historico', 'notificacoes', 'exportacoes'];
   const telasComHeader = ['busca', 'upload'];
 
   return (
@@ -42,6 +47,7 @@ function AppContent() {
         {telaAtual === 'registro' && <UserRegistration navegar={navegar} />}
         {telaAtual === 'login' && <Login navegar={navegar} />}
         {telaAtual === 'recuperarSenha' && <ForgotPassword navegar={navegar} />}
+        {telaAtual === 'politicaPrivacidade' && <PoliticaPrivacidade navegar={navegar} />}
         
         {telaAtual === 'busca' && (
           <BuscarVeiculos aoTrocarTela={() => navegar('upload')} navegar={navegar} />
@@ -61,6 +67,22 @@ function AppContent() {
 
         {telaAtual === 'checklist' && (
           <ChecklistExecution navegar={navegar} params={telaParams} />
+        )}
+
+        {telaAtual === 'relatorios' && (
+          <Relatorios navegar={navegar} />
+        )}
+
+        {telaAtual === 'historico' && (
+          <Historico navegar={navegar} />
+        )}
+
+        {telaAtual === 'notificacoes' && (
+          <Notificacoes navegar={navegar} />
+        )}
+
+        {telaAtual === 'exportacoes' && (
+          <Exportacoes navegar={navegar} />
         )}
       </View>
 

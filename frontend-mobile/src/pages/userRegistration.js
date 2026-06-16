@@ -11,13 +11,16 @@ import {
   TextInput,
   Menu,
   Button,
+  Checkbox,
 } from 'react-native-paper';
 
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
 } from 'firebase/auth';
 
 import { auth } from "../services/firebaseConfig";
+import api from '../services/api';
 
 const UserRegistration = ({ navegar }) => {
   const [nome, setNome] = React.useState('');
@@ -31,6 +34,8 @@ const UserRegistration = ({ navegar }) => {
 
   const [loading, setLoading] =
     React.useState(false);
+
+  const [aceitouTermos, setAceitouTermos] = React.useState(false);
 
   const openMenu = () => setVisible(true);
 
@@ -47,9 +52,15 @@ const UserRegistration = ({ navegar }) => {
       return;
     }
 
+    if (!aceitouTermos) {
+      Alert.alert('Atenção', 'Você deve aceitar os termos para continuar');
+      return;
+    }
+
     try {
       setLoading(true);
 
+      // 1. Cria conta no Firebase
       const userCredential =
         await createUserWithEmailAndPassword(
           auth,
@@ -57,30 +68,37 @@ const UserRegistration = ({ navegar }) => {
           senha
         );
 
-      console.log(
-        'Usuário criado:',
-        userCredential.user
-      );
+      // 2. Registra no backend (MongoDB) — crítico para authMiddleware
+      try {
+        await api.post('/usuarios', {
+          nome,
+          email,
+          senha,
+          tipoUsuario: tipoUsuario || 'Motorista',
+        });
+      } catch (backendError) {
+        // Rollback: remove conta Firebase para manter consistência
+        await deleteUser(userCredential.user);
+        throw backendError;
+      }
 
       Alert.alert(
         'Sucesso',
         'Cadastro realizado com sucesso'
       );
 
-      // Ir para login
       navegar('login');
 
     } catch (error) {
-
-      console.log(error);
-
-      Alert.alert(
-        'Erro',
-        'Não foi possível realizar o cadastro'
-      );
-
+      const code = error.code;
+      if (code === 'auth/email-already-in-use') {
+        Alert.alert('Erro', 'Este email já está cadastrado');
+      } else if (code === 'auth/weak-password') {
+        Alert.alert('Erro', 'Senha deve ter pelo menos 6 caracteres');
+      } else {
+        Alert.alert('Erro', 'Não foi possível realizar o cadastro');
+      }
     } finally {
-
       setLoading(false);
     }
   };
@@ -160,6 +178,19 @@ const UserRegistration = ({ navegar }) => {
         />
 
       </Menu>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <Checkbox
+          status={aceitouTermos ? 'checked' : 'unchecked'}
+          onPress={() => setAceitouTermos(!aceitouTermos)}
+          accessibilityLabel="Aceitar política de privacidade"
+        />
+        <TouchableOpacity onPress={() => navegar('politicaPrivacidade')} accessibilityRole="link">
+          <Text style={{ color: '#00b7eb', fontSize: 13 }}>
+            Li e aceito a Política de Privacidade
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <Button
         mode="contained"

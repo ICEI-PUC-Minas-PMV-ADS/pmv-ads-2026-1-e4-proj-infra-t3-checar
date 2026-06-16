@@ -17,6 +17,7 @@ export default function UserRegistration() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro]       = useState('');
   const [sucesso, setSucesso] = useState('');
+  const [aceitouTermos, setAceitouTermos] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -40,6 +41,11 @@ export default function UserRegistration() {
       return;
     }
 
+    if (!aceitouTermos) {
+      setErro('Você deve aceitar os termos para continuar.');
+      return;
+    }
+
     setLoading(true);
     let firebaseUser = null;
     try {
@@ -50,7 +56,10 @@ export default function UserRegistration() {
       // 2. Register in our backend (profile data / role)
       await api.post('/usuarios', { nome, email, senha, tipoUsuario });
 
-      // 3. Persist role in AuthContext so it's available across the session
+      // 3. Registra consentimento LGPD (best-effort — não bloqueia o fluxo)
+      try { await api.post('/aceitar-termos', { versaoTermos: '1.0' }); } catch { /* best-effort */ }
+
+      // 4. Persist role in AuthContext so it's available across the session
       setRole(tipoUsuario);
 
       setSucesso('Cadastro realizado com sucesso! Redirecionando…');
@@ -148,6 +157,23 @@ export default function UserRegistration() {
               <option value="Motorista">Motorista</option>
               <option value="Gestor">Gestor</option>
             </select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="termos"
+              checked={aceitouTermos}
+              onChange={(e) => setAceitouTermos(e.target.checked)}
+              className="w-4 h-4"
+              aria-required="true"
+            />
+            <label htmlFor="termos" className="text-sm text-gray-300">
+              Li e aceito a{' '}
+              <a href="/privacidade" className="text-[#00b7eb] underline" target="_blank">
+                Política de Privacidade
+              </a>
+            </label>
           </div>
 
           <button

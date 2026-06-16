@@ -10,6 +10,8 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 import { initNotificationQueue } from './queues/notificationQueue.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
@@ -21,6 +23,7 @@ import usuariosRoutes from './api_usuarios.js';
 import inspecoesRoutes from './api_inspecoes.js';
 import notificacoesRoutes from './api_notificacoes.js';
 import auditoriaRoutes from './api_auditoria.js';
+import lgpdRoutes from './api_lgpd.js';
 import auditMiddleware from './middlewares/auditMiddleware.js';
 import authMiddleware from './middlewares/authMiddleware.js';
 import authorize from './middlewares/roleMiddleware.js';
@@ -63,6 +66,8 @@ app.use(cors({
 // ── 3. Body parsers ──────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(mongoSanitize());
+app.use(hpp());
 
 // ── 4. Audit middleware (global) ─────────────────────────────────
 app.use(auditMiddleware);
@@ -141,6 +146,9 @@ app.delete('/vehicles/:id', authorize('Gestor'), deleteVehicle);
 // ── 13. Relatórios e auditoria — somente Gestor ──────────────────
 app.use(authorize('Gestor'), reportRoutes);
 app.use(authorize('Gestor'), auditoriaRoutes);
+
+// ── 13b. LGPD — rotas autenticadas (Art. 18 LGPD) ────────────────
+app.use(lgpdRoutes);
 
 // ── 14. Frontend (produção) ───────────────────────────────────────
 const distPath = path.join(__dirname, '..', 'frontend-web', 'dist');

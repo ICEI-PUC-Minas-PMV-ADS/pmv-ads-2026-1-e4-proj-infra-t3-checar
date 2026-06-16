@@ -50,21 +50,75 @@ export default function TabBar({ telaAtual, onTabPress }) {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={styles.tabItem} 
+      <TouchableOpacity
+        style={styles.tabItem}
         onPress={() => onTabPress('modelos')}
         activeOpacity={0.7}
       >
-        <Ionicons 
-          name="clipboard" 
-          size={24} 
-          color={telaAtual === 'modelos' ? '#00b7eb' : 'rgba(255,255,255,0.5)'} 
+        <Ionicons
+          name="clipboard"
+          size={24}
+          color={telaAtual === 'modelos' ? '#00b7eb' : 'rgba(255,255,255,0.5)'}
         />
         <Text style={[
-          styles.tabText, 
+          styles.tabText,
           { color: telaAtual === 'modelos' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
         ]}>
           Modelos
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tabItem}
+        onPress={() => onTabPress('historico')}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="time"
+          size={24}
+          color={telaAtual === 'historico' ? '#00b7eb' : 'rgba(255,255,255,0.5)'}
+        />
+        <Text style={[
+          styles.tabText,
+          { color: telaAtual === 'historico' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
+        ]}>
+          Histórico
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tabItem}
+        onPress={() => onTabPress('relatorios')}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="document-text"
+          size={24}
+          color={telaAtual === 'relatorios' ? '#00b7eb' : 'rgba(255,255,255,0.5)'}
+        />
+        <Text style={[
+          styles.tabText,
+          { color: telaAtual === 'relatorios' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
+        ]}>
+          Relatórios
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.tabItem}
+        onPress={() => onTabPress('notificacoes')}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="notifications"
+          size={24}
+          color={telaAtual === 'notificacoes' ? '#00b7eb' : 'rgba(255,255,255,0.5)'}
+        />
+        <Text style={[
+          styles.tabText,
+          { color: telaAtual === 'notificacoes' ? '#00b7eb' : 'rgba(255,255,255,0.5)' }
+        ]}>
+          Avisos
         </Text>
       </TouchableOpacity>
     </View>

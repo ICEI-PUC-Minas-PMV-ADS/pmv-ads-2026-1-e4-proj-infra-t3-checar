@@ -10,6 +10,11 @@ import ChecklistExecution from './pages/ChecklistExecution';
 import UserRegistration from './pages/userRegistration';
 import Login from './pages/Login';
 import RecuperarSenha from './pages/RecuperarSenha';
+import PoliticaPrivacidade from './pages/PoliticaPrivacidade';
+import Relatorios from './pages/Relatorios';
+import Historico from './pages/Historico';
+import Notificacoes from './pages/Notificacoes';
+import Exportacoes from './pages/Exportacoes';
 
 function App() {
   return (
@@ -21,6 +26,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/recuperar-senha" element={<RecuperarSenha />} />
             <Route path="/cadastro" element={<UserRegistration />} />
+            <Route path="/privacidade" element={<PoliticaPrivacidade />} />
 
             {/* Redirect root to vehicles list */}
             <Route path="/" element={<Navigate to="/veiculos" replace />} />
@@ -32,6 +38,10 @@ function App() {
             <Route path="/modelos/novo" element={<ProtectedRoute><ModeloChecklistEdit /></ProtectedRoute>} />
             <Route path="/modelos/:modeloId" element={<ProtectedRoute><ModeloChecklistEdit /></ProtectedRoute>} />
             <Route path="/checklist/:modeloId" element={<ProtectedRoute><ChecklistExecution /></ProtectedRoute>} />
+            <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
+            <Route path="/historico" element={<ProtectedRoute><Historico /></ProtectedRoute>} />
+            <Route path="/notificacoes" element={<ProtectedRoute><Notificacoes /></ProtectedRoute>} />
+            <Route path="/exportacoes" element={<ProtectedRoute><Exportacoes /></ProtectedRoute>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/veiculos" replace />} />

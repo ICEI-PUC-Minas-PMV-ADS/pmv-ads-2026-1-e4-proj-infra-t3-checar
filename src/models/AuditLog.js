@@ -38,6 +38,7 @@ const auditLogSchema = new mongoose.Schema(
 
 auditLogSchema.index({ entidade: 1, createdAt: -1 });
 auditLogSchema.index({ usuarioId: 1, createdAt: -1 });
+auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 24 * 60 * 60 });
 
 const AuditLog = mongoose.models.AuditLog || mongoose.model('AuditLog', auditLogSchema);
 export default AuditLog;

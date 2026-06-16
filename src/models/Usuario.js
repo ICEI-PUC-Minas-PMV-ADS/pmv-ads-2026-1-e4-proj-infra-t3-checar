@@ -26,7 +26,10 @@ const usuarioSchema = new mongoose.Schema({
         enum: ["Motorista", "Gestor"],
         required: true,
         default: "Motorista"
-    }
+    },
+    aceitouTermos: { type: Boolean, default: false },
+    dataAceiteTermos: { type: Date, default: null },
+    versaoTermos: { type: String, default: null },
 }, {
     timestamps: true
 });
