@@ -6,7 +6,8 @@ import request from 'supertest';
 import router from '../api_inspecoes.js';
 import Inspecao from '../models/Inspecao.js';
 
-const inspecaoId = '507f1f77bcf86cd799439011';
+const inspecaoId  = '507f1f77bcf86cd799439011';
+const checklistId = '507f1f77bcf86cd799439012';
 
 const createApp = () => {
   const app = express();
@@ -17,6 +18,7 @@ const createApp = () => {
 const mockInspecao = {
   _id: inspecaoId,
   placa: 'ABC1234',
+  checklistId,
   fotos: {
     frente: 'uploads/frente.jpg',
     traseira: 'uploads/traseira.jpg',
@@ -27,6 +29,20 @@ const mockInspecao = {
   dataInspecao: new Date().toISOString(),
   createdAt: new Date().toISOString(),
 };
+
+// Helper para simular a cadeia find().sort().skip().limit()
+const makePaginatedChain = (data) => ({
+  sort: () => ({
+    skip: () => ({
+      limit: async () => data,
+    }),
+  }),
+});
+
+// Helper para simular find().sort() (sem paginação)
+const makeSortChain = (data) => ({
+  sort: async () => data,
+});
 
 // ── POST /inspecao/upload — validation only ────────────────────────
 
@@ -52,6 +68,18 @@ test('/inspecao/upload - post: rejeita placa vazia', async () => {
   assert.equal(response.body.erro, 'Placa obrigatória');
 });
 
+test('/inspecao/upload - post: rejeita checklistId inválido', async () => {
+  mock.restoreAll();
+
+  const response = await request(createApp())
+    .post('/inspecao/upload')
+    .field('placa', 'ABC1234')
+    .field('checklistId', 'id-invalido');
+
+  assert.equal(response.status, 400);
+  assert.equal(response.body.erro, 'checklistId inválido');
+});
+
 test('/inspecao/upload - post: rejeita quando fotos não são enviadas', async () => {
   mock.restoreAll();
 
@@ -68,9 +96,59 @@ test('/inspecao/upload - post: rejeita quando fotos não são enviadas', async (
 
 test('/inspecoes - get: lista todas as inspeções', async () => {
   mock.restoreAll();
-  mock.method(Inspecao, 'find', () => ({ sort: async () => [mockInspecao] }));
+  mock.method(Inspecao, 'find', () => makePaginatedChain([mockInspecao]));
+  mock.method(Inspecao, 'countDocuments', async () => 1);
 
   const response = await request(createApp()).get('/inspecoes');
+
+  assert.equal(response.status, 200);
+  assert.ok(Array.isArray(response.body.data));
+  assert.equal(response.body.data.length, 1);
+  assert.equal(response.body.data[0].placa, 'ABC1234');
+  assert.equal(response.body.total, 1);
+  assert.equal(response.body.page, 1);
+});
+
+test('/inspecoes - get: retorna lista vazia quando não há inspeções', async () => {
+  mock.restoreAll();
+  mock.method(Inspecao, 'find', () => makePaginatedChain([]));
+  mock.method(Inspecao, 'countDocuments', async () => 0);
+
+  const response = await request(createApp()).get('/inspecoes');
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body.data, []);
+  assert.equal(response.body.total, 0);
+});
+
+test('/inspecoes - get: filtra por checklistId', async () => {
+  mock.restoreAll();
+  mock.method(Inspecao, 'find', () => makePaginatedChain([mockInspecao]));
+  mock.method(Inspecao, 'countDocuments', async () => 1);
+
+  const response = await request(createApp()).get('/inspecoes').query({ checklistId });
+
+  assert.equal(response.status, 200);
+  assert.equal(response.body.data.length, 1);
+  assert.equal(response.body.data[0].checklistId, checklistId);
+});
+
+test('/inspecoes - get: retorna 400 para checklistId inválido', async () => {
+  mock.restoreAll();
+
+  const response = await request(createApp()).get('/inspecoes').query({ checklistId: 'invalido' });
+
+  assert.equal(response.status, 400);
+  assert.equal(response.body.erro, 'checklistId inválido');
+});
+
+// ── GET /inspecoes/checklist/:checklistId ─────────────────────────
+
+test('/inspecoes/checklist/:checklistId - get: retorna inspeções do checklist', async () => {
+  mock.restoreAll();
+  mock.method(Inspecao, 'find', () => makeSortChain([mockInspecao]));
+
+  const response = await request(createApp()).get('/inspecoes/checklist/' + checklistId);
 
   assert.equal(response.status, 200);
   assert.ok(Array.isArray(response.body));
@@ -78,32 +156,45 @@ test('/inspecoes - get: lista todas as inspeções', async () => {
   assert.equal(response.body[0].placa, 'ABC1234');
 });
 
-test('/inspecoes - get: retorna lista vazia quando não há inspeções', async () => {
+test('/inspecoes/checklist/:checklistId - get: retorna 400 para ID inválido', async () => {
   mock.restoreAll();
-  mock.method(Inspecao, 'find', () => ({ sort: async () => [] }));
 
-  const response = await request(createApp()).get('/inspecoes');
+  const response = await request(createApp()).get('/inspecoes/checklist/id-invalido');
 
-  assert.equal(response.status, 200);
-  assert.deepEqual(response.body, []);
+  assert.equal(response.status, 400);
+  assert.equal(response.body.erro, 'checklistId inválido');
+});
+
+test('/inspecoes/checklist/:checklistId - get: retorna 404 quando não há inspeções', async () => {
+  mock.restoreAll();
+  mock.method(Inspecao, 'find', () => makeSortChain([]));
+
+  const response = await request(createApp()).get('/inspecoes/checklist/' + checklistId);
+
+  assert.equal(response.status, 404);
+  assert.ok(response.body.mensagem.includes(checklistId));
 });
 
 // ── GET /inspecoes/historico/:placa ───────────────────────────────
 
-test('/inspecoes/historico/:placa - get: retorna histórico por placa', async () => {
+test('/inspecoes/historico/:placa - get: retorna histórico paginado por placa', async () => {
   mock.restoreAll();
-  mock.method(Inspecao, 'find', () => ({ sort: async () => [mockInspecao] }));
+  mock.method(Inspecao, 'find', () => makePaginatedChain([mockInspecao]));
+  mock.method(Inspecao, 'countDocuments', async () => 1);
 
   const response = await request(createApp()).get('/inspecoes/historico/ABC1234');
 
   assert.equal(response.status, 200);
-  assert.ok(Array.isArray(response.body));
-  assert.equal(response.body[0].placa, 'ABC1234');
+  assert.ok(Array.isArray(response.body.data));
+  assert.equal(response.body.data[0].placa, 'ABC1234');
+  assert.equal(response.body.total, 1);
+  assert.equal(response.body.page, 1);
 });
 
 test('/inspecoes/historico/:placa - get: retorna 404 quando placa não tem inspeções', async () => {
   mock.restoreAll();
-  mock.method(Inspecao, 'find', () => ({ sort: async () => [] }));
+  mock.method(Inspecao, 'find', () => makePaginatedChain([]));
+  mock.method(Inspecao, 'countDocuments', async () => 0);
 
   const response = await request(createApp()).get('/inspecoes/historico/XYZ9999');
 

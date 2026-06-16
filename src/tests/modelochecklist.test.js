@@ -8,8 +8,10 @@ import ModeloChecklist from "../modelochecklist.js";
 
 const modeloChecklistId = "507f1f77bcf86cd799439011";
 
+// Injeta req.user para satisfazer authorize('Gestor') sem precisar de token real
 const createApp = () => {
     const app = express();
+    app.use((req, _res, next) => { req.user = { tipoUsuario: 'Gestor' }; next(); });
     app.use(router);
     return app;
 };

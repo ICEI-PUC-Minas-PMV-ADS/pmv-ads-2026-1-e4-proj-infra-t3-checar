@@ -21,14 +21,11 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-hot-toast": "^2.6.0",
-<<<<<<< HEAD
-    "react-router-dom": "^7.14.2"
-=======
     "react-router-dom": "^7.14.2",
     "react-signature-canvas": "^1.1.0-alpha.2"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   },
   "devDependencies": {
+    "@axe-core/react": "^4.11.3",
     "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -46,6 +43,7 @@
     "postcss": "^8.5.12",
     "tailwindcss": "^4.2.4",
     "vite": "^8.0.10",
+    "vite-plugin-pwa": "^1.3.0",
     "vitest": "^3.2.4"
   }
 }

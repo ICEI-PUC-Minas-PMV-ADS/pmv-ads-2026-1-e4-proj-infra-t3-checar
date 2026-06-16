@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Save, X } from 'lucide-react';
 import api from '../services/api';
+import SignaturePad from '../components/SignaturePad';
 
 const sortByOrder = (a, b) => (a.ordem || 0) - (b.ordem || 0);
 const isActive = (item) => item.ativo !== false;
@@ -40,12 +41,13 @@ function ChecklistExecution() {
   const [vehicle,         setVehicle]         = useState(location.state?.vehicle        || null);
   const [modeloChecklist, setModeloChecklist] = useState(location.state?.modeloChecklist || null);
 
-  const [pageLoading,  setPageLoading]  = useState(!modeloChecklist);
-  const [statusByItem, setStatusByItem] = useState({});
-  const [notes,        setNotes]        = useState({});
-  const [visibleNotes, setVisibleNotes] = useState({});
-  const [loading,      setLoading]      = useState(false);
-  const [message,      setMessage]      = useState({ type: '', text: '' });
+  const [pageLoading,     setPageLoading]     = useState(!modeloChecklist);
+  const [statusByItem,    setStatusByItem]    = useState({});
+  const [notes,           setNotes]           = useState({});
+  const [visibleNotes,    setVisibleNotes]    = useState({});
+  const [loading,         setLoading]         = useState(false);
+  const [message,         setMessage]         = useState({ type: '', text: '' });
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
 
   // Load vehicle from API when missing from state (e.g. page refresh)
   useEffect(() => {
@@ -103,32 +105,36 @@ function ChecklistExecution() {
     setVisibleNotes((cur) => ({ ...cur, [itemId]: true }));
   };
 
-  const handleSave = async () => {
+  // Valida itens e abre o pad de assinatura
+  const handleSave = () => {
     if (!modeloChecklist || allItems.length === 0) {
       setMessage({ type: 'error', text: 'Selecione um modelo com itens antes de salvar.' });
       return;
     }
+    setShowSignaturePad(true);
+  };
 
+  // Chamado ao confirmar a assinatura: envia checklist + itens para o backend
+  const handleSignatureConfirm = async (assinaturaBase64) => {
+    setShowSignaturePad(false);
     try {
       setLoading(true);
       setMessage({ type: '', text: '' });
 
-      const isConforme = allItems.every((item) => item.status === 'Conforme');
-
-      // 1 — Create checklist header
+      // conformidade não é mais calculada no frontend — o backend recalcula após os itens serem salvos
       const checklistPayload = {
         data: new Date().toISOString(),
-        conformidade: isConforme,
         observacao: Object.values(notes).filter(Boolean).join('\n'),
-        status: isConforme ? ['disponivel'] : ['com problema'],
+        status: ['disponivel'],
         modeloId: modeloChecklist._id,
+        assinatura: assinaturaBase64,
         ...(vehicleId ? { veiculoId: vehicleId } : {}),
       };
 
       const checklistRes = await api.post('/checklists', checklistPayload);
       const checklistId  = checklistRes.data._id;
 
-      // 2 — Save all items sequentially to avoid overwhelming the server
+      // Salva os itens sequencialmente para não sobrecarregar o servidor
       for (const item of allItems) {
         await api.post('/itemchecklists', {
           checklistId,
@@ -139,7 +145,6 @@ function ChecklistExecution() {
       }
 
       setMessage({ type: 'success', text: 'Inspeção registrada com sucesso!' });
-      // Redirect to vehicles after short delay
       setTimeout(() => navigate('/veiculos'), 2000);
     } catch (err) {
       setMessage({
@@ -178,6 +183,13 @@ function ChecklistExecution() {
 
   return (
     <section className="mx-auto grid max-w-5xl gap-6 pb-24">
+      {showSignaturePad && (
+        <SignaturePad
+          onConfirm={handleSignatureConfirm}
+          onCancel={() => setShowSignaturePad(false)}
+        />
+      )}
+
       <header className="border-b border-white/10 pb-5">
         <button
           type="button"
@@ -225,11 +237,8 @@ function ChecklistExecution() {
                           type="button"
                           onClick={() => handleStatusChange(item.id, status)}
                           disabled={loading}
-<<<<<<< HEAD
-=======
                           aria-label={`${item.label} — ${status === 'Conforme' ? 'Conforme' : 'Não conforme'}`}
                           aria-pressed={item.status === status}
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                           className={`px-3 text-sm font-bold transition ${
                             item.status === status
                               ? 'bg-[#00b4d8] text-[#001233]'
@@ -256,10 +265,7 @@ function ChecklistExecution() {
                       type="button"
                       onClick={() => showNote(item.id)}
                       disabled={loading}
-<<<<<<< HEAD
-=======
                       aria-label={`Adicionar observação para ${item.label}`}
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                       className="inline-flex w-fit min-h-9 items-center gap-2 text-sm font-bold text-[#5bc4f1]"
                     >
                       Adicionar observação
@@ -278,10 +284,7 @@ function ChecklistExecution() {
             type="button"
             onClick={() => navigate(-1)}
             disabled={loading}
-<<<<<<< HEAD
-=======
             aria-label="Cancelar e voltar"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#7a0800] px-4 font-bold text-white disabled:opacity-60"
           >
             <X size={20} /> Cancelar
@@ -290,10 +293,7 @@ function ChecklistExecution() {
             type="button"
             onClick={handleSave}
             disabled={loading}
-<<<<<<< HEAD
-=======
             aria-label="Salvar checklist"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#00b4d8] px-4 font-extrabold text-[#001233] disabled:opacity-60"
           >
             <Save size={20} />

@@ -1,16 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Inspecao from './models/Inspecao.js';
-<<<<<<< HEAD
-import upload from './config/multer.js';
-=======
 import upload, { compressImages } from './config/multer.js';
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 const router = express.Router();
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
+
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 router.post(
   '/inspecao/upload',
@@ -21,16 +19,17 @@ router.post(
     { name: 'lateralDireita',  maxCount: 1 },
     { name: 'topo',            maxCount: 1 },
   ]),
-<<<<<<< HEAD
-=======
   compressImages,
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   async (req, res) => {
     try {
-      const { placa } = req.body;
+      const { placa, checklistId } = req.body;
 
       if (!placa || placa.trim() === '') {
         return res.status(400).json({ erro: 'Placa obrigatória' });
+      }
+
+      if (checklistId && !isValidObjectId(checklistId)) {
+        return res.status(400).json({ erro: 'checklistId inválido' });
       }
 
       if (!req.files) {
@@ -61,6 +60,7 @@ router.post(
         placa: placa.toUpperCase(),
         fotos: fotosPaths,
         dataInspecao: new Date(),
+        ...(checklistId ? { checklistId } : {}),
       });
 
       await novaInspecao.save();
@@ -75,31 +75,55 @@ router.post(
   }
 );
 
-<<<<<<< HEAD
-router.get('/inspecoes', async (_req, res) => {
-  try {
-    const inspecoes = await Inspecao.find().sort({ createdAt: -1 });
-    res.json(inspecoes);
-=======
-// GET /inspecoes?page=1&limit=20
+// GET /inspecoes?page=1&limit=20&checklistId=<id>
 router.get('/inspecoes', async (req, res) => {
   try {
     const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '20', 10)));
     const skip  = (page - 1) * limit;
 
+    const filtros = {};
+    if (req.query.checklistId) {
+      if (!isValidObjectId(req.query.checklistId)) {
+        return res.status(400).json({ erro: 'checklistId inválido' });
+      }
+      filtros.checklistId = req.query.checklistId;
+    }
+
     const [inspecoes, total] = await Promise.all([
-      Inspecao.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
-      Inspecao.countDocuments(),
+      Inspecao.find(filtros).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Inspecao.countDocuments(filtros),
     ]);
 
     res.json({ data: inspecoes, total, page, totalPages: Math.ceil(total / limit) });
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao listar inspeções', detalhe: error.message });
   }
 });
 
+// GET /inspecoes/checklist/:checklistId — todas as fotos de um checklist específico
+router.get('/inspecoes/checklist/:checklistId', async (req, res) => {
+  try {
+    const { checklistId } = req.params;
+    if (!isValidObjectId(checklistId)) {
+      return res.status(400).json({ erro: 'checklistId inválido' });
+    }
+
+    const inspecoes = await Inspecao.find({ checklistId }).sort({ createdAt: -1 });
+
+    if (inspecoes.length === 0) {
+      return res.status(404).json({
+        mensagem: `Nenhuma inspeção encontrada para o checklist ${checklistId}`,
+      });
+    }
+
+    res.status(200).json(inspecoes);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar inspeções do checklist.', detalhe: error.message });
+  }
+});
+
+// GET /inspecoes/historico/:placa?page=1&limit=20&startDate=&endDate=
 router.get('/inspecoes/historico/:placa', async (req, res) => {
   try {
     const { placa } = req.params;
@@ -107,17 +131,29 @@ router.get('/inspecoes/historico/:placa', async (req, res) => {
       return res.status(400).json({ erro: 'Placa obrigatória' });
     }
 
-    const historico = await Inspecao.find({
-      placa: placa.toUpperCase(),
-    }).sort({ createdAt: -1 });
+    const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '20', 10)));
+    const skip  = (page - 1) * limit;
 
-    if (historico.length === 0) {
-      return res
-        .status(404)
-        .json({ mensagem: `Nenhuma inspeção encontrada para a placa ${placa.toUpperCase()}.` });
+    const filtro = { placa: placa.toUpperCase() };
+    if (req.query.startDate || req.query.endDate) {
+      filtro.dataInspecao = {};
+      if (req.query.startDate) filtro.dataInspecao.$gte = new Date(req.query.startDate);
+      if (req.query.endDate)   filtro.dataInspecao.$lte = new Date(req.query.endDate);
     }
 
-    res.status(200).json(historico);
+    const [historico, total] = await Promise.all([
+      Inspecao.find(filtro).sort({ dataInspecao: -1 }).skip(skip).limit(limit),
+      Inspecao.countDocuments(filtro),
+    ]);
+
+    if (total === 0) {
+      return res.status(404).json({
+        mensagem: `Nenhuma inspeção encontrada para a placa ${placa.toUpperCase()}.`,
+      });
+    }
+
+    res.status(200).json({ data: historico, total, page, totalPages: Math.ceil(total / limit) });
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao buscar histórico.', detalhe: error.message });
   }

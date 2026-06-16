@@ -2,12 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Checklist from "./checklist.js";
-<<<<<<< HEAD
-=======
-import { notificarFalhaCritica } from "./services/notificacaoService.js";
-import Vehicle from "./models/Vehicle.js";
 import { uploadSignature } from "./services/blobStorageService.js";
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 dotenv.config();
 
@@ -21,26 +16,15 @@ const objectIdFilters = ["usuarioId", "veiculoId", "modeloId"];
 
 router.post("/checklists", async (req, res) => {
     try {
-        const novoChecklist = await Checklist.create(req.body);
-        res.status(201).json(novoChecklist);
-<<<<<<< HEAD
-=======
+        const { assinatura: assinaturaInput, ...rest } = req.body;
 
-        // Dispara notificação assíncrona quando há falha (não bloqueia resposta)
-        if (novoChecklist.conformidade === false) {
-            let placa = '';
-            if (novoChecklist.veiculoId) {
-                const veiculo = await Vehicle.findById(novoChecklist.veiculoId).lean();
-                placa = veiculo?.plate || '';
-            }
-            notificarFalhaCritica({
-                checklistId: novoChecklist._id,
-                veiculoId:   novoChecklist.veiculoId,
-                usuarioId:   novoChecklist.usuarioId,
-                placa,
-            }).catch((err) => console.error('[Notificação] Erro ao disparar:', err.message));
+        if (!assinaturaInput) {
+            return res.status(400).json({ erro: 'Assinatura do motorista é obrigatória.' });
         }
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
+
+        const assinatura = await uploadSignature(assinaturaInput);
+        const novoChecklist = await Checklist.create({ ...rest, assinatura });
+        res.status(201).json(novoChecklist);
     } catch (error) {
         console.log(error);
         res.status(400).json({ erro: error.message });
@@ -74,6 +58,44 @@ router.get("/checklists", async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).json({ erro: error.message });
+    }
+});
+
+// GET /checklists/historico — must be before /checklists/:id to avoid "historico" matching :id
+router.get("/checklists/historico", async (req, res) => {
+    try {
+        const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '20', 10)));
+        const skip  = (page - 1) * limit;
+
+        const filtros = {};
+        for (const campo of objectIdFilters) {
+            if (req.query[campo]) {
+                if (!isValidObjectId(req.query[campo])) {
+                    return res.status(400).json({ erro: `${campo} invalido` });
+                }
+                filtros[campo] = req.query[campo];
+            }
+        }
+
+        if (req.query.conformidade !== undefined) {
+            filtros.conformidade = req.query.conformidade === 'true';
+        }
+
+        if (req.query.startDate || req.query.endDate) {
+            filtros.data = {};
+            if (req.query.startDate) filtros.data.$gte = new Date(req.query.startDate);
+            if (req.query.endDate)   filtros.data.$lte = new Date(req.query.endDate);
+        }
+
+        const [checklists, total] = await Promise.all([
+            Checklist.find(filtros).sort({ data: -1 }).skip(skip).limit(limit),
+            Checklist.countDocuments(filtros),
+        ]);
+
+        res.status(200).json({ data: checklists, total, page, totalPages: Math.ceil(total / limit) });
+    } catch (error) {
+        res.status(500).json({ erro: 'Erro ao buscar histórico de checklists.', detalhe: error.message });
     }
 });
 

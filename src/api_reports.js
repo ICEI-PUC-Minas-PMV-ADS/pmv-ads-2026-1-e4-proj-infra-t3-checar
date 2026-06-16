@@ -1,8 +1,12 @@
 import express from "express";
+import mongoose from "mongoose";
 import Vehicle from "./models/Vehicle.js";
 import Inspecao from "./models/Inspecao.js";
+import Checklist from "./checklist.js";
+import ItemChecklist from "./itemchecklist.js";
+import Usuario from "./models/Usuario.js";
 import { toCsv } from "./utils/csv.js";
-import { generateInspectionReportPdf } from "./utils/reportPdf.js";
+import { generateInspectionReportPdf, generateChecklistReportPdf } from "./utils/reportPdf.js";
 
 const router = express.Router();
 
@@ -11,11 +15,8 @@ const VEHICLE_CSV_HEADERS = [
   "plate",
   "model",
   "year",
-<<<<<<< HEAD
-=======
   "marca",
   "cor",
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   "mileage",
   "vehicleType",
   "operationalStatus",
@@ -49,11 +50,8 @@ router.get("/exportacoes/vehicles/csv", async (_req, res) => {
       plate: vehicle.plate,
       model: vehicle.model,
       year: vehicle.year,
-<<<<<<< HEAD
-=======
       marca: vehicle.marca || "",
       cor: vehicle.cor || "",
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
       mileage: vehicle.mileage,
       vehicleType: vehicle.vehicleType,
       operationalStatus: vehicle.operationalStatus,
@@ -70,7 +68,7 @@ router.get("/exportacoes/vehicles/csv", async (_req, res) => {
       'attachment; filename="veiculos.csv"'
     );
 
-    return res.status(200).send(`\uFEFF${csv}`);
+    return res.status(200).send(`﻿${csv}`);
   } catch (error) {
     console.error("Erro ao exportar CSV de veículos:", error);
     return res.status(500).json({
@@ -123,7 +121,7 @@ router.get("/exportacoes/inspecoes/csv", async (req, res) => {
       `attachment; filename="${fileName}"`
     );
 
-    return res.status(200).send(`\uFEFF${csv}`);
+    return res.status(200).send(`﻿${csv}`);
   } catch (error) {
     console.error("Erro ao exportar CSV de inspeções:", error);
     return res.status(500).json({
@@ -170,5 +168,35 @@ router.get("/relatorios/inspecoes/:placa/pdf", async (req, res) => {
 });
 
 
+
+
+// ==========================================
+// RELATÓRIO PDF DE CHECKLIST COMPLETO (RF-009)
+// ==========================================
+router.get("/relatorios/checklists/:id/pdf", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ status: "error", message: "ID inválido" });
+    }
+
+    const checklist = await Checklist.findById(id).lean();
+    if (!checklist) {
+      return res.status(404).json({ status: "error", message: "Checklist não encontrado" });
+    }
+
+    const [veiculo, motorista, itens] = await Promise.all([
+      checklist.veiculoId ? Vehicle.findById(checklist.veiculoId).lean() : null,
+      checklist.usuarioId ? Usuario.findById(checklist.usuarioId).lean() : null,
+      ItemChecklist.find({ checklistId: id }).lean(),
+    ]);
+
+    return generateChecklistReportPdf(res, { checklist, veiculo, motorista, itens });
+  } catch (error) {
+    console.error("Erro ao gerar PDF de checklist:", error);
+    return res.status(500).json({ status: "error", message: "Erro ao gerar relatório PDF" });
+  }
+});
 
 export default router;

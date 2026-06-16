@@ -16,6 +16,7 @@ import {
   TextInput as PaperTextInput,
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SignaturePad from '../components/SignaturePad';
 
 
 const STATUS_OPTIONS = ['Conforme', 'Nao Conforme'];
@@ -64,6 +65,7 @@ export default function ChecklistExecution({ navegar, params = {} }) {
   const [visibleNotes, setVisibleNotes] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
 
   const sections = useMemo(() =>
     mapModeloToSections(modeloChecklist).map((section) => ({
@@ -90,14 +92,14 @@ export default function ChecklistExecution({ navegar, params = {} }) {
     setVisibleNotes((current) => ({ ...current, [itemId]: true }));
   };
 
-  const createChecklist = async () => {
-    const isConforme = allItems.every((item) => item.status === 'Conforme');
+  // conformidade não é mais calculada no frontend — o backend recalcula após os itens serem salvos
+  const createChecklist = async (assinaturaBase64) => {
     const checklistData = {
       data: new Date().toISOString(),
-      conformidade: isConforme,
       observacao: Object.values(notes).filter(Boolean).join('\n'),
-      status: isConforme ? ['disponivel'] : ['com problema'],
+      status: ['disponivel'],
       modeloId: modeloChecklist?._id,
+      assinatura: assinaturaBase64,
     };
 
     if (vehicleId) checklistData.veiculoId = vehicleId;
@@ -107,17 +109,21 @@ export default function ChecklistExecution({ navegar, params = {} }) {
     return response.data._id;
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!modeloChecklist || allItems.length === 0) {
       setMessage({ type: 'error', text: 'Selecione um modelo com itens antes de salvar.' });
       return;
     }
+    setShowSignaturePad(true);
+  };
 
+  const handleSignatureConfirm = async (assinaturaBase64) => {
+    setShowSignaturePad(false);
     try {
       setLoading(true);
       setMessage({ type: '', text: '' });
 
-      const checklistId = await createChecklist();
+      const checklistId = await createChecklist(assinaturaBase64);
       const itemsToSave = allItems.map((item) => {
         const payload = {
           checklistId,
@@ -166,6 +172,12 @@ export default function ChecklistExecution({ navegar, params = {} }) {
 
   return (
     <View style={styles.container}>
+      {showSignaturePad && (
+        <SignaturePad
+          onConfirm={handleSignatureConfirm}
+          onCancel={() => setShowSignaturePad(false)}
+        />
+      )}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}

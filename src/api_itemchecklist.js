@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import ItemChecklist from "./itemchecklist.js";
+import { calcularConformidade } from "./services/checklistComplianceService.js";
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ router.post("/itemchecklists", async (req, res) => {
     try {
         const novoItemChecklist = await ItemChecklist.create(req.body);
         res.status(201).json(novoItemChecklist);
+        calcularConformidade(novoItemChecklist.checklistId)
+            .catch((err) => console.error('[Compliance] Erro:', err.message));
     } catch (error) {
         console.log(error);
         res.status(400).json({ erro: error.message });
@@ -82,6 +85,8 @@ router.put("/itemchecklists/:id", async (req, res) => {
         }
 
         res.status(200).json(itemChecklistAtualizado);
+        calcularConformidade(itemChecklistAtualizado.checklistId)
+            .catch((err) => console.error('[Compliance] Erro:', err.message));
     } catch (error) {
         console.log(error);
         res.status(400).json({ erro: error.message });

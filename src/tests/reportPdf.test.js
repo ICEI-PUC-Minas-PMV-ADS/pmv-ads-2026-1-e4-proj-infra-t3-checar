@@ -4,13 +4,21 @@ import { jest } from '@jest/globals';
 const mockDoc = {
   pipe: jest.fn(),
   fontSize: jest.fn().mockReturnThis(),
+  font: jest.fn().mockReturnThis(),
   text: jest.fn().mockReturnThis(),
   moveDown: jest.fn().mockReturnThis(),
   moveTo: jest.fn().mockReturnThis(),
   lineTo: jest.fn().mockReturnThis(),
   stroke: jest.fn().mockReturnThis(),
+  strokeColor: jest.fn().mockReturnThis(),
+  rect: jest.fn().mockReturnThis(),
+  fill: jest.fn().mockReturnThis(),
+  fillColor: jest.fn().mockReturnThis(),
+  circle: jest.fn().mockReturnThis(),
+  image: jest.fn().mockReturnThis(),
+  addPage: jest.fn().mockReturnThis(),
   end: jest.fn(),
-  page: { margins: { left: 50, right: 50 }, width: 595 },
+  page: { margins: { left: 50, right: 50 }, width: 595, height: 842 },
   y: 200,
 };
 
@@ -49,7 +57,7 @@ describe('utils/reportPdf — generateInspectionReportPdf', () => {
     expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/pdf');
     expect(res.setHeader).toHaveBeenCalledWith(
       'Content-Disposition',
-      'attachment; filename="relatorio-inspecoes-ABC1234.pdf"'
+      'attachment; filename="inspecoes-ABC1234.pdf"'
     );
   });
 

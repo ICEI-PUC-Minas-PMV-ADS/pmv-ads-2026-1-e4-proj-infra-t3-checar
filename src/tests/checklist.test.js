@@ -10,6 +10,7 @@ const checklistId = "507f1f77bcf86cd799439011";
 const usuarioId = "507f1f77bcf86cd799439012";
 const veiculoId = "507f1f77bcf86cd799439013";
 const modeloId = "507f1f77bcf86cd799439014";
+const assinatura = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
 
 const createApp = () => {
     const app = express();
@@ -27,7 +28,8 @@ test("/checklists - post", async () => {
         status: ["disponivel"],
         usuarioId,
         veiculoId,
-        modeloId
+        modeloId,
+        assinatura,
     };
 
     const checklistCriado = {
@@ -41,6 +43,23 @@ test("/checklists - post", async () => {
 
     assert.equal(response.status, 201);
     assert.deepEqual(response.body, checklistCriado);
+});
+
+test("/checklists - post: retorna 400 sem assinatura", async () => {
+    mock.restoreAll();
+
+    const body = {
+        data: "2026-05-10T12:00:00.000Z",
+        status: ["disponivel"],
+        usuarioId,
+        veiculoId,
+        modeloId,
+    };
+
+    const response = await request(createApp()).post("/checklists").send(body);
+
+    assert.equal(response.status, 400);
+    assert.equal(response.body.erro, "Assinatura do motorista é obrigatória.");
 });
 
 test("/checklists - get", async () => {
@@ -129,13 +148,67 @@ test("/checklists/:id - delete", async () => {
     assert.deepEqual(response.body, { mensagem: "Checklist deletado com sucesso" });
 });
 
+// ── GET /checklists/historico ────────────────────────────────────
+
+const makePaginatedChain = (data) => ({
+    sort: () => ({
+        skip: () => ({
+            limit: async () => data,
+        }),
+    }),
+});
+
+test("/checklists/historico - get: retorna histórico paginado", async () => {
+    mock.restoreAll();
+
+    const checklists = [{ _id: checklistId, data: new Date().toISOString(), status: ["disponivel"], veiculoId }];
+    mock.method(Checklist, "find", () => makePaginatedChain(checklists));
+    mock.method(Checklist, "countDocuments", async () => 1);
+
+    const response = await request(createApp()).get("/checklists/historico").query({ veiculoId });
+
+    assert.equal(response.status, 200);
+    assert.ok(Array.isArray(response.body.data));
+    assert.equal(response.body.data.length, 1);
+    assert.equal(response.body.total, 1);
+    assert.equal(response.body.page, 1);
+    assert.equal(response.body.totalPages, 1);
+});
+
+test("/checklists/historico - get: filtra por data", async () => {
+    mock.restoreAll();
+
+    mock.method(Checklist, "find", () => makePaginatedChain([]));
+    mock.method(Checklist, "countDocuments", async () => 0);
+
+    const response = await request(createApp())
+        .get("/checklists/historico")
+        .query({ startDate: "2026-01-01", endDate: "2026-12-31" });
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.body.data, []);
+    assert.equal(response.body.total, 0);
+});
+
+test("/checklists/historico - get: retorna 400 para veiculoId inválido", async () => {
+    mock.restoreAll();
+
+    const response = await request(createApp())
+        .get("/checklists/historico")
+        .query({ veiculoId: "invalido" });
+
+    assert.equal(response.status, 400);
+    assert.ok(response.body.erro.includes("veiculoId"));
+});
+
 test("/checklists - post error", async () => {
     mock.restoreAll();
 
     const body = {
         data: "2026-05-10T12:00:00.000Z",
         conformidade: true,
-        status: ["disponivel"]
+        status: ["disponivel"],
+        assinatura,
     };
     const erro = "Erro ao criar checklist";
 

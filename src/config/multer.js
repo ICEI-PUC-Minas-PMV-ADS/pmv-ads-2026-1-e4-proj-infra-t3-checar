@@ -1,57 +1,78 @@
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs';
-<<<<<<< HEAD
-=======
-import { makeCompressImages } from '../services/imageCompressor.js';
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
+import { fileURLToPath } from 'url';
+import { compressToBuffer, makeCompressImages } from '../services/imageCompressor.js';
+import { uploadPhoto } from '../services/blobStorage.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-<<<<<<< HEAD
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
-  filename: (_req, file, cb) => {
-    const safe = file.originalname.replace(/\s+/g, '_');
-    cb(null, `${Date.now()}-${safe}`);
-  },
-});
-
-=======
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 const ALLOWED_MIME = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 const fileFilter = (_req, file, cb) => {
-  if (ALLOWED_MIME.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Tipo de arquivo não permitido: ${file.mimetype}. Use JPEG, PNG ou WEBP.`), false);
-  }
+    if (ALLOWED_MIME.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error(`Tipo de arquivo não permitido: ${file.mimetype}. Use JPEG, PNG ou WEBP.`), false);
+    }
 };
 
-<<<<<<< HEAD
+// Multer com memoryStorage: buffers processados antes de qualquer escrita
 const upload = multer({
-  storage,
-=======
-// Memory storage so sharp can process the buffer before writing to disk
-const upload = multer({
-  storage: multer.memoryStorage(),
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
-  fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB per file
+    storage: multer.memoryStorage(),
+    fileFilter,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB por arquivo
 });
 
-<<<<<<< HEAD
-=======
+// Middleware legado — escreve em disco (mantido para compatibilidade com testes)
 const compressImages = makeCompressImages(uploadDir);
 
-export { compressImages };
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
+/**
+ * Middleware de processamento de imagens com suporte a Azure Blob Storage.
+ *
+ * Fluxo:
+ *   1. Comprime cada buffer via sharp → JPEG 1280px / 75 q
+ *   2. Se AZURE_STORAGE_CONNECTION_STRING estiver configurada → upload para Blob → file.path = URL
+ *   3. Caso contrário (dev/test) → escreve em disco → file.path = caminho local
+ *
+ * O valor de file.path é sempre uma string válida (URL ou caminho),
+ * compatível com o campo fotos.* do modelo Inspecao.
+ */
+const processImages = async (req, _res, next) => {
+    if (!req.files) return next();
+
+    try {
+        for (const files of Object.values(req.files)) {
+            for (const file of files) {
+                const compressed = await compressToBuffer(file.buffer);
+                const blobUrl    = await uploadPhoto(compressed, file.originalname);
+
+                if (blobUrl) {
+                    // Produção: URL pública do Azure Blob
+                    file.path     = blobUrl;
+                    file.filename = blobUrl.split('/').pop();
+                } else {
+                    // Fallback (dev / sem credenciais Azure): escreve em disco
+                    const baseName   = file.originalname.replace(/\s+/g, '_').replace(/\.[^.]+$/, '');
+                    const filename   = `${Date.now()}-${baseName}.jpg`;
+                    const outputPath = path.join(uploadDir, filename);
+                    await fs.promises.writeFile(outputPath, compressed);
+                    file.path     = outputPath;
+                    file.filename = filename;
+                }
+            }
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+};
+
+export { compressImages, processImages };
 export default upload;

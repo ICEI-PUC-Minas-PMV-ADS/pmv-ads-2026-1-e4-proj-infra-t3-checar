@@ -14,31 +14,21 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "2.2.0",
-<<<<<<< HEAD
-=======
     "@react-native-community/netinfo": "^12.0.1",
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
     "axios": "^1.6.0",
     "expo": "~54.0.0",
     "expo-image-picker": "~17.0.11",
     "expo-linear-gradient": "~15.0.8",
     "expo-local-authentication": "~17.0.8",
-<<<<<<< HEAD
-=======
     "expo-notifications": "^0.29.14",
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
     "expo-web-browser": "~15.0.11",
     "firebase": "^11.0.0",
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-paper": "^5.12.3",
-<<<<<<< HEAD
-    "react-native-safe-area-context": "~5.6.0"
-=======
     "react-native-safe-area-context": "~5.6.0",
     "react-native-signature-canvas": "^5.0.2",
     "react-native-webview": "^13.16.1"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -48,10 +38,6 @@
   },
   "jest": {
     "preset": "jest-expo",
-<<<<<<< HEAD
-    "testMatch": ["**/__tests__/**/*.{js,jsx}", "**/*.test.{js,jsx}"],
-    "testPathIgnorePatterns": ["/node_modules/"],
-=======
     "testMatch": [
       "**/__tests__/**/*.{js,jsx}",
       "**/*.test.{js,jsx}"
@@ -59,20 +45,15 @@
     "testPathIgnorePatterns": [
       "/node_modules/"
     ],
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}",
       "!src/**/*.test.{js,jsx}"
     ],
-<<<<<<< HEAD
-    "coverageReporters": ["text", "lcov", "html"],
-=======
     "coverageReporters": [
       "text",
       "lcov",
       "html"
     ],
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
     ]
