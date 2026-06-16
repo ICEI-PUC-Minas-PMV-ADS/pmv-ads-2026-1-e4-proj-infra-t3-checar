@@ -28,6 +28,11 @@ const InspecaoSchema = new mongoose.Schema({
 });
 
 InspecaoSchema.index({ placa: 1 });
+<<<<<<< HEAD
+=======
+InspecaoSchema.index({ dataInspecao: -1 });
+InspecaoSchema.index({ placa: 1, dataInspecao: -1 });
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 // Evitar OverwriteModelError - verifica se o modelo já existe
 const Inspecao = mongoose.models.Inspecao || mongoose.model('Inspecao', InspecaoSchema);

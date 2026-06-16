@@ -2,6 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Checklist from "./checklist.js";
+<<<<<<< HEAD
+=======
+import { notificarFalhaCritica } from "./services/notificacaoService.js";
+import Vehicle from "./models/Vehicle.js";
+import { uploadSignature } from "./services/blobStorageService.js";
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 dotenv.config();
 
@@ -17,6 +23,24 @@ router.post("/checklists", async (req, res) => {
     try {
         const novoChecklist = await Checklist.create(req.body);
         res.status(201).json(novoChecklist);
+<<<<<<< HEAD
+=======
+
+        // Dispara notificação assíncrona quando há falha (não bloqueia resposta)
+        if (novoChecklist.conformidade === false) {
+            let placa = '';
+            if (novoChecklist.veiculoId) {
+                const veiculo = await Vehicle.findById(novoChecklist.veiculoId).lean();
+                placa = veiculo?.plate || '';
+            }
+            notificarFalhaCritica({
+                checklistId: novoChecklist._id,
+                veiculoId:   novoChecklist.veiculoId,
+                usuarioId:   novoChecklist.usuarioId,
+                placa,
+            }).catch((err) => console.error('[Notificação] Erro ao disparar:', err.message));
+        }
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
     } catch (error) {
         console.log(error);
         res.status(400).json({ erro: error.message });

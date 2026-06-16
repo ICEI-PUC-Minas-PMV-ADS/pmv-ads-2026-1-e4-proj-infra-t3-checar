@@ -11,6 +11,11 @@ const VEHICLE_CSV_HEADERS = [
   "plate",
   "model",
   "year",
+<<<<<<< HEAD
+=======
+  "marca",
+  "cor",
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   "mileage",
   "vehicleType",
   "operationalStatus",
@@ -44,6 +49,11 @@ router.get("/exportacoes/vehicles/csv", async (_req, res) => {
       plate: vehicle.plate,
       model: vehicle.model,
       year: vehicle.year,
+<<<<<<< HEAD
+=======
+      marca: vehicle.marca || "",
+      cor: vehicle.cor || "",
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
       mileage: vehicle.mileage,
       vehicleType: vehicle.vehicleType,
       operationalStatus: vehicle.operationalStatus,

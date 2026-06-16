@@ -2,6 +2,10 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+<<<<<<< HEAD
+=======
+import { makeCompressImages } from '../services/imageCompressor.js';
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -11,6 +15,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+<<<<<<< HEAD
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadDir),
   filename: (_req, file, cb) => {
@@ -19,6 +24,8 @@ const storage = multer.diskStorage({
   },
 });
 
+=======
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 const ALLOWED_MIME = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 const fileFilter = (_req, file, cb) => {
@@ -29,10 +36,22 @@ const fileFilter = (_req, file, cb) => {
   }
 };
 
+<<<<<<< HEAD
 const upload = multer({
   storage,
+=======
+// Memory storage so sharp can process the buffer before writing to disk
+const upload = multer({
+  storage: multer.memoryStorage(),
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   fileFilter,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB per file
 });
 
+<<<<<<< HEAD
+=======
+const compressImages = makeCompressImages(uploadDir);
+
+export { compressImages };
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 export default upload;

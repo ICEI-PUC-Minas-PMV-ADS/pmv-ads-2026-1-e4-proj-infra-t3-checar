@@ -225,6 +225,11 @@ function ChecklistExecution() {
                           type="button"
                           onClick={() => handleStatusChange(item.id, status)}
                           disabled={loading}
+<<<<<<< HEAD
+=======
+                          aria-label={`${item.label} — ${status === 'Conforme' ? 'Conforme' : 'Não conforme'}`}
+                          aria-pressed={item.status === status}
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                           className={`px-3 text-sm font-bold transition ${
                             item.status === status
                               ? 'bg-[#00b4d8] text-[#001233]'
@@ -251,6 +256,10 @@ function ChecklistExecution() {
                       type="button"
                       onClick={() => showNote(item.id)}
                       disabled={loading}
+<<<<<<< HEAD
+=======
+                      aria-label={`Adicionar observação para ${item.label}`}
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                       className="inline-flex w-fit min-h-9 items-center gap-2 text-sm font-bold text-[#5bc4f1]"
                     >
                       Adicionar observação
@@ -269,6 +278,10 @@ function ChecklistExecution() {
             type="button"
             onClick={() => navigate(-1)}
             disabled={loading}
+<<<<<<< HEAD
+=======
+            aria-label="Cancelar e voltar"
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#7a0800] px-4 font-bold text-white disabled:opacity-60"
           >
             <X size={20} /> Cancelar
@@ -277,6 +290,10 @@ function ChecklistExecution() {
             type="button"
             onClick={handleSave}
             disabled={loading}
+<<<<<<< HEAD
+=======
+            aria-label="Salvar checklist"
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#00b4d8] px-4 font-extrabold text-[#001233] disabled:opacity-60"
           >
             <Save size={20} />

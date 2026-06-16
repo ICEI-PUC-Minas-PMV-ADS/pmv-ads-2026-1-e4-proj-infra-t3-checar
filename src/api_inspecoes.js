@@ -1,7 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Inspecao from './models/Inspecao.js';
+<<<<<<< HEAD
 import upload from './config/multer.js';
+=======
+import upload, { compressImages } from './config/multer.js';
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 const router = express.Router();
 
@@ -17,6 +21,10 @@ router.post(
     { name: 'lateralDireita',  maxCount: 1 },
     { name: 'topo',            maxCount: 1 },
   ]),
+<<<<<<< HEAD
+=======
+  compressImages,
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   async (req, res) => {
     try {
       const { placa } = req.body;
@@ -67,10 +75,26 @@ router.post(
   }
 );
 
+<<<<<<< HEAD
 router.get('/inspecoes', async (_req, res) => {
   try {
     const inspecoes = await Inspecao.find().sort({ createdAt: -1 });
     res.json(inspecoes);
+=======
+// GET /inspecoes?page=1&limit=20
+router.get('/inspecoes', async (req, res) => {
+  try {
+    const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '20', 10)));
+    const skip  = (page - 1) * limit;
+
+    const [inspecoes, total] = await Promise.all([
+      Inspecao.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Inspecao.countDocuments(),
+    ]);
+
+    res.json({ data: inspecoes, total, page, totalPages: Math.ceil(total / limit) });
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   } catch (error) {
     res.status(500).json({ erro: 'Erro ao listar inspeções', detalhe: error.message });
   }

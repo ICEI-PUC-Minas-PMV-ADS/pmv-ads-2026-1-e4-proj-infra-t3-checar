@@ -43,6 +43,19 @@ const vehicleSchema = new mongoose.Schema(
         message: 'Operational status must be one of: active, inactive, maintenance, decommissioned',
       },
     },
+<<<<<<< HEAD
+=======
+    marca: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    cor: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+>>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
     observation: {
       type: String,
       trim: true,
