@@ -5,10 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import * as LocalAuthentication from 'expo-local-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from '../services/firebaseConfig';
-<<<<<<< HEAD
-=======
 import { registrarTokenPush } from '../services/pushNotification';
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 const CREDS_KEY = 'checar_credentials';
 
@@ -41,21 +38,15 @@ const Login = ({ navegar }) => {
 
     try {
       setLoading(true);
-<<<<<<< HEAD
-      await signInWithEmailAndPassword(auth, email, senha);
-=======
       const userCredential = await signInWithEmailAndPassword(auth, email, senha);
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
       // Save credentials encrypted for future biometric login
       await AsyncStorage.setItem(CREDS_KEY, JSON.stringify({ email, senha }));
 
-<<<<<<< HEAD
-=======
       // Register FCM push token (non-blocking)
       registrarTokenPush(userCredential.user.uid).catch(() => {});
 
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
+
       navegar('busca');
     } catch (error) {
       const code = error.code;

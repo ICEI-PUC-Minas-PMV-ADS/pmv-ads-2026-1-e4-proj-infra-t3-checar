@@ -120,10 +120,7 @@ function ModeloChecklistSelection() {
               key={modelo._id}
               type="button"
               onClick={() => selecionarModelo(modelo)}
-<<<<<<< HEAD
-=======
               aria-label={`Selecionar modelo ${modelo.nome}`}
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
               className="grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-lg border border-white/60 bg-[#004aad] p-4 text-left transition hover:border-[#00b4d8] hover:bg-[#0057c2]"
             >
               <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#00b4d8] text-white">

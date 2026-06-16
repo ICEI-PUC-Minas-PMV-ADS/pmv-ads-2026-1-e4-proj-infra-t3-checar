@@ -16,13 +16,10 @@
  */
 import { Platform } from 'react-native';
 import axios from 'axios';
-<<<<<<< HEAD
-=======
 import { getIdToken } from 'firebase/auth';
 import { auth } from './firebaseConfig';
 import * as offlineStorage from './offlineStorage';
 import { enqueue } from './syncQueue';
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
 
 const getBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_API_URL) {
@@ -50,8 +47,6 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-<<<<<<< HEAD
-=======
 // ── Request interceptor: injeta Firebase ID Token ─────────────────
 // O token é renovado automaticamente pelo SDK quando expirado (~1h)
 api.interceptors.request.use(async (config) => {
@@ -117,5 +112,5 @@ api.interceptors.response.use(
   }
 );
 
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
+
 export default api;

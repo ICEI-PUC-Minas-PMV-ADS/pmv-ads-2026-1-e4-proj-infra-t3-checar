@@ -292,11 +292,8 @@ function ModeloChecklistEdit() {
                   type="button"
                   onClick={() => handleChange('tipo', tipo)}
                   disabled={loading}
-<<<<<<< HEAD
-=======
                   aria-label={`Tipo ${tipo === 'Diario' ? 'Diário' : tipo}`}
                   aria-pressed={formData.tipo === tipo}
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                   className={`min-h-12 font-bold transition ${
                     formData.tipo === tipo ? 'bg-[#00b4d8] text-[#001233]' : 'text-white hover:bg-white/10'
                   }`}
@@ -437,10 +434,7 @@ function ModeloChecklistEdit() {
             type="button"
             onClick={resetDraft}
             disabled={loading}
-<<<<<<< HEAD
-=======
             aria-label="Limpar formulário"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#7a0800] px-4 font-bold text-white disabled:opacity-60"
           >
             <RefreshCw size={20} />
@@ -450,10 +444,7 @@ function ModeloChecklistEdit() {
             type="button"
             onClick={handleSave}
             disabled={loading}
-<<<<<<< HEAD
-=======
             aria-label="Salvar modelo de checklist"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#00b4d8] px-4 font-extrabold text-[#001233] disabled:opacity-60"
           >
             <Check size={20} />

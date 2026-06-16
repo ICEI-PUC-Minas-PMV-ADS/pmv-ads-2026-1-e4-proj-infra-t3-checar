@@ -20,11 +20,8 @@ const UploadFotos = () => {
     placa: '',
     model: '',
     year: String(new Date().getFullYear()),
-<<<<<<< HEAD
-=======
     marca: '',
     cor: '',
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
   });
 
   const [fotos,     setFotos]    = useState(INITIAL_FOTOS);
@@ -99,11 +96,8 @@ const UploadFotos = () => {
         vehicleType: 'car',
         operationalStatus: 'active',
         observation: null,
-<<<<<<< HEAD
-=======
         marca: novoVeiculo.marca || null,
         cor: novoVeiculo.cor || null,
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
       });
 
       // Step 2 — Upload photos
@@ -140,10 +134,7 @@ const UploadFotos = () => {
 
         <button
           onClick={() => navigate('/veiculos')}
-<<<<<<< HEAD
-=======
           aria-label="Voltar para a lista de veículos"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
           className="mb-6 flex items-center gap-2 rounded-full bg-[#002b45] px-4 py-2 transition-colors hover:bg-[#003d5c]"
         >
           <ChevronLeft size={20} /> Voltar
@@ -170,10 +161,7 @@ const UploadFotos = () => {
               onChange={handleInputChange}
               disabled={loading}
               maxLength={8}
-<<<<<<< HEAD
-=======
               aria-label="Placa do veículo"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             />
             <input
               name="model"
@@ -182,10 +170,7 @@ const UploadFotos = () => {
               value={novoVeiculo.model}
               onChange={handleInputChange}
               disabled={loading}
-<<<<<<< HEAD
-=======
               aria-label="Modelo do veículo"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             />
             <input
               name="year"
@@ -197,8 +182,6 @@ const UploadFotos = () => {
               disabled={loading}
               min="1886"
               max={new Date().getFullYear() + 1}
-<<<<<<< HEAD
-=======
               aria-label="Ano do veículo"
             />
             <input
@@ -218,7 +201,6 @@ const UploadFotos = () => {
               onChange={handleInputChange}
               disabled={loading}
               aria-label="Cor do veículo"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
             />
           </div>
         </div>
@@ -247,11 +229,7 @@ const UploadFotos = () => {
               <div className="mb-3 flex items-center justify-between text-sm font-bold uppercase">
                 <span>{icon} {label} *</span>
                 {previews[id] && (
-<<<<<<< HEAD
-                  <button onClick={() => removeFoto(id)} className="text-red-400 hover:text-red-300">
-=======
                   <button onClick={() => removeFoto(id)} aria-label={`Remover foto ${label}`} className="text-red-400 hover:text-red-300">
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                     <XCircle size={18} />
                   </button>
                 )}
@@ -275,10 +253,7 @@ const UploadFotos = () => {
               ) : (
                 <button
                   onClick={() => fileInputRefs[id].current?.click()}
-<<<<<<< HEAD
-=======
                   aria-label={`Selecionar foto ${label}`}
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
                   className="flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#33ccff]/50 bg-[#00112b] transition-all hover:border-[#33ccff] group disabled:opacity-50"
                   disabled={loading}
                 >
@@ -307,10 +282,7 @@ const UploadFotos = () => {
         <button
           onClick={handleSalvarTudo}
           disabled={loading || !isCompleto}
-<<<<<<< HEAD
-=======
           aria-label="Cadastrar veículo e enviar fotos"
->>>>>>> d836a09 (Proteção das rotas da API com autenticação, Implementação de controle de permissões (RBAC) para perfis, Aplicação de rate limiting contra força bruta, Configuração de HTTPS com Helmet, Criação de componentes de assinatura para Web e Mobile)
           className={`w-full rounded-2xl py-4 text-xl font-bold transition-all ${
             loading || !isCompleto
               ? 'cursor-not-allowed bg-gray-600 opacity-50'
