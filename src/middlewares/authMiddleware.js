@@ -1,63 +1,33 @@
-import { admin, initFirebase } from '../config/firebase.js';
-import Usuario from '../models/Usuario.js';
+import * as admin from 'firebase-admin';
 
+let initialized = false;
 
-/**
- * Verifica o Firebase ID Token enviado no header Authorization: Bearer <token>.
- * Após verificação bem-sucedida, popula req.user com os dados do usuário.
- */
-const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-
-  if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ erro: 'Token de autenticação obrigatório.' });
+const initFirebase = () => {
+  // A verificação abaixo é o ponto crítico. 
+  // Se 'admin' for undefined, o código quebrava antes.
+  if (initialized || (admin && admin.apps && admin.apps.length > 0)) {
+    return true;
   }
 
-  const token = authHeader.slice(7);
-
-  if (!initFirebase()) {
-    return res.status(503).json({ erro: 'Serviço de autenticação indisponível.' });
+  const credential = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+  if (!credential) {
+    console.error('[Firebase] VARIÁVEL FIREBASE_SERVICE_ACCOUNT_JSON NÃO ENCONTRADA!');
+    return false;
   }
 
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
-
-    const usuario = await Usuario
-      .findOne({ email: decoded.email })
-      .select('_id tipoUsuario nome email')
-      .lean();
-
-    if (!usuario) {
-      return res.status(401).json({
-        erro: 'Usuário não encontrado.',
-        mensagem: 'Autenticado no Firebase mas sem cadastro local. Faça o cadastro primeiro.',
-      });
-    }
-
-    req.user = {
-      uid:         decoded.uid,
-      email:       decoded.email,
-      id:          usuario._id.toString(),
-      nome:        usuario.nome,
-      tipoUsuario: usuario.tipoUsuario,
-    };
-
-    next();
+    const serviceAccount = JSON.parse(credential);
+    // Usamos admin.default.initializeApp se necessário, 
+    // mas com import * as, tentamos o admin.initializeApp direto:
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    initialized = true;
+    return true;
   } catch (err) {
-    if (err.code === 'auth/id-token-expired') {
-      return res.status(401).json({ erro: 'Token expirado. Faça login novamente.' });
-    }
-    if (
-      err.code === 'auth/argument-error'   ||
-      err.code === 'auth/invalid-credential' ||
-      err.code?.startsWith('auth/invalid')
-    ) {
-      return res.status(401).json({ erro: 'Token inválido.' });
-    }
-    console.error('[Auth] Erro ao verificar token:', err.message);
-    return res.status(401).json({ erro: 'Falha na autenticação.' });
+    console.error('[Firebase] Erro na inicialização:', err);
+    return false;
   }
 };
 
-export default authMiddleware;
+export { admin, initFirebase };

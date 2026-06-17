@@ -1,26 +1,29 @@
-import * as admin from 'firebase-admin'; // Mudança principal
+// IMPORTANTE: use o * as para garantir a importação do objeto admin
+import * as admin from 'firebase-admin';
 
 let initialized = false;
 
 const initFirebase = () => {
-  // Proteção extra: verifica se admin e admin.apps existem
+  // Verificação robusta
   if (initialized || (admin && admin.apps && admin.apps.length > 0)) {
-    initialized = true;
     return true;
   }
 
   const credential = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   if (!credential) {
-    console.warn('[Firebase] FIREBASE_SERVICE_ACCOUNT_JSON não definida — push e auth desativados.');
+    console.error('[Firebase] VARIÁVEL NÃO ENCONTRADA');
     return false;
   }
 
   try {
-    admin.initializeApp({ credential: admin.credential.cert(JSON.parse(credential)) });
+    const serviceAccount = JSON.parse(credential);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
     initialized = true;
     return true;
   } catch (err) {
-    console.error('[Firebase] Falha ao inicializar:', err.message);
+    console.error('[Firebase] Erro crítico:', err);
     return false;
   }
 };
