@@ -26,9 +26,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const erro = error.response?.data?.erro;
-      // Evita logout em requisição sem token (auth ainda inicializando)
-      if (erro !== 'Token de autenticação obrigatório.' && auth.currentUser) {
+      const codigo = error.response?.data?.codigo;
+      // Só desloga se o Firebase invalidou a sessão — evita voltar ao login por erro de API
+      const sessaoInvalida =
+        codigo === 'auth/id-token-revoked' ||
+        codigo === 'auth/user-disabled';
+      if (sessaoInvalida && auth.currentUser) {
         triggerUnauthorized();
       }
     }

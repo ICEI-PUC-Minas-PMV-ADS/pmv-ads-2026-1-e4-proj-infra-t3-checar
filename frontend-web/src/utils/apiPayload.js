@@ -29,7 +29,10 @@ export function getApiErrorMessage(error, fallback = 'Não foi possível complet
     return msg || 'Serviço temporariamente indisponível. Tente novamente em instantes.';
   }
   if (status === 401) {
-    return msg || 'Sessão expirada. Faça login novamente.';
+    if (error.response?.data?.erro === 'Usuário não encontrado.') {
+      return 'Conta sem cadastro local. Faça o cadastro em /cadastro ou contate o suporte.';
+    }
+    return msg || 'Não foi possível autenticar. Tente sair e entrar novamente.';
   }
   if (status >= 500) {
     return msg || 'Erro no servidor. Tente novamente em instantes.';

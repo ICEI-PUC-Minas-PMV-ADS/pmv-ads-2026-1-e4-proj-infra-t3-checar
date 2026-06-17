@@ -1,6 +1,41 @@
-// Importa o objeto 'admin' já inicializado e a função 'initFirebase'
-import { admin, initFirebase, getFirebaseStatus } from '../config/firebase.js'; 
+import crypto from 'node:crypto';
+import { admin, initFirebase, getFirebaseStatus } from '../config/firebase.js';
 import Usuario from '../models/Usuario.js';
+
+const findOrCreateUsuario = async (decoded) => {
+  const email = decoded.email?.toLowerCase?.()?.trim();
+  if (!email) return null;
+
+  let usuario = await Usuario
+    .findOne({ email })
+    .select('_id tipoUsuario nome email')
+    .lean();
+
+  if (usuario) return usuario;
+
+  try {
+    const novo = new Usuario({
+      nome: decoded.name?.trim() || email.split('@')[0] || 'Usuário',
+      email,
+      senha: crypto.randomBytes(24).toString('hex'),
+      tipoUsuario: 'Motorista',
+    });
+    await novo.save();
+    console.log('[Auth] Usuário auto-provisionado no MongoDB:', email);
+    return {
+      _id: novo._id,
+      tipoUsuario: novo.tipoUsuario,
+      nome: novo.nome,
+      email: novo.email,
+    };
+  } catch (err) {
+    if (err.code === 11000) {
+      return Usuario.findOne({ email }).select('_id tipoUsuario nome email').lean();
+    }
+    console.error('[Auth] Falha ao auto-provisionar usuário:', err.message);
+    return null;
+  }
+};
 
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -10,12 +45,10 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const token = authHeader.slice(7).trim();
-
   if (!token) {
     return res.status(401).json({ erro: 'Token de autenticação obrigatório.' });
   }
 
-  // Garante que o Firebase está pronto antes de tentar validar
   if (!initFirebase()) {
     const { error } = getFirebaseStatus();
     return res.status(503).json({
@@ -25,13 +58,8 @@ const authMiddleware = async (req, res, next) => {
   }
 
   try {
-    // Agora o 'admin' está disponível e garantido pelo módulo firebase.js
     const decoded = await admin.auth().verifyIdToken(token);
-
-    const usuario = await Usuario
-      .findOne({ email: decoded.email?.toLowerCase?.() ?? decoded.email })
-      .select('_id tipoUsuario nome email')
-      .lean();
+    const usuario = await findOrCreateUsuario(decoded);
 
     if (!usuario) {
       return res.status(401).json({
