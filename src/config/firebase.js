@@ -1,36 +1,56 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
 import * as adminNamespace from 'firebase-admin';
 
-// Função de inicialização robusta
+let initError = null;
+
+const parseServiceAccount = () => {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    // Azure App Settings: JSON colado com escape duplo ou base64
+    try {
+      const decoded = Buffer.from(raw, 'base64').toString('utf8');
+      return JSON.parse(decoded);
+    } catch (err) {
+      initError = `JSON inválido em FIREBASE_SERVICE_ACCOUNT_JSON: ${err.message}`;
+      return null;
+    }
+  }
+};
+
 const initFirebase = () => {
-  // Se já houver apps inicializados, retornamos true
   if (getApps().length > 0) {
     return true;
   }
 
-  const credential = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-  if (!credential) {
-    console.error('[Firebase] VARIÁVEL FIREBASE_SERVICE_ACCOUNT_JSON NÃO ENCONTRADA!');
+  const serviceAccount = parseServiceAccount();
+  if (!serviceAccount) {
+    if (!initError) {
+      initError = 'FIREBASE_SERVICE_ACCOUNT_JSON não definida no ambiente.';
+    }
+    console.error('[Firebase]', initError);
     return false;
   }
 
   try {
-    const serviceAccount = JSON.parse(credential);
-    
-    // Inicializa usando os métodos nomeados
-    initializeApp({
-      credential: cert(serviceAccount)
-    });
-    
+    initializeApp({ credential: cert(serviceAccount) });
+    initError = null;
     return true;
   } catch (err) {
-    console.error('[Firebase] Erro crítico na inicialização:', err);
+    initError = `Falha ao inicializar Firebase Admin: ${err.message}`;
+    console.error('[Firebase]', initError);
     return false;
   }
 };
 
-// Exportamos o namespace admin para que o authMiddleware continue funcionando
-// acessando admin.auth()
+const getFirebaseStatus = () => ({
+  configured: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim()),
+  ready: getApps().length > 0 || initFirebase(),
+  error: initError,
+});
+
 const admin = adminNamespace;
-export { admin, initFirebase };
+export { admin, initFirebase, getFirebaseStatus };

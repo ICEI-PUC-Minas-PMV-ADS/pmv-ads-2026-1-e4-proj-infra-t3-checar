@@ -13,7 +13,10 @@ const authMiddleware = async (req, res, next) => {
 
   // Garante que o Firebase está pronto antes de tentar validar
   if (!initFirebase()) {
-    return res.status(503).json({ erro: 'Serviço de autenticação indisponível.' });
+    return res.status(503).json({
+      erro: 'Serviço de autenticação indisponível.',
+      mensagem: 'Configure FIREBASE_SERVICE_ACCOUNT_JSON no Azure App Service (Configuration → Application settings).',
+    });
   }
 
   try {

@@ -1,10 +1,10 @@
-console.log("DEBUG_AZURE_ENV:", process.env.FIREBASE_SERVICE_ACCOUNT_JSON ? "ENCONTRADO" : "NÃO ENCONTRADO");
 // ==========================================
 // ENTRY POINT — API Checar
 // ==========================================
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { getFirebaseStatus } from './config/firebase.js';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -105,14 +105,17 @@ app.get('/api-docs.json', (_req, res) => {
 app.get('/health', (_req, res) => {
   const dbStateMap = ['disconnected', 'connected', 'connecting', 'disconnecting'];
   const dbState = dbStateMap[mongoose.connection.readyState] ?? 'unknown';
-  const isHealthy = mongoose.connection.readyState === 1;
+  const dbOk = mongoose.connection.readyState === 1;
+  const firebase = getFirebaseStatus();
 
-  res.status(isHealthy ? 200 : 503).json({
-    status: isHealthy ? 'ok' : 'degraded',
+  res.status(dbOk && firebase.ready ? 200 : 503).json({
+    status: dbOk && firebase.ready ? 'ok' : 'degraded',
     db: dbState,
     env: process.env.NODE_ENV || 'development',
     uptime: Math.floor(process.uptime()),
-    firebase: !!process.env.FIREBASE_SERVICE_ACCOUNT_JSON,
+    firebase: firebase.ready,
+    firebaseConfigured: firebase.configured,
+    ...(firebase.error && !firebase.ready ? { firebaseError: firebase.error } : {}),
     redis: !!process.env.REDIS_URL,
   });
 });
