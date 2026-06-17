@@ -30,7 +30,7 @@ function ModeloChecklistSelection() {
 
         if (!mounted) return;
 
-        setModelos(modelosRes.data || []);
+        setModelos(modelosRes.data?.data || modelosRes.data || []);
         // vehicleController returns { status, data: vehicle }
         setVehicle(vehicleRes?.data?.data || vehicleRes?.data || null);
       } catch (err) {

@@ -39,7 +39,7 @@ function Layout({ children }) {
       .then((res) => {
         if (!cancelado) {
           const total = res.data?.total ?? 0;
-          const naoLidasCount = res.data?.data?.filter?.((n) => !n.lida).length ?? 0;
+          const naoLidasCount = res.data?.data?.filter((n) => !n.lida)?.length ?? 0;
           setNaoLidas(naoLidasCount || (total > 0 ? total : 0));
         }
       })

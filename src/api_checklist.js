@@ -55,7 +55,7 @@ router.get("/checklists", async (req, res) => {
     }
 
     const checklists = await Checklist.find(filtros);
-    res.status(200).json(checklists);
+    res.status(200).json({ status: 'success', data: checklists });
   } catch (error) {
     console.error('[GET /checklists]', error.name, error.message, error.stack);
     res.status(500).json({ erro: 'Erro interno ao listar checklists.' });

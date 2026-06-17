@@ -51,8 +51,9 @@ router.get("/modelochecklists", async (req, res) => {
     }
 
     const modelosChecklist = await ModeloChecklist.find(filtros);
-    cache.set(cacheKey, modelosChecklist, 5 * 60_000); // TTL 5 min
-    res.status(200).json(modelosChecklist);
+    const payload = { status: 'success', data: modelosChecklist };
+    cache.set(cacheKey, payload, 5 * 60_000); // TTL 5 min
+    res.status(200).json(payload);
   } catch (error) {
     console.error('[GET /modelochecklists]', error.name, error.message, error.stack);
     res.status(500).json({ erro: 'Erro interno ao listar modelos de checklist.' });

@@ -30,7 +30,14 @@ const getAllVehicles = async (req, res) => {
     });
   } catch (error) {
     console.error('[getAllVehicles]', error.name, error.message);
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    const isConnectivity = error.name === 'MongoNetworkError' ||
+      error.name === 'MongoServerSelectionError' ||
+      error.name === 'MongoExpiredSessionError' ||
+      /ECONNRESET|ETIMEDOUT|ENOTFOUND/.test(error.message ?? '');
+    return res.status(isConnectivity ? 503 : 500).json({
+      status: 'error',
+      message: isConnectivity ? 'Database temporarily unavailable. Please retry.' : 'Internal server error',
+    });
   }
 };
 

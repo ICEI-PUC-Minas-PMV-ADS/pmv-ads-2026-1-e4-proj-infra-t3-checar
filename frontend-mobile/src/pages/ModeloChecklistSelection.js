@@ -34,7 +34,7 @@ export default function ModeloChecklistSelection({ navegar, params = {} }) {
       const response = await api.get('/modelochecklists', {
         params: { ativo: 'true' },
       });
-      setModelos(response.data || []);
+      setModelos(response.data?.data || response.data || []);
     } catch (err) {
       setError(`Falha ao carregar modelos: ${err.response?.data?.erro || err.message}`);
       setModelos([]);
