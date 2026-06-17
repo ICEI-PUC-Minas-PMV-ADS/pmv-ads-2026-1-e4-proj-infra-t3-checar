@@ -101,7 +101,14 @@ app.get('/api-docs.json', (_req, res) => {
 });
 
 // ── 7. Health check (público) ────────────────────────────────────
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/health', (_req, res) => {
+  const dbState = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+  res.json({
+    status: 'ok',
+    db: dbState[mongoose.connection.readyState] ?? 'unknown',
+    env: process.env.NODE_ENV || 'development',
+  });
+});
 
 // ═══════════════════════════════════════════════════════════════════
 // Autenticação APENAS para rotas /api — frontend fica público
@@ -150,11 +157,22 @@ app.use('/api', authorize('Gestor'), auditoriaRoutes);
 // ── 14. LGPD — rotas autenticadas ────────────────────────────────
 app.use('/api', lgpdRoutes);
 
+// ── 15. Error handler global — captura erros não tratados de middlewares async
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+  console.error('[Express] Erro não tratado:', err);
+  if (res.headersSent) return;
+  res.status(err.status ?? 500).json({
+    erro: err.message ?? 'Erro interno do servidor',
+    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+  });
+});
+
 // ═══════════════════════════════════════════════════════════════════
 // 🎯 FRONTEND - Livre e público (SEM autenticação)
 // ═══════════════════════════════════════════════════════════════════
 
-// ── 15. Frontend (produção) ───────────────────────────────────────
+// ── 16. Frontend (produção) ───────────────────────────────────────
 const distPath = path.join(__dirname, '..', 'frontend-web', 'dist');
 
 // Arquivos estáticos do frontend
@@ -177,8 +195,25 @@ if (!mongoUri) {
   process.exit(1);
 }
 
+mongoose.connection.on('disconnected', () =>
+  console.warn('[MongoDB] Desconectado — aguardando reconexão automática do driver...')
+);
+mongoose.connection.on('reconnected', () =>
+  console.log('[MongoDB] Reconectado com sucesso.')
+);
+mongoose.connection.on('error', (err) =>
+  console.error('[MongoDB] Erro de conexão:', err.message)
+);
+
 mongoose
-  .connect(mongoUri)
+  .connect(mongoUri, {
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    connectTimeoutMS: 10000,
+    heartbeatFrequencyMS: 10000,
+    maxPoolSize: 10,
+    family: 4,
+  })
   .then(() => {
     console.log('✅ MongoDB conectado com sucesso!');
     initNotificationQueue();

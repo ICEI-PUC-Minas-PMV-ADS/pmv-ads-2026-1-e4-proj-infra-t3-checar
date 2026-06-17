@@ -69,6 +69,7 @@ router.get('/notificacoes', async (req, res) => {
       totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
+    console.error('[Notificacoes] Erro ao listar:', err);
     return res.status(500).json({ erro: 'Erro ao listar notificações', detalhe: err.message });
   }
 });
