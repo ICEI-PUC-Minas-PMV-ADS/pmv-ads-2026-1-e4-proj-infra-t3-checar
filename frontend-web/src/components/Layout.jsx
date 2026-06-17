@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import { extractList } from '../utils/apiPayload';
 
 const PUBLIC_PATHS = ['/login', '/cadastro', '/recuperar-senha'];
 
@@ -38,8 +39,9 @@ function Layout({ children }) {
     api.get('/notificacoes', { params: { page: 1, limit: 1 } })
       .then((res) => {
         if (!cancelado) {
-          const total = res.data?.total ?? 0;
-          const naoLidasCount = res.data?.data?.filter((n) => !n.lida)?.length ?? 0;
+          const list = extractList(res.data);
+          const total = res.data?.total ?? list.length;
+          const naoLidasCount = list.filter((n) => !n.lida).length;
           setNaoLidas(naoLidasCount || (total > 0 ? total : 0));
         }
       })

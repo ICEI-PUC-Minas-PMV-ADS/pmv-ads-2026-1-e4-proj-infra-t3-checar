@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 import Inspecao from './models/Inspecao.js';
-import upload, { compressImages } from './config/multer.js';
+import upload, { processImages } from './config/multer.js';
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.post(
     { name: 'lateralDireita',  maxCount: 1 },
     { name: 'topo',            maxCount: 1 },
   ]),
-  compressImages,
+  processImages,
   async (req, res) => {
     try {
       const { placa, checklistId } = req.body;

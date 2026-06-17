@@ -71,7 +71,7 @@ describe('api service — getBaseUrl', () => {
     require('./api.js');
 
     expect(axios.create).toHaveBeenCalledWith(
-      expect.objectContaining({ baseURL: 'http://10.0.0.5:3000' })
+      expect.objectContaining({ baseURL: 'http://10.0.0.5:3000/api' })
     );
   });
 });

@@ -20,6 +20,14 @@ jest.mock('../models/FcmToken.js', () => ({
   },
 }));
 
+jest.mock('mongoose', () => ({
+  Types: {
+    ObjectId: jest.fn((id) => id),
+    isValid: jest.fn(() => false),
+  },
+  connection: { readyState: 1 },
+}));
+
 import express from 'express';
 import request from 'supertest';
 import router from '../api_notificacoes.js';
@@ -104,6 +112,7 @@ describe('api_notificacoes', () => {
 
       const res = await request(app).get('/notificacoes?lida=false');
       expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty('status', 'success');
       expect(res.body).toHaveProperty('data');
       expect(res.body).toHaveProperty('total');
       expect(res.body).toHaveProperty('page');

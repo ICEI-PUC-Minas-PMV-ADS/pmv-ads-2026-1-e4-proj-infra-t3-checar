@@ -31,6 +31,7 @@ const getBaseUrl = () => {
 };
 
 export const BASE_URL = getBaseUrl();
+export const API_BASE_URL = `${BASE_URL.replace(/\/$/, '')}/api`;
 
 if (__DEV__ && !process.env.EXPO_PUBLIC_API_URL) {
   console.warn(
@@ -42,7 +43,7 @@ if (__DEV__ && !process.env.EXPO_PUBLIC_API_URL) {
 }
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });

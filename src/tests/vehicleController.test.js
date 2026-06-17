@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 
 jest.mock('mongoose', () => ({
   Types: { ObjectId: { isValid: jest.fn() } },
+  connection: { readyState: 1 },
 }));
 
 const makeFindChain = (result) => {

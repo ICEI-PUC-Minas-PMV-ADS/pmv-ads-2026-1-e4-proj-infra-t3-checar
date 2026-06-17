@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight, Camera, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../services/api';
+import { extractList, extractPageMeta } from '../utils/apiPayload';
 
 const TABS = ['Inspeções', 'Checklists'];
 
@@ -79,10 +80,10 @@ function Historico() {
         if (conformidade) params.conformidade = conformidade;
         res = await api.get('/checklists/historico', { params });
       }
-      const { data, total: tot, totalPages: tp } = res.data;
-      setResultados(data ?? []);
-      setTotal(tot ?? 0);
-      setTotalPages(tp ?? 1);
+      const { data, total: tot, totalPages: tp } = extractPageMeta(res.data);
+      setResultados(data);
+      setTotal(tot);
+      setTotalPages(tp);
       setPage(novaPagina);
     } catch (err) {
       setErro(err.message || 'Erro ao buscar histórico.');

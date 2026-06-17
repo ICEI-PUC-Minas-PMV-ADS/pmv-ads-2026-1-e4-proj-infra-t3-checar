@@ -1,6 +1,7 @@
 import express from 'express';
 import Notificacao from './models/Notificacao.js';
 import FcmToken from './models/FcmToken.js';
+import { isMongoReady, mongoUnavailableResponse, dbErrorResponse } from './utils/mongoReady.js';
 
 const router = express.Router();
 
@@ -47,9 +48,11 @@ router.delete('/fcm-tokens/:token', async (req, res) => {
 // GET /notificacoes?lida=false&page=1&limit=20
 // Filtrado automaticamente pelo usuário autenticado (evita IDOR)
 router.get('/notificacoes', async (req, res) => {
+  if (!isMongoReady()) return mongoUnavailableResponse(res, 'GET /notificacoes');
+
   try {
     const usuarioId = req.user?.id;
-    if (!usuarioId) return res.status(401).json({ erro: 'Não autenticado' });
+    if (!usuarioId) return res.status(401).json({ status: 'error', erro: 'Não autenticado' });
 
     const { lida } = req.query;
     const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
@@ -64,15 +67,18 @@ router.get('/notificacoes', async (req, res) => {
       Notificacao.countDocuments(filtro),
     ]);
 
+    const list = Array.isArray(notificacoes) ? notificacoes : [];
+
     return res.status(200).json({
-      data: notificacoes,
-      total,
+      status: 'success',
+      data: list,
+      total: total ?? list.length,
       page,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil((total ?? 0) / limit) || 0,
     });
   } catch (err) {
     console.error('[GET /notificacoes]', err.name, err.message, err.stack);
-    return res.status(500).json({ erro: 'Erro ao listar notificações.' });
+    return dbErrorResponse(res, 'GET /notificacoes', err);
   }
 });
 

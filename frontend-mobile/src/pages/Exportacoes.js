@@ -15,7 +15,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { getIdToken } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
-import { BASE_URL } from '../services/api';
+import { API_BASE_URL } from '../services/api';
 
 export default function Exportacoes({ navegar }) {
   const [placaInspecao, setPlacaInspecao] = useState('');
@@ -46,7 +46,7 @@ export default function Exportacoes({ navegar }) {
   const exportarVeiculos = async () => {
     setLoadingVeiculos(true);
     try {
-      const url = `${BASE_URL}/exportacoes/vehicles/csv`;
+      const url = `${API_BASE_URL}/exportacoes/vehicles/csv`;
       await baixarCsv(url, 'veiculos.csv');
     } catch (error) {
       const msg = error?.message || 'Não foi possível exportar os veículos.';
@@ -61,7 +61,7 @@ export default function Exportacoes({ navegar }) {
     try {
       const placa = placaInspecao.trim().toUpperCase();
       const query = placa ? `?placa=${encodeURIComponent(placa)}` : '';
-      const url = `${BASE_URL}/exportacoes/inspecoes/csv${query}`;
+      const url = `${API_BASE_URL}/exportacoes/inspecoes/csv${query}`;
       const nomeArquivo = placa ? `inspecoes_${placa}.csv` : 'inspecoes.csv';
       await baixarCsv(url, nomeArquivo);
     } catch (error) {

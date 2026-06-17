@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
 import Vehicle from'../models/Vehicle.js';
+import { isMongoReady, mongoUnavailableResponse, dbErrorResponse } from '../utils/mongoReady.js';
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // GET /vehicles?page=1&limit=20
 const getAllVehicles = async (req, res) => {
-  if (mongoose.connection.readyState !== 1) {
-    console.warn('[getAllVehicles] MongoDB indisponível. readyState:', mongoose.connection.readyState);
-    return res.status(503).json({ status: 'error', message: 'Database temporarily unavailable. Please retry.' });
-  }
+  if (!isMongoReady()) return mongoUnavailableResponse(res, 'getAllVehicles');
 
   try {
     const page  = Math.max(1, parseInt(req.query.page  || '1',  10));
@@ -20,29 +18,25 @@ const getAllVehicles = async (req, res) => {
       Vehicle.countDocuments(),
     ]);
 
+    const list = Array.isArray(vehicles) ? vehicles : [];
+
     return res.status(200).json({
       status: 'success',
-      count: vehicles.length,
+      count: list.length,
       total,
       page,
       totalPages: Math.ceil(total / limit),
-      data: vehicles,
+      data: list,
     });
   } catch (error) {
-    console.error('[getAllVehicles]', error.name, error.message);
-    const isConnectivity = error.name === 'MongoNetworkError' ||
-      error.name === 'MongoServerSelectionError' ||
-      error.name === 'MongoExpiredSessionError' ||
-      /ECONNRESET|ETIMEDOUT|ENOTFOUND/.test(error.message ?? '');
-    return res.status(isConnectivity ? 503 : 500).json({
-      status: 'error',
-      message: isConnectivity ? 'Database temporarily unavailable. Please retry.' : 'Internal server error',
-    });
+    return dbErrorResponse(res, 'getAllVehicles', error);
   }
 };
 
 // GET /vehicles/:id
 const getVehicleById = async (req, res) => {
+  if (!isMongoReady()) return mongoUnavailableResponse(res, 'getVehicleById');
+
   try {
     const { id } = req.params;
 
@@ -58,13 +52,14 @@ const getVehicleById = async (req, res) => {
 
     return res.status(200).json({ status: 'success', data: vehicle });
   } catch (error) {
-    console.error('[getVehicleById]', error.name, error.message);
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return dbErrorResponse(res, 'getVehicleById', error);
   }
 };
 
 // POST /vehicles
 const createVehicle = async (req, res) => {
+  if (!isMongoReady()) return mongoUnavailableResponse(res, 'createVehicle');
+
   try {
     const { plate, model, year, mileage, vehicleType, operationalStatus, observation, marca, cor } = req.body;
 
@@ -89,13 +84,14 @@ const createVehicle = async (req, res) => {
       const errors = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ status: 'error', errors });
     }
-    console.error('[createVehicle]', error.name, error.message);
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return dbErrorResponse(res, 'createVehicle', error);
   }
 };
 
 // PUT /vehicles/:id
 const updateVehicle = async (req, res) => {
+  if (!isMongoReady()) return mongoUnavailableResponse(res, 'updateVehicle');
+
   try {
     const { id } = req.params;
 
@@ -124,13 +120,14 @@ const updateVehicle = async (req, res) => {
       const errors = Object.values(error.errors).map((e) => e.message);
       return res.status(400).json({ status: 'error', errors });
     }
-    console.error('[updateVehicle]', error.name, error.message);
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return dbErrorResponse(res, 'updateVehicle', error);
   }
 };
 
 // DELETE /vehicles/:id
 const deleteVehicle = async (req, res) => {
+  if (!isMongoReady()) return mongoUnavailableResponse(res, 'deleteVehicle');
+
   try {
     const { id } = req.params;
 
@@ -146,8 +143,7 @@ const deleteVehicle = async (req, res) => {
 
     return res.status(204).send();
   } catch (error) {
-    console.error('[deleteVehicle]', error.name, error.message);
-    return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    return dbErrorResponse(res, 'deleteVehicle', error);
   }
 };
 

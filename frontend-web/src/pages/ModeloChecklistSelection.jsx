@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ClipboardList, Plus, Search } from 'lucide-react';
 import api from '../services/api';
+import { extractList } from '../utils/apiPayload';
 
 function ModeloChecklistSelection() {
   const navigate = useNavigate();
@@ -30,8 +31,7 @@ function ModeloChecklistSelection() {
 
         if (!mounted) return;
 
-        setModelos(modelosRes.data?.data || modelosRes.data || []);
-        // vehicleController returns { status, data: vehicle }
+        setModelos(extractList(modelosRes.data));
         setVehicle(vehicleRes?.data?.data || vehicleRes?.data || null);
       } catch (err) {
         if (mounted) {

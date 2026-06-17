@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, Bell, Info, ChevronLeft, ChevronRight, CheckCheck, Loader2, RefreshCw } from 'lucide-react';
 import api from '../services/api';
+import { extractList, extractPageMeta } from '../utils/apiPayload';
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   const d = new Date(dateStr);
@@ -37,11 +38,11 @@ function Notificacoes() {
     setErro('');
     try {
       const res = await api.get('/notificacoes', { params: { page: novaPagina, limit } });
-      const { data, total: tot, totalPages: tp } = res.data;
-      setNotificacoes(data ?? []);
-      setTotal(tot ?? 0);
-      setTotalPages(tp ?? 1);
-      setPage(novaPagina);
+      const { data, total: tot, totalPages: tp, page: pg } = extractPageMeta(res.data);
+      setNotificacoes(data);
+      setTotal(tot);
+      setTotalPages(tp);
+      setPage(pg);
     } catch (err) {
       const status = err.response?.status;
       console.error('[Checar] GET /api/notificacoes falhou', {
