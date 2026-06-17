@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Car, Plus, RefreshCw } from 'lucide-react';
 import api from '../services/api';
-import { extractList } from '../utils/apiPayload';
+import { extractList, getApiErrorMessage } from '../utils/apiPayload';
 
 const BuscarVeiculos = () => {
   const navigate = useNavigate();
@@ -34,11 +34,7 @@ const BuscarVeiculos = () => {
         data: error.response?.data,
         message: error.message,
       });
-      if (status >= 500) {
-        setErro('Erro no servidor (500) ao carregar veículos. Tente novamente em instantes.');
-      } else {
-        setErro(error.message || 'Não foi possível carregar os veículos. Verifique a conexão.');
-      }
+      setErro(getApiErrorMessage(error, 'Não foi possível carregar os veículos. Verifique a conexão.'));
     } finally {
       setCarregando(false);
     }

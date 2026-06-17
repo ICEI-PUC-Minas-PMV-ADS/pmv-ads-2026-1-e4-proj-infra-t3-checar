@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../services/api';
+import { extractList, getApiErrorMessage } from '../utils/apiPayload';
 
 export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
   const insets = useSafeAreaInsets();
@@ -20,7 +21,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
     try {
       setCarregando(true);
       const response = await api.get('/vehicles');
-      const dadosVeiculos = response.data?.data || response.data || [];
+      const dadosVeiculos = extractList(response.data);
 
       setVeiculos(dadosVeiculos.map((v) => ({
         _id:            v._id,
@@ -33,7 +34,12 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
       })));
       setErro(null);
     } catch (error) {
-      setErro('Não foi possível carregar os veículos.');
+      console.error('[Checar] GET /api/vehicles falhou', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      });
+      setErro(getApiErrorMessage(error, 'Não foi possível carregar os veículos.'));
       setVeiculos([]);
     } finally {
       setCarregando(false);

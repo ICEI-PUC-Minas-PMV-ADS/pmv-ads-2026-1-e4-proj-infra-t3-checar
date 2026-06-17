@@ -1,9 +1,10 @@
-import admin from 'firebase-admin';
+import * as admin from 'firebase-admin'; // Mudança principal
 
 let initialized = false;
 
 const initFirebase = () => {
-  if (initialized || admin.apps.length > 0) {
+  // Proteção extra: verifica se admin e admin.apps existem
+  if (initialized || (admin && admin.apps && admin.apps.length > 0)) {
     initialized = true;
     return true;
   }
