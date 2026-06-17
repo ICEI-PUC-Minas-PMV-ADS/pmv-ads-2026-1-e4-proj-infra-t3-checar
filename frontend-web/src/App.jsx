@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import BuscarVeiculos from './pages/BuscarVeiculos';
@@ -16,6 +16,19 @@ import Historico from './pages/Historico';
 import Notificacoes from './pages/Notificacoes';
 import Exportacoes from './pages/Exportacoes';
 
+// Auth-aware redirect: goes directly to /login or /veiculos without a double-hop
+function RootRedirect() {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#00112b]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#00b7eb] border-t-transparent" />
+      </div>
+    );
+  }
+  return <Navigate to={isAuthenticated ? '/veiculos' : '/login'} replace />;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -28,8 +41,8 @@ function App() {
             <Route path="/cadastro" element={<UserRegistration />} />
             <Route path="/privacidade" element={<PoliticaPrivacidade />} />
 
-            {/* Redirect root to vehicles list */}
-            <Route path="/" element={<Navigate to="/veiculos" replace />} />
+            {/* Root: auth-aware redirect (no double-hop through ProtectedRoute) */}
+            <Route path="/" element={<RootRedirect />} />
 
             {/* Protected routes */}
             <Route path="/veiculos" element={<ProtectedRoute><BuscarVeiculos /></ProtectedRoute>} />
@@ -43,8 +56,8 @@ function App() {
             <Route path="/notificacoes" element={<ProtectedRoute><Notificacoes /></ProtectedRoute>} />
             <Route path="/exportacoes" element={<ProtectedRoute><Exportacoes /></ProtectedRoute>} />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/veiculos" replace />} />
+            {/* Fallback: same auth-aware logic */}
+            <Route path="*" element={<RootRedirect />} />
           </Routes>
         </Layout>
       </Router>

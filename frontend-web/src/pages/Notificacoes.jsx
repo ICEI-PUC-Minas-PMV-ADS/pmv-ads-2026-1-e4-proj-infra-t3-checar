@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AlertTriangle, Bell, Info, ChevronLeft, ChevronRight, CheckCheck, Loader2 } from 'lucide-react';
+import { AlertTriangle, Bell, Info, ChevronLeft, ChevronRight, CheckCheck, Loader2, RefreshCw } from 'lucide-react';
 import api from '../services/api';
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -43,7 +43,18 @@ function Notificacoes() {
       setTotalPages(tp ?? 1);
       setPage(novaPagina);
     } catch (err) {
-      setErro(err.message || 'Erro ao carregar notificações.');
+      const status = err.response?.status;
+      console.error('[Checar] GET /api/notificacoes falhou', {
+        endpoint: `/api/notificacoes?page=${novaPagina}&limit=${limit}`,
+        status: status ?? 'sem resposta (erro de rede)',
+        data: err.response?.data,
+        message: err.message,
+      });
+      if (status >= 500) {
+        setErro('Erro no servidor (500) ao carregar notificações. Tente novamente em instantes.');
+      } else {
+        setErro(err.message || 'Erro ao carregar notificações.');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,8 +120,18 @@ function Notificacoes() {
       {/* Erro */}
       <div aria-live="polite">
         {erro && (
-          <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-            <AlertTriangle size={16} /> {erro}
+          <div className="flex items-start justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={16} className="shrink-0" />
+              {erro}
+            </div>
+            <button
+              onClick={() => carregar(page)}
+              className="flex shrink-0 items-center gap-1 rounded-md bg-red-500/20 px-3 py-1 text-xs font-semibold hover:bg-red-500/30 transition-colors"
+              aria-label="Tentar carregar novamente"
+            >
+              <RefreshCw size={12} /> Tentar novamente
+            </button>
           </div>
         )}
       </div>

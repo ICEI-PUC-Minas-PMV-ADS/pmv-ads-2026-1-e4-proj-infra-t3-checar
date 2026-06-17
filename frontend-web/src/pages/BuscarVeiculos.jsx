@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Car, Plus } from 'lucide-react';
+import { Search, Car, Plus, RefreshCw } from 'lucide-react';
 import api from '../services/api';
 
 const BuscarVeiculos = () => {
@@ -10,31 +10,40 @@ const BuscarVeiculos = () => {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro]           = useState('');
 
-  useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        setCarregando(true);
-        setErro('');
-        const response = await api.get('/vehicles');
-        const dadosVeiculos = response.data?.data || [];
-
-        setVeiculos(dadosVeiculos.map((v) => ({
-          _id: v._id,
-          nome: v.model,
-          placa: v.plate,
-          status: v.operationalStatus === 'active' ? 'OK' : 'ALERTA',
-          ano: v.year,
-          quilometragem: v.mileage,
-          observacao: v.observation,
-        })));
-      } catch (error) {
-        setErro('Não foi possível carregar os veículos. Verifique a conexão.');
-      } finally {
-        setCarregando(false);
+  const carregarDados = useCallback(async () => {
+    setCarregando(true);
+    setErro('');
+    try {
+      const response = await api.get('/vehicles');
+      const dadosVeiculos = response.data?.data || [];
+      setVeiculos(dadosVeiculos.map((v) => ({
+        _id: v._id,
+        nome: v.model,
+        placa: v.plate,
+        status: v.operationalStatus === 'active' ? 'OK' : 'ALERTA',
+        ano: v.year,
+        quilometragem: v.mileage,
+        observacao: v.observation,
+      })));
+    } catch (error) {
+      const status = error.response?.status;
+      console.error('[Checar] GET /api/vehicles falhou', {
+        endpoint: '/api/vehicles',
+        status: status ?? 'sem resposta (erro de rede)',
+        data: error.response?.data,
+        message: error.message,
+      });
+      if (status >= 500) {
+        setErro('Erro no servidor (500) ao carregar veículos. Tente novamente em instantes.');
+      } else {
+        setErro(error.message || 'Não foi possível carregar os veículos. Verifique a conexão.');
       }
-    };
-    carregarDados();
+    } finally {
+      setCarregando(false);
+    }
   }, []);
+
+  useEffect(() => { carregarDados(); }, [carregarDados]);
 
   const veiculosFiltrados = veiculos.filter((v) => {
     const termo = busca.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -77,9 +86,15 @@ const BuscarVeiculos = () => {
 
         {/* Error */}
         {erro && !carregando && (
-          <p className="mb-4 rounded-lg border border-red-500/40 bg-red-950/30 px-4 py-3 text-sm text-red-300">
-            {erro}
-          </p>
+          <div className="mb-4 rounded-lg border border-red-500/40 bg-red-950/30 px-4 py-3 text-sm text-red-300 flex items-start justify-between gap-3">
+            <span>{erro}</span>
+            <button
+              onClick={carregarDados}
+              className="flex shrink-0 items-center gap-1 rounded-md bg-red-500/20 px-3 py-1 text-xs font-semibold text-red-300 hover:bg-red-500/30 transition-colors"
+            >
+              <RefreshCw size={12} /> Tentar novamente
+            </button>
+          </div>
         )}
 
         {/* Results */}
