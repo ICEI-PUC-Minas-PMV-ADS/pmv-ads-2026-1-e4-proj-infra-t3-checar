@@ -87,40 +87,25 @@ app.get('/api-docs.json', (_req, res) => {
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 // ═══════════════════════════════════════════════════════════════════
-// 🔥 CORREÇÃO: Autenticação APENAS para rotas /api
+// Autenticação APENAS para rotas /api — frontend fica público
 // ═══════════════════════════════════════════════════════════════════
 
-// ── 8. Normalização do prefixo /api ─────────────────────────────
-app.use((req, _res, next) => {
-  if (req.path.startsWith('/api/')) {
-    req.url = req.url.slice(4);
-  }
-  next();
-});
-
-// ── 9. Middleware de autenticação SOMENTE para /api ─────────────
-// ✅ Frontend (/, /favicon.ico, etc) fica LIVRE
-// ✅ API (/api/*) é protegida
+// ── 8. Middleware de autenticação SOMENTE para /api ─────────────
+// Dentro de app.use('/api', handler), req.path é relativo ao prefixo:
+// /api/login → req.path = '/login', /api/checklists → req.path = '/checklists'
 app.use('/api', (req, res, next) => {
   const key = `${req.method} ${req.path}`;
-  
-  // Rotas públicas da API (sem autenticação)
+
   const PUBLIC_API_PATHS = new Set([
     'POST /login',
     'POST /usuarios',
     'POST /usuariocadastrados',
   ]);
-  
-  // Swagger e uploads também são públicos
-  if (
-    PUBLIC_API_PATHS.has(key) ||
-    req.path.startsWith('/api-docs') ||
-    req.path.startsWith('/uploads')
-  ) {
+
+  if (PUBLIC_API_PATHS.has(key)) {
     return next();
   }
-  
-  // Qualquer outra rota /api exige autenticação
+
   return authMiddleware(req, res, next);
 });
 
@@ -158,10 +143,13 @@ const distPath = path.join(__dirname, '..', 'frontend-web', 'dist');
 // Arquivos estáticos do frontend
 app.use(express.static(distPath));
 
-// SPA fallback: QUALQUER rota não reconhecida volta index.html
-// ⚠️ Isso inclui / e /favicon.ico (que agora funcionam!)
+// SPA fallback: rotas não reconhecidas pelo Express servem o React app
 app.use((_req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
+  res.sendFile(path.join(distPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(503).json({ erro: 'Frontend não disponível. Execute npm run build no frontend-web.' });
+    }
+  });
 });
 
 // ── 16. Conexão MongoDB e inicialização ──────────────────────────
