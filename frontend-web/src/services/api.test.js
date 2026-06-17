@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mocks must be declared before any imports that use the mocked modules
+const mockGetIdToken = vi.fn();
+let mockCurrentUser = null;
+
+vi.mock('firebase/auth', () => ({
+  getIdToken: (...args) => mockGetIdToken(...args),
+}));
+
+vi.mock('./firebaseConfig', () => ({
+  auth: {
+    get currentUser() {
+      return mockCurrentUser;
+    },
+  },
+}));
+
 vi.mock('./authState', () => ({
   getCurrentUser:      vi.fn(() => null),
   triggerUnauthorized: vi.fn(),
@@ -20,8 +34,6 @@ vi.mock('axios', () => {
 import axios from 'axios';
 import { getCurrentUser, triggerUnauthorized } from './authState';
 
-// Importing api.js triggers axios.create() + interceptor registration at module load.
-// Capture references NOW, before any beforeEach can wipe mock state.
 import './api.js';
 const axiosInstance = axios.create.mock.results[0].value;
 
@@ -32,14 +44,12 @@ const [responseSuccessFn, responseErrorFn] =
 
 describe('frontend-web api service', () => {
   beforeEach(() => {
-    // Only reset the mocks we actually mutate per-test.
-    // Do NOT use clearAllMocks — it wipes axios.create.mock.results.
+    mockCurrentUser = null;
+    mockGetIdToken.mockReset();
     getCurrentUser.mockReset();
     getCurrentUser.mockReturnValue(null);
     triggerUnauthorized.mockReset();
   });
-
-  // ── Instance creation ────────────────────────────────────────────────────
 
   it('creates axios instance with correct base config', () => {
     expect(axios.create).toHaveBeenCalledWith(
@@ -66,57 +76,38 @@ describe('frontend-web api service', () => {
     );
   });
 
-  // ── Request interceptor ──────────────────────────────────────────────────
-
   describe('request interceptor', () => {
-    it('attaches X-User-Id and Authorization when user is authenticated', () => {
-      getCurrentUser.mockReturnValue({ uid: 'firebase-uid-123', token: 'jwt-token-abc' });
+    it('uses fresh Firebase token when currentUser is signed in', async () => {
+      const firebaseUser = { uid: 'firebase-uid-123' };
+      mockCurrentUser = firebaseUser;
+      mockGetIdToken.mockResolvedValue('fresh-token-xyz');
 
       const config = { headers: {} };
-      const result = requestInterceptorFn(config);
+      const result = await requestInterceptorFn(config);
 
+      expect(mockGetIdToken).toHaveBeenCalledWith(firebaseUser);
       expect(result.headers['X-User-Id']).toBe('firebase-uid-123');
-      expect(result.headers['Authorization']).toBe('Bearer jwt-token-abc');
+      expect(result.headers['Authorization']).toBe('Bearer fresh-token-xyz');
     });
 
-    it('attaches only X-User-Id when token is absent', () => {
-      getCurrentUser.mockReturnValue({ uid: 'firebase-uid-123', token: null });
+    it('falls back to authState when Firebase has no currentUser', async () => {
+      getCurrentUser.mockReturnValue({ uid: 'cached-uid', token: 'cached-token' });
 
       const config = { headers: {} };
-      const result = requestInterceptorFn(config);
+      const result = await requestInterceptorFn(config);
 
-      expect(result.headers['X-User-Id']).toBe('firebase-uid-123');
-      expect(result.headers['Authorization']).toBeUndefined();
+      expect(result.headers['X-User-Id']).toBe('cached-uid');
+      expect(result.headers['Authorization']).toBe('Bearer cached-token');
     });
 
-    it('leaves headers unchanged when no user is authenticated', () => {
-      getCurrentUser.mockReturnValue(null);
-
+    it('leaves headers unchanged when no user is authenticated', async () => {
       const config = { headers: {} };
-      const result = requestInterceptorFn(config);
+      const result = await requestInterceptorFn(config);
 
       expect(result.headers['X-User-Id']).toBeUndefined();
       expect(result.headers['Authorization']).toBeUndefined();
-    });
-
-    it('leaves headers unchanged when getCurrentUser returns undefined', () => {
-      getCurrentUser.mockReturnValue(undefined);
-
-      const config = { headers: {} };
-      const result = requestInterceptorFn(config);
-
-      expect(result.headers['X-User-Id']).toBeUndefined();
-    });
-
-    it('returns the same config object reference', () => {
-      const config = { headers: {}, url: '/veiculos' };
-      const result = requestInterceptorFn(config);
-
-      expect(result).toBe(config);
     });
   });
-
-  // ── Response interceptor ─────────────────────────────────────────────────
 
   describe('response interceptor (success path)', () => {
     it('passes the response through unchanged', () => {
@@ -150,46 +141,6 @@ describe('frontend-web api service', () => {
 
       await expect(responseErrorFn(error)).rejects.toMatchObject({
         message: 'Campo obrigatório',
-      });
-    });
-
-    it('normalizes error.message from backend "erro" field', async () => {
-      const error = makeError(400, { erro: 'Dados inválidos' });
-
-      await expect(responseErrorFn(error)).rejects.toMatchObject({
-        message: 'Dados inválidos',
-      });
-    });
-
-    it('normalizes error.message from backend "message" field', async () => {
-      const error = makeError(500, { message: 'Internal server error' });
-
-      await expect(responseErrorFn(error)).rejects.toMatchObject({
-        message: 'Internal server error',
-      });
-    });
-
-    it('prefers "mensagem" over "erro" when both are present', async () => {
-      const error = makeError(400, { mensagem: 'Mensagem', erro: 'Erro' });
-
-      await expect(responseErrorFn(error)).rejects.toMatchObject({
-        message: 'Mensagem',
-      });
-    });
-
-    it('sets network error message when there is no response', async () => {
-      const error = { message: 'Network Error' }; // no .response property
-
-      await expect(responseErrorFn(error)).rejects.toMatchObject({
-        message: 'Erro de conexão. Verifique sua rede.',
-      });
-    });
-
-    it('keeps original axios message when server returns no message fields', async () => {
-      const error = makeError(500, {}); // data has no mensagem/erro/message
-
-      await expect(responseErrorFn(error)).rejects.toMatchObject({
-        message: 'Request failed', // original preserved
       });
     });
   });

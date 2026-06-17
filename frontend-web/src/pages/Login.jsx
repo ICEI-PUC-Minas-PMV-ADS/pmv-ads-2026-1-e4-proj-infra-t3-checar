@@ -24,7 +24,8 @@ export default function Login() {
 
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, senha);
+      const credential = await signInWithEmailAndPassword(auth, email, senha);
+      await credential.user.getIdToken(true);
       navigate(from, { replace: true });
     } catch (error) {
       const code = error.code;

@@ -4,7 +4,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { getFirebaseStatus } from './config/firebase.js';
+import { getFirebaseStatus, initFirebase } from './config/firebase.js';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -41,6 +41,12 @@ const __dirname  = path.dirname(__filename);
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
+
+initFirebase();
+const firebaseBoot = getFirebaseStatus();
+if (!firebaseBoot.ready) {
+  console.error('[Startup] Firebase Admin indisponível:', firebaseBoot.error);
+}
 
 // ── 1. Security headers — RNF-004 / HSTS ────────────────────────
 const isProduction = process.env.NODE_ENV === 'production';
@@ -135,6 +141,7 @@ app.get('/health', (_req, res) => {
     uptime: Math.floor(process.uptime()),
     firebase: firebase.ready,
     firebaseConfigured: firebase.configured,
+    ...(firebase.hint && !firebase.ready ? { firebaseHint: firebase.hint } : {}),
     ...(firebase.error && !firebase.ready ? { firebaseError: firebase.error } : {}),
     redis: !!process.env.REDIS_URL,
   });

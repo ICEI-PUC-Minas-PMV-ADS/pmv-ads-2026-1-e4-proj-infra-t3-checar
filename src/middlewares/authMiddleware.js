@@ -1,5 +1,5 @@
 // Importa o objeto 'admin' já inicializado e a função 'initFirebase'
-import { admin, initFirebase } from '../config/firebase.js'; 
+import { admin, initFirebase, getFirebaseStatus } from '../config/firebase.js'; 
 import Usuario from '../models/Usuario.js';
 
 const authMiddleware = async (req, res, next) => {
@@ -13,9 +13,10 @@ const authMiddleware = async (req, res, next) => {
 
   // Garante que o Firebase está pronto antes de tentar validar
   if (!initFirebase()) {
+    const { error } = getFirebaseStatus();
     return res.status(503).json({
       erro: 'Serviço de autenticação indisponível.',
-      mensagem: 'Configure FIREBASE_SERVICE_ACCOUNT_JSON no Azure App Service (Configuration → Application settings).',
+      mensagem: error || 'Configure FIREBASE_SERVICE_ACCOUNT_JSON no Azure App Service.',
     });
   }
 
@@ -24,7 +25,7 @@ const authMiddleware = async (req, res, next) => {
     const decoded = await admin.auth().verifyIdToken(token);
 
     const usuario = await Usuario
-      .findOne({ email: decoded.email })
+      .findOne({ email: decoded.email?.toLowerCase?.() ?? decoded.email })
       .select('_id tipoUsuario nome email')
       .lean();
 

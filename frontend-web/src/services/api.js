@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { getIdToken } from 'firebase/auth';
+import { auth } from './firebaseConfig';
 import { getCurrentUser, triggerUnauthorized } from './authState';
 
 const api = axios.create({
@@ -8,19 +10,27 @@ const api = axios.create({
 });
 
 // ── Request interceptor ──────────────────────────────────────────────────────
-// Auth headers from the authState singleton (maintained by AuthContext).
-// Zero sessionStorage access here.
-api.interceptors.request.use((config) => {
+// Sempre obtém token fresco do Firebase (evita race após login e token expirado).
+api.interceptors.request.use(async (config) => {
+  try {
+    const firebaseUser = auth.currentUser;
+    if (firebaseUser) {
+      const token = await getIdToken(firebaseUser);
+      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['X-User-Id'] = firebaseUser.uid;
+      return config;
+    }
+  } catch {
+    // fallback abaixo
+  }
+
   const user = getCurrentUser();
-  if (user?.uid)   config.headers['X-User-Id']    = user.uid;
+  if (user?.uid) config.headers['X-User-Id'] = user.uid;
   if (user?.token) config.headers['Authorization'] = `Bearer ${user.token}`;
   return config;
 });
 
 // ── Response interceptor ─────────────────────────────────────────────────────
-// 1. 401 → trigger logout via the callback registered by AuthContext.
-// 2. Normalize error.message so components can always use err.message reliably,
-//    regardless of which key the backend used (mensagem / erro / message).
 api.interceptors.response.use(
   (response) => response,
   (error) => {
