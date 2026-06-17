@@ -1,3 +1,4 @@
+console.log("DEBUG_AZURE_ENV:", process.env.FIREBASE_SERVICE_ACCOUNT_JSON ? "ENCONTRADO" : "NÃO ENCONTRADO");
 // ==========================================
 // ENTRY POINT — API Checar
 // ==========================================
