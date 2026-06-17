@@ -1,11 +1,11 @@
-import * as admin from 'firebase-admin';
-import { initializeApp, cert } from 'firebase-admin/app';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import * as adminNamespace from 'firebase-admin';
 
-let initialized = false;
-
+// Função de inicialização robusta
 const initFirebase = () => {
-  // Verifica se já existe uma app inicializada pelo SDK
-  if (initialized || (admin.apps && admin.apps.length > 0)) {
+  // Se já houver apps inicializados, retornamos true
+  if (getApps().length > 0) {
     return true;
   }
 
@@ -18,18 +18,19 @@ const initFirebase = () => {
   try {
     const serviceAccount = JSON.parse(credential);
     
-    // Inicialização correta usando o método da v14+
+    // Inicializa usando os métodos nomeados
     initializeApp({
       credential: cert(serviceAccount)
     });
     
-    initialized = true;
     return true;
   } catch (err) {
-    console.error('[Firebase] Erro na inicialização:', err);
+    console.error('[Firebase] Erro crítico na inicialização:', err);
     return false;
   }
 };
 
-// Exportamos o 'admin' para que outros arquivos acessem admin.auth(), etc.
+// Exportamos o namespace admin para que o authMiddleware continue funcionando
+// acessando admin.auth()
+const admin = adminNamespace;
 export { admin, initFirebase };
