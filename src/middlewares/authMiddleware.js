@@ -1,12 +1,14 @@
 import { admin, initFirebase } from '../config/firebase.js';
 import Usuario from '../models/Usuario.js';
 
+
 /**
  * Verifica o Firebase ID Token enviado no header Authorization: Bearer <token>.
  * Após verificação bem-sucedida, popula req.user com os dados do usuário.
  */
 const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
+
 
   if (!authHeader?.startsWith('Bearer ')) {
     return res.status(401).json({ erro: 'Token de autenticação obrigatório.' });

@@ -43,8 +43,6 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 
 // ── 1. Security headers — RNF-004 / HSTS ────────────────────────
-// Em produção, CSP é ativado para proteção contra XSS.
-// Em desenvolvimento, CSP é desativado para Swagger UI e o SPA React funcionarem.
 const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(helmet({
@@ -88,82 +86,85 @@ app.get('/api-docs.json', (_req, res) => {
 // ── 7. Health check (público) ────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+// ═══════════════════════════════════════════════════════════════════
+// 🔥 CORREÇÃO: Autenticação APENAS para rotas /api
+// ═══════════════════════════════════════════════════════════════════
+
 // ── 8. Normalização do prefixo /api ─────────────────────────────
-// Dev: Vite proxy retira /api. Prod: browser envia /api/* direto.
 app.use((req, _res, next) => {
-  if (req.path.startsWith('/api/')) req.url = req.url.slice(4);
+  if (req.path.startsWith('/api/')) {
+    req.url = req.url.slice(4);
+  }
   next();
 });
 
-// ── 9. Autenticação global com bypass de rotas públicas ──────────
-// Caminhos que NÃO exigem token Firebase:
-//   - POST /login, POST /usuarios, POST /usuariocadastrados (registro)
-//   - Documentação Swagger
-//   - Arquivos de upload
-//   - Health check
-const PUBLIC_PATHS = new Set([
-  'POST /login',
-  'POST /usuarios',
-  'POST /usuariocadastrados',
-]);
-
-app.use((req, res, next) => {
+// ── 9. Middleware de autenticação SOMENTE para /api ─────────────
+// ✅ Frontend (/, /favicon.ico, etc) fica LIVRE
+// ✅ API (/api/*) é protegida
+app.use('/api', (req, res, next) => {
   const key = `${req.method} ${req.path}`;
+  
+  // Rotas públicas da API (sem autenticação)
+  const PUBLIC_API_PATHS = new Set([
+    'POST /login',
+    'POST /usuarios',
+    'POST /usuariocadastrados',
+  ]);
+  
+  // Swagger e uploads também são públicos
   if (
-    PUBLIC_PATHS.has(key)             ||
-    req.path.startsWith('/api-docs')  ||
-    req.path.startsWith('/uploads')   ||
-    req.path === '/health'
-  ) return next();
-
+    PUBLIC_API_PATHS.has(key) ||
+    req.path.startsWith('/api-docs') ||
+    req.path.startsWith('/uploads')
+  ) {
+    return next();
+  }
+  
+  // Qualquer outra rota /api exige autenticação
   return authMiddleware(req, res, next);
 });
 
-// ── 10. Rotas — usuários ─────────────────────────────────────────
-// O router gerencia internamente:
-//   - Rate limiting em /login e registro
-//   - authorize('Gestor') em operações de gestão
-app.use(usuariosRoutes);
+// ── 10. Rotas — usuários (autenticadas via middleware /api) ─────
+app.use('/api', usuariosRoutes);
 
 // ── 11. Rotas — todos os perfis autenticados ─────────────────────
-app.use(checklistRoutes);
-app.use(itemChecklistRoutes);
-app.use(inspecoesRoutes);
-app.use(notificacoesRoutes);
-
-// Modelos de checklist:
-//   GET (leitura) → qualquer usuário autenticado
-//   POST/PUT/DELETE → somente Gestor (gerenciado internamente no router)
-app.use(modeloChecklistRoutes);
+app.use('/api', checklistRoutes);
+app.use('/api', itemChecklistRoutes);
+app.use('/api', inspecoesRoutes);
+app.use('/api', notificacoesRoutes);
+app.use('/api', modeloChecklistRoutes);
 
 // ── 12. Veículos ─────────────────────────────────────────────────
-// Leitura: qualquer usuário autenticado
-app.get('/vehicles',     getAllVehicles);
-app.get('/vehicles/:id', getVehicleById);
-
-// Escrita: somente Gestor (1.2 — RBAC)
-app.post('/vehicles',       authorize('Gestor'), validateVehicleCreate, createVehicle);
-app.put('/vehicles/:id',    authorize('Gestor'), updateVehicle);
-app.delete('/vehicles/:id', authorize('Gestor'), deleteVehicle);
+app.get('/api/vehicles', getAllVehicles);
+app.get('/api/vehicles/:id', getVehicleById);
+app.post('/api/vehicles', authorize('Gestor'), validateVehicleCreate, createVehicle);
+app.put('/api/vehicles/:id', authorize('Gestor'), updateVehicle);
+app.delete('/api/vehicles/:id', authorize('Gestor'), deleteVehicle);
 
 // ── 13. Relatórios e auditoria — somente Gestor ──────────────────
-app.use(authorize('Gestor'), reportRoutes);
-app.use(authorize('Gestor'), auditoriaRoutes);
+app.use('/api', authorize('Gestor'), reportRoutes);
+app.use('/api', authorize('Gestor'), auditoriaRoutes);
 
-// ── 13b. LGPD — rotas autenticadas (Art. 18 LGPD) ────────────────
-app.use(lgpdRoutes);
+// ── 14. LGPD — rotas autenticadas ────────────────────────────────
+app.use('/api', lgpdRoutes);
 
-// ── 14. Frontend (produção) ───────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+// 🎯 FRONTEND - Livre e público (SEM autenticação)
+// ═══════════════════════════════════════════════════════════════════
+
+// ── 15. Frontend (produção) ───────────────────────────────────────
 const distPath = path.join(__dirname, '..', 'frontend-web', 'dist');
+
+// Arquivos estáticos do frontend
 app.use(express.static(distPath));
 
-// SPA fallback: qualquer rota desconhecida devolve index.html
-// para que o React Router trate no lado do cliente
+// SPA fallback: QUALQUER rota não reconhecida volta index.html
+// ⚠️ Isso inclui / e /favicon.ico (que agora funcionam!)
 app.use((_req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-// ── 15. Conexão MongoDB e inicialização ──────────────────────────
+// ── 16. Conexão MongoDB e inicialização ──────────────────────────
 const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
 if (!mongoUri) {
@@ -179,6 +180,7 @@ mongoose
     app.listen(PORT, () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
       console.log(`📚 Swagger em http://localhost:${PORT}/api-docs`);
+      console.log(`🌐 Frontend em http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
