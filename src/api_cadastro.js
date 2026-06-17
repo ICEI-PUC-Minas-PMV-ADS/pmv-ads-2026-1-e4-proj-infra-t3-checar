@@ -45,8 +45,28 @@ const PORT = process.env.PORT || 3000;
 // ── 1. Security headers — RNF-004 / HSTS ────────────────────────
 const isProduction = process.env.NODE_ENV === 'production';
 
+// Firebase Auth (login/cadastro) exige connect-src explícito — sem isso cai em default-src 'self'
+const FIREBASE_CONNECT_SRC = [
+  "'self'",
+  'https://identitytoolkit.googleapis.com',
+  'https://securetoken.googleapis.com',
+  'https://www.googleapis.com',
+  'https://firebase.googleapis.com',
+  'https://firebasestorage.googleapis.com',
+  'https://checar-d8205.firebaseapp.com',
+];
+
 app.use(helmet({
-  contentSecurityPolicy: isProduction,
+  contentSecurityPolicy: isProduction
+    ? {
+        useDefaults: true,
+        directives: {
+          connectSrc: FIREBASE_CONNECT_SRC,
+          imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+          frameSrc: ["'self'", 'https://checar-d8205.firebaseapp.com'],
+        },
+      }
+    : false,
   crossOriginEmbedderPolicy: false,
   hsts: {
     maxAge: 31536000,
