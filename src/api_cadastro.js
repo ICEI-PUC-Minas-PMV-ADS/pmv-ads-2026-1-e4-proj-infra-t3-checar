@@ -10,7 +10,6 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
-import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import { initNotificationQueue } from './queues/notificationQueue.js';
 import swaggerUi from 'swagger-ui-express';
@@ -67,7 +66,25 @@ app.use(cors({
 // ── 3. Body parsers ──────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize());
+// express-mongo-sanitize reassigns req.query which is getter-only in Express 5 + Node 22.
+// This inline version mutates the object in place instead.
+app.use((req, _res, next) => {
+  const hasForbidden = (key) => /[$\0]/.test(key);
+  const sanitize = (obj) => {
+    if (!obj || typeof obj !== 'object') return;
+    for (const key of Object.keys(obj)) {
+      if (hasForbidden(key)) {
+        delete obj[key];
+      } else {
+        sanitize(obj[key]);
+      }
+    }
+  };
+  sanitize(req.body);
+  sanitize(req.params);
+  sanitize(req.query); // mutates the object returned by the getter — safe in Express 5
+  next();
+});
 app.use(hpp());
 
 // ── 4. Audit middleware (global) ─────────────────────────────────
