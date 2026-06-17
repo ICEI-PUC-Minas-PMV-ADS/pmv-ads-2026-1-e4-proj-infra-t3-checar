@@ -19,7 +19,7 @@ const NAV_LINKS = [
 ];
 
 function Layout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const isPublicPage = PUBLIC_PATHS.includes(location.pathname);
@@ -31,7 +31,7 @@ function Layout({ children }) {
   useEffect(() => { setMenuAberto(false); }, [location.pathname]);
 
   useEffect(() => {
-    if (!user || isPublicPage) {
+    if (!user || isPublicPage || loading) {
       setNaoLidas(0);
       return;
     }
@@ -47,7 +47,7 @@ function Layout({ children }) {
       })
       .catch(() => {});
     return () => { cancelado = true; };
-  }, [user, isPublicPage, location.pathname]);
+  }, [user, isPublicPage, location.pathname, loading]);
 
   const handleLogout = async () => {
     setMenuAberto(false);

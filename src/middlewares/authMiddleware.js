@@ -9,7 +9,11 @@ const authMiddleware = async (req, res, next) => {
     return res.status(401).json({ erro: 'Token de autenticação obrigatório.' });
   }
 
-  const token = authHeader.slice(7);
+  const token = authHeader.slice(7).trim();
+
+  if (!token) {
+    return res.status(401).json({ erro: 'Token de autenticação obrigatório.' });
+  }
 
   // Garante que o Firebase está pronto antes de tentar validar
   if (!initFirebase()) {
@@ -46,8 +50,11 @@ const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error('[Auth] Erro ao verificar token:', err.message);
-    return res.status(401).json({ erro: 'Falha na autenticação.' });
+    console.error('[Auth] Erro ao verificar token:', err.code, err.message);
+    return res.status(401).json({
+      erro: 'Falha na autenticação.',
+      codigo: err.code || 'unknown',
+    });
   }
 };
 

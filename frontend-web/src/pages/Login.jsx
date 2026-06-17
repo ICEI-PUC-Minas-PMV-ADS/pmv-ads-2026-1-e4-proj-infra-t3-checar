@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebaseConfig';
+import { waitForFirebaseUser } from '../contexts/AuthContext';
 
 export default function Login() {
   const [email, setEmail]   = useState('');
@@ -24,8 +25,9 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const credential = await signInWithEmailAndPassword(auth, email, senha);
-      await credential.user.getIdToken(true);
+      await signInWithEmailAndPassword(auth, email, senha);
+      const firebaseUser = await waitForFirebaseUser();
+      await firebaseUser.getIdToken(true);
       navigate(from, { replace: true });
     } catch (error) {
       const code = error.code;

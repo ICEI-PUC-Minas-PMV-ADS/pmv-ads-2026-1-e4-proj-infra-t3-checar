@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getIdToken } from 'firebase/auth';
 import { auth } from './firebaseConfig';
-import { getCurrentUser, triggerUnauthorized } from './authState';
+import { triggerUnauthorized } from './authState';
 
 const api = axios.create({
   baseURL: '/api',
@@ -10,23 +10,14 @@ const api = axios.create({
 });
 
 // ── Request interceptor ──────────────────────────────────────────────────────
-// Sempre obtém token fresco do Firebase (evita race após login e token expirado).
+// Usa SOMENTE token fresco do Firebase — nunca cache do sessionStorage.
 api.interceptors.request.use(async (config) => {
-  try {
-    const firebaseUser = auth.currentUser;
-    if (firebaseUser) {
-      const token = await getIdToken(firebaseUser);
-      config.headers['Authorization'] = `Bearer ${token}`;
-      config.headers['X-User-Id'] = firebaseUser.uid;
-      return config;
-    }
-  } catch {
-    // fallback abaixo
-  }
+  const firebaseUser = auth.currentUser;
+  if (!firebaseUser) return config;
 
-  const user = getCurrentUser();
-  if (user?.uid) config.headers['X-User-Id'] = user.uid;
-  if (user?.token) config.headers['Authorization'] = `Bearer ${user.token}`;
+  const token = await getIdToken(firebaseUser);
+  config.headers['Authorization'] = `Bearer ${token}`;
+  config.headers['X-User-Id'] = firebaseUser.uid;
   return config;
 });
 
@@ -35,7 +26,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      triggerUnauthorized();
+      const erro = error.response?.data?.erro;
+      // Evita logout em requisição sem token (auth ainda inicializando)
+      if (erro !== 'Token de autenticação obrigatório.' && auth.currentUser) {
+        triggerUnauthorized();
+      }
     }
 
     const serverMessage =

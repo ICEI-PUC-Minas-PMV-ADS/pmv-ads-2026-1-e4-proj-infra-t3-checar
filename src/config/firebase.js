@@ -3,6 +3,7 @@ import * as adminNamespace from 'firebase-admin';
 
 let initError = null;
 let initHint = 'not_configured';
+let serviceAccountProjectId = null;
 
 const PEM_BEGIN = '-----BEGIN PRIVATE KEY-----';
 const PEM_END = '-----END PRIVATE KEY-----';
@@ -74,6 +75,7 @@ const parseServiceAccount = () => {
       if (parsed?.type === 'service_account' && parsed?.private_key && parsed?.client_email) {
         initError = null;
         initHint = 'parsed';
+        serviceAccountProjectId = parsed.project_id || null;
         return parsed;
       }
     } catch {
@@ -121,6 +123,7 @@ const getFirebaseStatus = () => ({
   ready: getApps().length > 0 || initFirebase(),
   hint: initHint,
   error: initError,
+  projectId: serviceAccountProjectId,
 });
 
 const admin = adminNamespace;

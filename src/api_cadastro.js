@@ -141,6 +141,7 @@ app.get('/health', (_req, res) => {
     uptime: Math.floor(process.uptime()),
     firebase: firebase.ready,
     firebaseConfigured: firebase.configured,
+    ...(firebase.projectId ? { firebaseProjectId: firebase.projectId } : {}),
     ...(firebase.hint && !firebase.ready ? { firebaseHint: firebase.hint } : {}),
     ...(firebase.error && !firebase.ready ? { firebaseError: firebase.error } : {}),
     redis: !!process.env.REDIS_URL,
