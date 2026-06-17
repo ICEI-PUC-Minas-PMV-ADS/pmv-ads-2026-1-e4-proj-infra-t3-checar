@@ -80,7 +80,8 @@ router.post(
         dados: novaInspecao,
       });
     } catch (error) {
-      res.status(500).json({ erro: 'Erro interno no servidor.', detalhe: error.message });
+      console.error('[inspecao/upload]', error.name, error.message);
+      res.status(500).json({ erro: 'Erro interno no servidor.' });
     }
   }
 );
@@ -107,7 +108,8 @@ router.get('/inspecoes', async (req, res) => {
 
     res.json({ data: inspecoes, total, page, totalPages: Math.ceil(total / limit) });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao listar inspeções', detalhe: error.message });
+    console.error('[GET /inspecoes]', error.name, error.message);
+    res.status(500).json({ erro: 'Erro ao listar inspeções' });
   }
 });
 
@@ -129,7 +131,8 @@ router.get('/inspecoes/checklist/:checklistId', async (req, res) => {
 
     res.status(200).json(inspecoes);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar inspeções do checklist.', detalhe: error.message });
+    console.error('[GET /inspecoes/checklist]', error.name, error.message);
+    res.status(500).json({ erro: 'Erro ao buscar inspeções do checklist.' });
   }
 });
 
@@ -165,7 +168,8 @@ router.get('/inspecoes/historico/:placa', async (req, res) => {
 
     res.status(200).json({ data: historico, total, page, totalPages: Math.ceil(total / limit) });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar histórico.', detalhe: error.message });
+    console.error('[GET /inspecoes/historico]', error.name, error.message);
+    res.status(500).json({ erro: 'Erro ao buscar histórico.' });
   }
 });
 
@@ -186,7 +190,8 @@ router.delete('/inspecoes/placa/:placa', async (req, res) => {
       totalDeletado: resultado.deletedCount,
     });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao deletar inspeções', detalhe: error.message });
+    console.error('[DELETE /inspecoes/placa]', error.name, error.message);
+    res.status(500).json({ erro: 'Erro ao deletar inspeções' });
   }
 });
 
@@ -202,7 +207,8 @@ router.delete('/inspecoes/:id', async (req, res) => {
     }
     res.status(200).json({ mensagem: 'Inspeção deletada com sucesso', inspecao: inspecaoDeletada });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao deletar inspeção', detalhe: error.message });
+    console.error('[DELETE /inspecoes/:id]', error.name, error.message);
+    res.status(500).json({ erro: 'Erro ao deletar inspeção' });
   }
 });
 

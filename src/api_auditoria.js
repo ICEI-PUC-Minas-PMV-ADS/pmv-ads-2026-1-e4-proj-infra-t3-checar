@@ -23,7 +23,8 @@ router.get('/auditoria', async (req, res) => {
 
     return res.status(200).json({ data: logs, total, page, totalPages: Math.ceil(total / limit) });
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro ao consultar auditoria', detalhe: err.message });
+    console.error('[GET /auditoria]', err.name, err.message, err.stack);
+    return res.status(500).json({ erro: 'Erro ao consultar auditoria.' });
   }
 });
 

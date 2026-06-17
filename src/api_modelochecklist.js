@@ -13,112 +13,116 @@ const router = express.Router();
 
 router.use(express.json());
 
-
-
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // Criação de modelo: somente Gestor (1.2 — RBAC)
 router.post("/modelochecklists", authorize("Gestor"), async (req, res) => {
-    try {
-        const novoModeloChecklist = await ModeloChecklist.create(req.body);
-        cache.delByPrefix(CACHE_PREFIX); // invalida cache da listagem
-        res.status(201).json(novoModeloChecklist);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ erro: error.message });
+  try {
+    const novoModeloChecklist = await ModeloChecklist.create(req.body);
+    cache.delByPrefix(CACHE_PREFIX); // invalida cache da listagem
+    res.status(201).json(novoModeloChecklist);
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ erro: error.message });
     }
+    console.error('[POST /modelochecklists]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro interno ao criar modelo de checklist.' });
+  }
 });
 
 router.get("/modelochecklists", async (req, res) => {
-    try {
-        const cacheKey = CACHE_PREFIX + JSON.stringify(req.query);
-        const cached = cache.get(cacheKey);
-        if (cached) return res.status(200).json(cached);
+  try {
+    const cacheKey = CACHE_PREFIX + JSON.stringify(req.query);
+    const cached = cache.get(cacheKey);
+    if (cached) return res.status(200).json(cached);
 
-        const filtros = {};
+    const filtros = {};
 
-        if (req.query.tipo) {
-            filtros.tipo = req.query.tipo;
-        }
-
-        if (req.query.nome) {
-            filtros.nome = { $regex: req.query.nome, $options: "i" };
-        }
-
-        if (req.query.ativo !== undefined) {
-            filtros.ativo = req.query.ativo === "true";
-        }
-
-        const modelosChecklist = await ModeloChecklist.find(filtros);
-        cache.set(cacheKey, modelosChecklist, 5 * 60_000); // TTL 5 min
-        res.status(200).json(modelosChecklist);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ erro: error.message });
+    if (req.query.tipo) {
+      filtros.tipo = req.query.tipo;
     }
+
+    if (req.query.nome) {
+      filtros.nome = { $regex: req.query.nome, $options: "i" };
+    }
+
+    if (req.query.ativo !== undefined) {
+      filtros.ativo = req.query.ativo === "true";
+    }
+
+    const modelosChecklist = await ModeloChecklist.find(filtros);
+    cache.set(cacheKey, modelosChecklist, 5 * 60_000); // TTL 5 min
+    res.status(200).json(modelosChecklist);
+  } catch (error) {
+    console.error('[GET /modelochecklists]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro interno ao listar modelos de checklist.' });
+  }
 });
 
 router.get("/modelochecklists/:id", async (req, res) => {
-    try {
-        if (!isValidObjectId(req.params.id)) {
-            return res.status(400).json({ erro: "ID invalido" });
-        }
-
-        const modeloChecklist = await ModeloChecklist.findById(req.params.id);
-
-        if (!modeloChecklist) {
-            return res.status(404).json({ mensagem: "Modelo de checklist nao encontrado" });
-        }
-
-        res.status(200).json(modeloChecklist);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ erro: error.message });
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ erro: "ID invalido" });
     }
+
+    const modeloChecklist = await ModeloChecklist.findById(req.params.id);
+
+    if (!modeloChecklist) {
+      return res.status(404).json({ mensagem: "Modelo de checklist nao encontrado" });
+    }
+
+    res.status(200).json(modeloChecklist);
+  } catch (error) {
+    console.error('[GET /modelochecklists/:id]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro interno ao buscar modelo de checklist.' });
+  }
 });
 
 router.put("/modelochecklists/:id", authorize("Gestor"), async (req, res) => {
-    try {
-        if (!isValidObjectId(req.params.id)) {
-            return res.status(400).json({ erro: "ID invalido" });
-        }
-
-        const modeloChecklistAtualizado = await ModeloChecklist.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        );
-
-        if (!modeloChecklistAtualizado) {
-            return res.status(404).json({ mensagem: "Modelo de checklist nao encontrado" });
-        }
-
-        cache.delByPrefix(CACHE_PREFIX);
-        res.status(200).json(modeloChecklistAtualizado);
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ erro: error.message });
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ erro: "ID invalido" });
     }
+
+    const modeloChecklistAtualizado = await ModeloChecklist.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!modeloChecklistAtualizado) {
+      return res.status(404).json({ mensagem: "Modelo de checklist nao encontrado" });
+    }
+
+    cache.delByPrefix(CACHE_PREFIX);
+    res.status(200).json(modeloChecklistAtualizado);
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ erro: error.message });
+    }
+    console.error('[PUT /modelochecklists/:id]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro interno ao atualizar modelo de checklist.' });
+  }
 });
 
 router.delete("/modelochecklists/:id", authorize("Gestor"), async (req, res) => {
-    try {
-        if (!isValidObjectId(req.params.id)) {
-            return res.status(400).json({ erro: "ID invalido" });
-        }
-
-        const modeloChecklistDeletado = await ModeloChecklist.findByIdAndDelete(req.params.id);
-
-        if (!modeloChecklistDeletado) {
-            return res.status(404).json({ mensagem: "Modelo de checklist nao encontrado" });
-        }
-
-        cache.delByPrefix(CACHE_PREFIX);
-        res.status(200).json({ mensagem: "Modelo de checklist deletado com sucesso" });
-    } catch (error) {
-        console.log(error);
-        res.status(400).json({ erro: error.message });
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ erro: "ID invalido" });
     }
+
+    const modeloChecklistDeletado = await ModeloChecklist.findByIdAndDelete(req.params.id);
+
+    if (!modeloChecklistDeletado) {
+      return res.status(404).json({ mensagem: "Modelo de checklist nao encontrado" });
+    }
+
+    cache.delByPrefix(CACHE_PREFIX);
+    res.status(200).json({ mensagem: "Modelo de checklist deletado com sucesso" });
+  } catch (error) {
+    console.error('[DELETE /modelochecklists/:id]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro interno ao deletar modelo de checklist.' });
+  }
 });
 
 export default router;

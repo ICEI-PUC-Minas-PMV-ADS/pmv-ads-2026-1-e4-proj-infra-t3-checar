@@ -26,7 +26,8 @@ router.post('/fcm-tokens', async (req, res) => {
 
     return res.status(200).json({ mensagem: 'Token registrado com sucesso' });
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro ao registrar token', detalhe: err.message });
+    console.error('[POST /fcm-tokens]', err.name, err.message, err.stack);
+    return res.status(500).json({ erro: 'Erro ao registrar token.' });
   }
 });
 
@@ -36,7 +37,8 @@ router.delete('/fcm-tokens/:token', async (req, res) => {
     await FcmToken.deleteOne({ token: req.params.token });
     return res.status(200).json({ mensagem: 'Token removido' });
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro ao remover token', detalhe: err.message });
+    console.error('[DELETE /fcm-tokens]', err.name, err.message, err.stack);
+    return res.status(500).json({ erro: 'Erro ao remover token.' });
   }
 });
 
@@ -69,8 +71,8 @@ router.get('/notificacoes', async (req, res) => {
       totalPages: Math.ceil(total / limit),
     });
   } catch (err) {
-    console.error('[Notificacoes] Erro ao listar:', err);
-    return res.status(500).json({ erro: 'Erro ao listar notificações', detalhe: err.message });
+    console.error('[GET /notificacoes]', err.name, err.message, err.stack);
+    return res.status(500).json({ erro: 'Erro ao listar notificações.' });
   }
 });
 
@@ -87,7 +89,8 @@ router.patch('/notificacoes/:id/lida', async (req, res) => {
     }
     return res.status(200).json(notificacao);
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro ao atualizar notificação', detalhe: err.message });
+    console.error('[PATCH /notificacoes/:id/lida]', err.name, err.message, err.stack);
+    return res.status(500).json({ erro: 'Erro ao atualizar notificação.' });
   }
 });
 
@@ -101,7 +104,8 @@ router.patch('/notificacoes/lida/todas', async (req, res) => {
     await Notificacao.updateMany({ usuarioId, lida: false }, { lida: true });
     return res.status(200).json({ mensagem: 'Todas as notificações marcadas como lidas' });
   } catch (err) {
-    return res.status(500).json({ erro: 'Erro ao atualizar notificações', detalhe: err.message });
+    console.error('[PATCH /notificacoes/lida/todas]', err.name, err.message, err.stack);
+    return res.status(500).json({ erro: 'Erro ao atualizar notificações.' });
   }
 });
 

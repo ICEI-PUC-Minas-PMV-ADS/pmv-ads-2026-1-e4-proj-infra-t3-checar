@@ -102,11 +102,17 @@ app.get('/api-docs.json', (_req, res) => {
 
 // ── 7. Health check (público) ────────────────────────────────────
 app.get('/health', (_req, res) => {
-  const dbState = ['disconnected', 'connected', 'connecting', 'disconnecting'];
-  res.json({
-    status: 'ok',
-    db: dbState[mongoose.connection.readyState] ?? 'unknown',
+  const dbStateMap = ['disconnected', 'connected', 'connecting', 'disconnecting'];
+  const dbState = dbStateMap[mongoose.connection.readyState] ?? 'unknown';
+  const isHealthy = mongoose.connection.readyState === 1;
+
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'ok' : 'degraded',
+    db: dbState,
     env: process.env.NODE_ENV || 'development',
+    uptime: Math.floor(process.uptime()),
+    firebase: !!process.env.FIREBASE_SERVICE_ACCOUNT_JSON,
+    redis: !!process.env.REDIS_URL,
   });
 });
 
@@ -211,8 +217,14 @@ mongoose
     socketTimeoutMS: 45000,
     connectTimeoutMS: 10000,
     heartbeatFrequencyMS: 10000,
-    maxPoolSize: 10,
+    // Azure fecha conexões TCP idle em ~4 min; manter pool menor evita SNAT exhaustion
+    maxPoolSize: 5,
+    minPoolSize: 1,
+    // Fecha conexões pool ociosas antes do Azure fazer isso por baixo
+    maxIdleTimeMS: 120000,
     family: 4,
+    retryWrites: true,
+    retryReads: true,
   })
   .then(() => {
     console.log('✅ MongoDB conectado com sucesso!');

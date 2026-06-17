@@ -45,5 +45,5 @@ usuarioSchema.methods.compararSenha = async function (senhaDigitada) {
     return await bcrypt.compare(senhaDigitada, this.senha);
 };
 
-const Usuario = mongoose.model("Usuario", usuarioSchema);
+const Usuario = mongoose.models.Usuario || mongoose.model("Usuario", usuarioSchema);
 export default Usuario;

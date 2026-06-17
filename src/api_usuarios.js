@@ -63,7 +63,11 @@ const criarUsuario = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao criar usuário', detalhe: error.message });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ erro: 'Dados inválidos', mensagem: error.message });
+    }
+    console.error('[POST /usuarios]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro ao criar usuário.' });
   }
 };
 
@@ -102,7 +106,8 @@ router.post('/login', authLimiter, async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro no servidor', detalhe: error.message });
+    console.error('[POST /login]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro no servidor.' });
   }
 });
 
@@ -112,7 +117,8 @@ router.get('/usuarios', authorize('Gestor'), async (_req, res) => {
     const usuarios = await Usuario.find().select('-senha');
     res.status(200).json(usuarios);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao listar usuários', detalhe: error.message });
+    console.error('[GET /usuarios]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro ao listar usuários.' });
   }
 });
 
@@ -126,7 +132,8 @@ router.get('/usuarios/:id', authorize('Gestor'), async (req, res) => {
     if (!usuario) return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     res.status(200).json(usuario);
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao buscar usuário', detalhe: error.message });
+    console.error('[GET /usuarios/:id]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro ao buscar usuário.' });
   }
 });
 
@@ -169,7 +176,11 @@ router.put('/usuarios/:id', authorize('Gestor'), async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao atualizar usuário', detalhe: error.message });
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ erro: 'Dados inválidos', mensagem: error.message });
+    }
+    console.error('[PUT /usuarios/:id]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro ao atualizar usuário.' });
   }
 });
 
@@ -183,7 +194,8 @@ router.delete('/usuarios/:id', authorize('Gestor'), async (req, res) => {
     if (!usuario) return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     res.status(200).json({ mensagem: 'Usuário deletado com sucesso!' });
   } catch (error) {
-    res.status(500).json({ erro: 'Erro ao deletar usuário', detalhe: error.message });
+    console.error('[DELETE /usuarios/:id]', error.name, error.message, error.stack);
+    res.status(500).json({ erro: 'Erro ao deletar usuário.' });
   }
 });
 
