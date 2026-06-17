@@ -105,10 +105,13 @@ const initFirebase = () => {
   }
 
   try {
-    initializeApp({ credential: cert(serviceAccount) });
+    initializeApp({
+      credential: cert(serviceAccount),
+      projectId: serviceAccount.project_id,
+    });
     initError = null;
     initHint = 'ready';
-    console.log('[Firebase] Admin SDK inicializado:', serviceAccount.client_email);
+    console.log('[Firebase] Admin SDK inicializado:', serviceAccount.client_email, serviceAccount.project_id);
     return true;
   } catch (err) {
     initHint = 'invalid_private_key';

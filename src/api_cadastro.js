@@ -25,7 +25,7 @@ import notificacoesRoutes from './api_notificacoes.js';
 import auditoriaRoutes from './api_auditoria.js';
 import lgpdRoutes from './api_lgpd.js';
 import auditMiddleware from './middlewares/auditMiddleware.js';
-import authMiddleware from './middlewares/authMiddleware.js';
+import authMiddleware, { EXPECTED_PROJECT_ID } from './middlewares/authMiddleware.js';
 import authorize from './middlewares/roleMiddleware.js';
 import {
   getAllVehicles,
@@ -128,11 +128,24 @@ app.get('/api-docs.json', (_req, res) => {
 });
 
 // ── 7. Health check (público) ────────────────────────────────────
-app.get('/health', (_req, res) => {
+const checkGoogleCerts = async () => {
+  try {
+    const res = await fetch(
+      'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
+      { signal: AbortSignal.timeout(5000) }
+    );
+    return res.ok;
+  } catch {
+    return false;
+  }
+};
+
+app.get('/health', async (_req, res) => {
   const dbStateMap = ['disconnected', 'connected', 'connecting', 'disconnecting'];
   const dbState = dbStateMap[mongoose.connection.readyState] ?? 'unknown';
   const dbOk = mongoose.connection.readyState === 1;
   const firebase = getFirebaseStatus();
+  const googleCertsOk = firebase.ready ? await checkGoogleCerts() : false;
 
   res.status(dbOk && firebase.ready ? 200 : 503).json({
     status: dbOk && firebase.ready ? 'ok' : 'degraded',
@@ -142,6 +155,9 @@ app.get('/health', (_req, res) => {
     firebase: firebase.ready,
     firebaseConfigured: firebase.configured,
     ...(firebase.projectId ? { firebaseProjectId: firebase.projectId } : {}),
+    firebaseProjectMatch: firebase.projectId === EXPECTED_PROJECT_ID,
+    expectedFirebaseProjectId: EXPECTED_PROJECT_ID,
+    googleCertsReachable: googleCertsOk,
     ...(firebase.hint && !firebase.ready ? { firebaseHint: firebase.hint } : {}),
     ...(firebase.error && !firebase.ready ? { firebaseError: firebase.error } : {}),
     redis: !!process.env.REDIS_URL,

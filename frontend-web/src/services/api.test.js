@@ -20,12 +20,14 @@ vi.mock('./authState', () => ({
   setOnUnauthorized:   vi.fn(),
 }));
 
+const mockRequest = vi.fn();
 vi.mock('axios', () => {
   const mockInstance = {
     interceptors: {
       request:  { use: vi.fn() },
       response: { use: vi.fn() },
     },
+    request: (...args) => mockRequest(...args),
   };
   return { default: { create: vi.fn(() => mockInstance) } };
 });
@@ -43,6 +45,7 @@ describe('frontend-web api service', () => {
   beforeEach(() => {
     mockCurrentUser = null;
     mockGetIdToken.mockReset();
+    mockRequest.mockReset();
     triggerUnauthorized.mockReset();
   });
 
@@ -58,7 +61,9 @@ describe('frontend-web api service', () => {
 
   it('does NOT logout on generic 401', async () => {
     mockCurrentUser = { uid: 'uid-1' };
+    mockRequest.mockRejectedValueOnce(new Error('retry failed'));
     const error = {
+      config: { headers: {} },
       response: { status: 401, data: { erro: 'Falha na autenticação.' } },
       message: 'Request failed',
     };
@@ -67,14 +72,20 @@ describe('frontend-web api service', () => {
     expect(triggerUnauthorized).not.toHaveBeenCalled();
   });
 
-  it('logs out only when Firebase revokes the session', async () => {
+  it('uses detalhe from backend in error message', async () => {
     mockCurrentUser = { uid: 'uid-1' };
+    mockRequest.mockRejectedValueOnce(new Error('retry failed'));
     const error = {
-      response: { status: 401, data: { codigo: 'auth/id-token-revoked' } },
+      config: { headers: {}, _authRetry: true },
+      response: {
+        status: 401,
+        data: { erro: 'Falha na autenticação.', detalhe: 'Token expirado.' },
+      },
       message: 'Request failed',
     };
 
-    await expect(responseErrorFn(error)).rejects.toBeDefined();
-    expect(triggerUnauthorized).toHaveBeenCalledTimes(1);
+    await expect(responseErrorFn(error)).rejects.toMatchObject({
+      message: 'Token expirado.',
+    });
   });
 });

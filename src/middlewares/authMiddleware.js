@@ -1,6 +1,58 @@
 import crypto from 'node:crypto';
-import { admin, initFirebase, getFirebaseStatus } from '../config/firebase.js';
+import { getAuth } from 'firebase-admin/auth';
+import { initFirebase, getFirebaseStatus } from '../config/firebase.js';
 import Usuario from '../models/Usuario.js';
+
+const EXPECTED_PROJECT_ID = 'checar-d8205';
+
+const decodeJwtPayload = (token) => {
+  try {
+    const part = token.split('.')[1];
+    if (!part) return null;
+    const json = Buffer.from(part.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+};
+
+const buildAuthFailureResponse = (err, token) => {
+  const payload = decodeJwtPayload(token);
+  const serverProjectId = getFirebaseStatus().projectId || null;
+  const tokenAud = payload?.aud ?? null;
+  const tokenExpired = payload?.exp ? payload.exp * 1000 < Date.now() : null;
+
+  let detalhe;
+  if (tokenAud && serverProjectId && tokenAud !== serverProjectId) {
+    detalhe =
+      `Token emitido para "${tokenAud}" mas o servidor usa "${serverProjectId}". ` +
+      'Recoloque a service account do projeto checar-d8205 no Azure.';
+  } else if (tokenExpired) {
+    detalhe = 'Token expirado. Saia e entre novamente.';
+  } else if (err.message?.includes('fetch') || err.message?.includes('certificate')) {
+    detalhe =
+      'Servidor não alcançou os certificados do Google (rede outbound do Azure). ' +
+      'Libere acesso a googleapis.com.';
+  } else if (payload && !tokenAud) {
+    detalhe = 'Token JWT inválido ou incompleto.';
+  }
+
+  console.error('[Auth] verifyIdToken falhou:', {
+    codigo: err.code,
+    message: err.message,
+    tokenAud,
+    serverProjectId,
+    tokenExpired,
+  });
+
+  return {
+    erro: 'Falha na autenticação.',
+    codigo: err.code || 'unknown',
+    ...(detalhe ? { detalhe } : {}),
+    ...(tokenAud ? { tokenProjectId: tokenAud } : {}),
+    ...(serverProjectId ? { serverProjectId } : {}),
+  };
+};
 
 const findOrCreateUsuario = async (decoded) => {
   const email = decoded.email?.toLowerCase?.()?.trim();
@@ -45,7 +97,7 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const token = authHeader.slice(7).trim();
-  if (!token) {
+  if (!token || token === 'undefined' || token === 'null') {
     return res.status(401).json({ erro: 'Token de autenticação obrigatório.' });
   }
 
@@ -58,7 +110,7 @@ const authMiddleware = async (req, res, next) => {
   }
 
   try {
-    const decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await getAuth().verifyIdToken(token);
     const usuario = await findOrCreateUsuario(decoded);
 
     if (!usuario) {
@@ -78,12 +130,9 @@ const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error('[Auth] Erro ao verificar token:', err.code, err.message);
-    return res.status(401).json({
-      erro: 'Falha na autenticação.',
-      codigo: err.code || 'unknown',
-    });
+    return res.status(401).json(buildAuthFailureResponse(err, token));
   }
 };
 
+export { EXPECTED_PROJECT_ID, decodeJwtPayload, buildAuthFailureResponse };
 export default authMiddleware;

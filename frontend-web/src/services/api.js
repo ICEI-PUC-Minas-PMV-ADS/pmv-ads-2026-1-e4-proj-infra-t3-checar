@@ -9,25 +9,42 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// ── Request interceptor ──────────────────────────────────────────────────────
-// Usa SOMENTE token fresco do Firebase — nunca cache do sessionStorage.
 api.interceptors.request.use(async (config) => {
   const firebaseUser = auth.currentUser;
   if (!firebaseUser) return config;
 
-  const token = await getIdToken(firebaseUser);
+  const forceRefresh = Boolean(config._forceTokenRefresh);
+  const token = await getIdToken(firebaseUser, forceRefresh);
+  if (!token) return config;
+
   config.headers['Authorization'] = `Bearer ${token}`;
   config.headers['X-User-Id'] = firebaseUser.uid;
   return config;
 });
 
-// ── Response interceptor ─────────────────────────────────────────────────────
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const original = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !original._authRetry &&
+      auth.currentUser &&
+      error.response?.data?.erro === 'Falha na autenticação.'
+    ) {
+      original._authRetry = true;
+      original._forceTokenRefresh = true;
+      try {
+        return await api.request(original);
+      } catch (retryErr) {
+        error = retryErr;
+      }
+    }
+
     if (error.response?.status === 401) {
       const codigo = error.response?.data?.codigo;
-      // Só desloga se o Firebase invalidou a sessão — evita voltar ao login por erro de API
       const sessaoInvalida =
         codigo === 'auth/id-token-revoked' ||
         codigo === 'auth/user-disabled';
@@ -37,6 +54,7 @@ api.interceptors.response.use(
     }
 
     const serverMessage =
+      error.response?.data?.detalhe ||
       error.response?.data?.mensagem ||
       error.response?.data?.erro     ||
       error.response?.data?.message  ||
