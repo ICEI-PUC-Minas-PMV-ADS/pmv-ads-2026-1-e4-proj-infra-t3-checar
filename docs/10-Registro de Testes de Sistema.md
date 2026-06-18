@@ -13,75 +13,23 @@ Testes de sistema ajudam a:
 - Validar a funcionalidade completa em um ambiente que simula o uso real.
 - Garantir que as mudanças no código não causem regressões em áreas não diretamente relacionadas.
 
-## Configuração do Ambiente
+## Requisitos Funcionais:
 
-Para começar a escrever testes de sistema em um projeto backend utilizando C#, siga os passos abaixo:
-
-1. **Instale o .NET SDK**: Certifique-se de ter o [.NET SDK](https://dotnet.microsoft.com/download) instalado.
-
-2. **Crie um projeto de testes de sistema**: No terminal, navegue até o diretório do seu projeto e execute o seguinte comando para criar um projeto de testes:
-
-    ```bash
-    dotnet new xunit -o tests
-    ```
-
-3. **Adicione uma referência ao seu projeto principal**: No diretório do projeto de testes, adicione uma referência ao seu projeto principal:
-
-    ```bash
-    dotnet add reference ../src/MyProject.csproj
-    ```
-
-4. **Configure o ambiente de teste**: Isso pode incluir a configuração de servidores, bancos de dados, e outros serviços necessários para que o sistema funcione como um todo.
-
-5. **Organize sua estrutura de diretórios**: Uma estrutura comum de projeto é a seguinte:
-
-    ```
-    MyProject/
-    ├── src/
-    │   └── MyProject.cs
-    └── tests/
-        └── MyProject.SystemTests.cs
-    ```
-
-## Exemplo de Teste de Sistema
-
-Vamos supor que temos um serviço web que gerencia usuários e oferece uma API REST para adicionar e consultar usuários. Vamos criar um teste de sistema para garantir que a API funciona corretamente.
-
-### Código de Exemplo
-
-Aqui está uma implementação simplificada do serviço:
-
-```csharp
-// src/MyProject.cs
-
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-
-namespace MyProject
-{
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
-    {
-        private static List<User> Users = new List<User>();
-
-        [HttpPost]
-        public IActionResult AddUser(User user)
-        {
-            Users.Add(user);
-            return Ok();
-        }
-
-        [HttpGet]
-        public IActionResult GetUsers()
-        {
-            return Ok(Users);
-        }
-    }
-
-    public class User
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-    }
-}
+RF 001 - Permitir o cadastro e autenticação de motoristas e gestores
+RF-002	Permitir o cadastro detalhado de veículos (placa, modelo, ano):
+Descrição do teste:
+Preenchimento das informações do carro
+<img width="1536" height="606" alt="image" src="https://github.com/user-attachments/assets/56fefa62-9c01-44c5-a480-74a0df60cf76" />
+Upload das fotos para identificar as condições do carro:
+<img width="1208" height="895" alt="image" src="https://github.com/user-attachments/assets/80e40f14-424e-47df-9a37-8f753612727c" />
+RF-003	Permitir a criação de modelos de checklist (diário, preventivo)	
+RF-004	Registrar status de itens (Conforme/Não Conforme)	
+RF-005	Permitir upload de fotos de avarias nos veículos	
+RF-006	Permitir a inclusão de observações em texto livre por item	
+RF-007	Permitir a assinatura digital do condutor ao finalizar	
+RF-008	Calcular automaticamente a conformidade do checklist		
+RF-009	Gerar relatórios em PDF das inspeções realizadas		
+RF-010	Enviar notificações de falhas críticas via sistema		
+RF-011	Permitir a busca de histórico de inspeções por placa	   
+RF-012	Permitir a exportação de dados em formato CSV	
+RF-013	Permitir realizar login
