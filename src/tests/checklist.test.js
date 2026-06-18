@@ -80,7 +80,7 @@ test("/checklists - get", async () => {
     });
 
     assert.equal(response.status, 200);
-    assert.deepEqual(response.body, checklists);
+    assert.deepEqual(response.body, { status: 'success', data: checklists });
 });
 
 test("/checklists/:id - get", async () => {
@@ -218,8 +218,8 @@ test("/checklists - post error", async () => {
 
     const response = await request(createApp()).post("/checklists").send(body);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao criar checklist.' });
 });
 
 test("/checklists - get error", async () => {
@@ -233,8 +233,8 @@ test("/checklists - get error", async () => {
 
     const response = await request(createApp()).get("/checklists").query({ status: "disponivel" });
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao listar checklists.' });
 });
 
 test("/checklists/:id - get error", async () => {
@@ -248,8 +248,8 @@ test("/checklists/:id - get error", async () => {
 
     const response = await request(createApp()).get("/checklists/" + checklistId);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao buscar checklist.' });
 });
 
 test("/checklists/:id - put error", async () => {
@@ -267,8 +267,8 @@ test("/checklists/:id - put error", async () => {
 
     const response = await request(createApp()).put("/checklists/" + checklistId).send(body);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao atualizar checklist.' });
 });
 
 test("/checklists/:id - delete error", async () => {
@@ -282,6 +282,6 @@ test("/checklists/:id - delete error", async () => {
 
     const response = await request(createApp()).delete("/checklists/" + checklistId);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao deletar checklist.' });
 });

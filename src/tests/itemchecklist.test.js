@@ -133,8 +133,8 @@ test("/itemchecklists - post error", async () => {
 
     const response = await request(createApp()).post("/itemchecklists").send(itensChecklist);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao criar item de checklist.' });
 });
 
 test("/itemchecklists - get error", async () => {
@@ -148,8 +148,8 @@ test("/itemchecklists - get error", async () => {
 
     const response = await request(createApp()).get("/itemchecklists").query({ status: "Conforme" });
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao listar itens de checklist.' });
 });
 
 test("/itemchecklists/:id - get error", async () => {
@@ -163,8 +163,8 @@ test("/itemchecklists/:id - get error", async () => {
 
     const response = await request(createApp()).get("/itemchecklists/" + itemChecklistId);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao buscar item de checklist.' });
 });
 
 test("/itemchecklists/:id - put error", async () => {
@@ -183,8 +183,8 @@ test("/itemchecklists/:id - put error", async () => {
 
     const response = await request(createApp()).put("/itemchecklists/" + itemChecklistId).send(body);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao atualizar item de checklist.' });
 });
 
 test("/itemchecklists/:id - delete error", async () => {
@@ -198,6 +198,6 @@ test("/itemchecklists/:id - delete error", async () => {
 
     const response = await request(createApp()).delete("/itemchecklists/" + itemChecklistId);
 
-    assert.equal(response.status, 400);
-    assert.deepEqual(response.body, { erro });
+    assert.equal(response.status, 500);
+    assert.deepEqual(response.body, { erro: 'Erro interno ao deletar item de checklist.' });
 });

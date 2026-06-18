@@ -15,8 +15,8 @@ router.use(express.json());
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
-// Criação de modelo: somente Gestor (1.2 — RBAC)
-router.post("/modelochecklists", authorize("Gestor"), async (req, res) => {
+// Criação/edição de modelo: Gestor e Motorista (tela Modelos acessível a ambos)
+router.post("/modelochecklists", authorize("Gestor", "Motorista"), async (req, res) => {
   try {
     const novoModeloChecklist = await ModeloChecklist.create(req.body);
     cache.delByPrefix(CACHE_PREFIX); // invalida cache da listagem
@@ -79,7 +79,7 @@ router.get("/modelochecklists/:id", async (req, res) => {
   }
 });
 
-router.put("/modelochecklists/:id", authorize("Gestor"), async (req, res) => {
+router.put("/modelochecklists/:id", authorize("Gestor", "Motorista"), async (req, res) => {
   try {
     if (!isValidObjectId(req.params.id)) {
       return res.status(400).json({ erro: "ID invalido" });

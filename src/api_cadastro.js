@@ -213,7 +213,7 @@ app.use('/api', modeloChecklistRoutes);
 // ── 12. Veículos ─────────────────────────────────────────────────
 app.get('/api/vehicles', getAllVehicles);
 app.get('/api/vehicles/:id', getVehicleById);
-app.post('/api/vehicles', authorize('Gestor'), validateVehicleCreate, createVehicle);
+app.post('/api/vehicles', authorize('Gestor', 'Motorista'), validateVehicleCreate, createVehicle);
 app.put('/api/vehicles/:id', authorize('Gestor'), updateVehicle);
 app.delete('/api/vehicles/:id', authorize('Gestor'), deleteVehicle);
 

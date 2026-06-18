@@ -25,4 +25,8 @@ export default {
     '!src/test.js',
   ],
   coverageReporters: ['text', 'lcov', 'html'],
+  moduleNameMapper: {
+    '^(\\.\\./)*config/loadEnv\\.js$': '<rootDir>/src/tests/__mocks__/loadEnv.js',
+    '^\\.\\/loadEnv\\.js$': '<rootDir>/src/tests/__mocks__/loadEnv.js',
+  },
 };

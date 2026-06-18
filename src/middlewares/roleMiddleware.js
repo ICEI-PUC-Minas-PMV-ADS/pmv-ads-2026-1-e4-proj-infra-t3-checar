@@ -4,8 +4,9 @@
  * Deve ser usado APÓS authMiddleware — depende de req.user estar preenchido.
  *
  * Regras de negócio:
- *   Motorista : criar/consultar checklists, ver veículos, subir fotos
- *   Gestor    : tudo do Motorista + CRUD de veículos, modelos, relatórios, auditoria, usuários
+ *   Motorista : criar/consultar checklists, ver veículos, cadastrar veículo (campo),
+ *               criar/editar modelos de checklist, subir fotos
+ *   Gestor    : tudo do Motorista + excluir veículos/modelos, relatórios, auditoria, usuários
  *
  * Uso:
  *   router.post('/vehicles', authorize('Gestor'), handler)
