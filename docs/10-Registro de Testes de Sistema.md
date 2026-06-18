@@ -44,7 +44,8 @@ Checklist salvo com sucesso
 <img width="1445" height="495" alt="image" src="https://github.com/user-attachments/assets/53bedf32-d058-4d8e-b9ec-3513e6a7838b" />
 
 RF-005	Permitir upload de fotos de avarias nos veículos	
-RF-006	Permitir a inclusão de observações em texto livre por item	
+RF-006	Permitir a inclusão de observações em texto livre por item
+<img width="1311" height="890" alt="image" src="https://github.com/user-attachments/assets/5f2b73d0-fa3e-444d-a39b-0b329420e4ce" />
 RF-007	Permitir a assinatura digital do condutor ao finalizar
 Após fazer o checklist pelo motorista o mesmo deve assinar para garantir rastreabilidade
 <img width="748" height="573" alt="image" src="https://github.com/user-attachments/assets/9e9f7ef8-0e9b-4b84-acdc-3f09cf352bb1" />
@@ -52,5 +53,8 @@ RF-008	Calcular automaticamente a conformidade do checklist
 RF-009	Gerar relatórios em PDF das inspeções realizadas		
 RF-010	Enviar notificações de falhas críticas via sistema		
 RF-011	Permitir a busca de histórico de inspeções por placa	   
-RF-012	Permitir a exportação de dados em formato CSV	
+RF-012	Permitir a exportação de dados em formato CSV
+Exportação de veículos cadastrados
+<img width="1642" height="405" alt="image" src="https://github.com/user-attachments/assets/c843cf63-bc08-467e-8c2a-42c6e1f95b3e" />
+
 RF-013	Permitir realizar login
