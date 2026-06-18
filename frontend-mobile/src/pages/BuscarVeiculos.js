@@ -63,7 +63,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          Buscar veículo por <Text style={styles.headerTitleBlue}>Placa</Text>
+          Buscar <Text style={styles.headerTitleBlue}>veículos</Text>
         </Text>
       </View>
 

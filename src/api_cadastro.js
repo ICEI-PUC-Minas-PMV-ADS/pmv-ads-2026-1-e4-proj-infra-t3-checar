@@ -1,8 +1,7 @@
 // ==========================================
 // ENTRY POINT — API Checar
 // ==========================================
-import dotenv from 'dotenv';
-dotenv.config();
+import './config/loadEnv.js';
 
 import { getFirebaseStatus, initFirebase } from './config/firebase.js';
 import express from 'express';
@@ -10,6 +9,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import os from 'os';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import { initNotificationQueue } from './queues/notificationQueue.js';
@@ -25,6 +25,7 @@ import notificacoesRoutes from './api_notificacoes.js';
 import auditoriaRoutes from './api_auditoria.js';
 import lgpdRoutes from './api_lgpd.js';
 import auditMiddleware from './middlewares/auditMiddleware.js';
+import apiPathCompat from './middlewares/apiPathCompat.js';
 import authMiddleware, { EXPECTED_PROJECT_ID } from './middlewares/authMiddleware.js';
 import authorize from './middlewares/roleMiddleware.js';
 import {
@@ -38,6 +39,15 @@ import { validateVehicleCreate } from './middlewares/validateVehicle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
+
+const getLanIp = () => {
+  for (const iface of Object.values(os.networkInterfaces())) {
+    for (const net of iface ?? []) {
+      if (net.family === 'IPv4' && !net.internal) return net.address;
+    }
+  }
+  return '127.0.0.1';
+};
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -113,6 +123,9 @@ app.use((req, _res, next) => {
   next();
 });
 app.use(hpp());
+
+// Proxy Vite (web dev) envia /vehicles em vez de /api/vehicles — normaliza antes das rotas
+app.use(apiPathCompat);
 
 // ── 4. Audit middleware (global) ─────────────────────────────────
 app.use(auditMiddleware);
@@ -242,10 +255,13 @@ app.use((_req, res) => {
 });
 
 // ── 16. Conexão MongoDB e inicialização ──────────────────────────
-const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+const mongoUri =
+  process.env.MONGO_URI ||
+  process.env.MONGODB_URI ||
+  (process.env.NODE_ENV !== 'production' ? 'mongodb://127.0.0.1:27017/checar' : undefined);
 
 if (!mongoUri) {
-  console.error('❌ MONGO_URI não definida. Configure o arquivo .env');
+  console.error('❌ MONGO_URI não definida. Configure o arquivo .env na raiz do projeto.');
   process.exit(1);
 }
 
@@ -277,10 +293,12 @@ mongoose
   .then(() => {
     console.log('✅ MongoDB conectado com sucesso!');
     initNotificationQueue();
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
+      const lanIp = getLanIp();
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
       console.log(`📚 Swagger em http://localhost:${PORT}/api-docs`);
       console.log(`🌐 Frontend em http://localhost:${PORT}`);
+      console.log(`📱 Mobile (Expo): EXPO_PUBLIC_API_URL=http://${lanIp}:${PORT}`);
     });
   })
   .catch((err) => {

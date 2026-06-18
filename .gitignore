@@ -10,6 +10,7 @@ frontend-mobile/node_modules/
 # =========================
 .env
 .env.*
+!.env.example
 .firebase-env.*
 frontend-mobile/.env
 frontend-web/.env

@@ -22,9 +22,10 @@
     "install:all": "npm install && cd frontend-mobile && npm install && cd .. && cd frontend-web && npm install",
     "update:all": "git pull origin main && npm run install:all",
     "start:web": "cd frontend-web && npm run dev",
-    "start:mobile": "cd frontend-mobile && npx expo start",
+    "start:mobile": "node scripts/start-mobile.mjs",
     "firebase:prepare": "node scripts/prepare-firebase-env.mjs",
-    "firebase:prepare:ps1": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-firebase-env.ps1"
+    "firebase:prepare:ps1": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-firebase-env.ps1",
+    "seed:dev": "node scripts/seed-dev-data.mjs"
   },
   "repository": {
     "type": "git",

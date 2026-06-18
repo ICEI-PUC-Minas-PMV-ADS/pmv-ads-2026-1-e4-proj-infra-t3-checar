@@ -1,5 +1,8 @@
+import { readFileSync, existsSync } from 'fs';
+import path from 'path';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import * as adminNamespace from 'firebase-admin';
+import { PROJECT_ROOT } from './loadEnv.js';
 
 let initError = null;
 let initHint = 'not_configured';
@@ -53,8 +56,28 @@ const sanitizeRaw = (raw) => {
   return value;
 };
 
+const readServiceAccountRaw = () => {
+  const jsonEnv = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
+  if (jsonEnv) return jsonEnv;
+
+  const filePath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH?.trim();
+  if (!filePath) return null;
+
+  const resolved = path.isAbsolute(filePath)
+    ? filePath
+    : path.join(PROJECT_ROOT, filePath);
+
+  if (!existsSync(resolved)) {
+    initHint = 'file_not_found';
+    initError = `FIREBASE_SERVICE_ACCOUNT_PATH não encontrado: ${resolved}`;
+    return null;
+  }
+
+  return readFileSync(resolved, 'utf8').trim();
+};
+
 const parseServiceAccount = () => {
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
+  const raw = readServiceAccountRaw();
   if (!raw) {
     initHint = 'not_configured';
     return null;
@@ -98,7 +121,9 @@ const initFirebase = () => {
   const serviceAccount = parseServiceAccount();
   if (!serviceAccount) {
     if (!initError) {
-      initError = 'FIREBASE_SERVICE_ACCOUNT_JSON não definida no ambiente.';
+      initError =
+        'Firebase não configurado. Defina FIREBASE_SERVICE_ACCOUNT_JSON ou ' +
+        'FIREBASE_SERVICE_ACCOUNT_PATH no .env (rode: npm run firebase:prepare).';
     }
     console.error('[Firebase]', initError);
     return false;
@@ -122,7 +147,10 @@ const initFirebase = () => {
 };
 
 const getFirebaseStatus = () => ({
-  configured: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim()),
+  configured: Boolean(
+    process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim() ||
+      process.env.FIREBASE_SERVICE_ACCOUNT_PATH?.trim()
+  ),
   ready: getApps().length > 0 || initFirebase(),
   hint: initHint,
   error: initError,
