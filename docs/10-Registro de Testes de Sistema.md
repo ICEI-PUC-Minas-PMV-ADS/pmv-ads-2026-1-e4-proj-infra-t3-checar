@@ -16,6 +16,9 @@ Testes de sistema ajudam a:
 ## Requisitos Funcionais:
 
 RF 001 - Permitir o cadastro e autenticação de motoristas e gestores
+<img width="1782" height="865" alt="Cadastro01" src="https://github.com/user-attachments/assets/0c24f1df-3887-4d1d-b279-75318e4dabac" />
+<img width="1795" height="860" alt="Cadastro02" src="https://github.com/user-attachments/assets/3bf26d76-3d3f-425e-a48c-515f7909dad4" />
+<img width="1787" height="862" alt="cadastro03" src="https://github.com/user-attachments/assets/8836c154-2097-4901-9f0b-e732928ffde9" />
 
 |RF-002	Permitir o cadastro detalhado de veículos (placa, modelo, ano)| Evidência| Descrição do teste
 Preenchimento das informações do carro
@@ -48,13 +51,23 @@ RF-006	Permitir a inclusão de observações em texto livre por item
 <img width="1311" height="890" alt="image" src="https://github.com/user-attachments/assets/5f2b73d0-fa3e-444d-a39b-0b329420e4ce" />
 RF-007	Permitir a assinatura digital do condutor ao finalizar
 Após fazer o checklist pelo motorista o mesmo deve assinar para garantir rastreabilidade
+
 <img width="748" height="573" alt="image" src="https://github.com/user-attachments/assets/9e9f7ef8-0e9b-4b84-acdc-3f09cf352bb1" />
-RF-008	Calcular automaticamente a conformidade do checklist		
-RF-009	Gerar relatórios em PDF das inspeções realizadas		
-RF-010	Enviar notificações de falhas críticas via sistema		
-RF-011	Permitir a busca de histórico de inspeções por placa	   
+
+RF-008	Calcular automaticamente a conformidade do checklist
+
+RF-009	Gerar relatórios em PDF das inspeções realizadas
+<img width="1906" height="862" alt="relatorio" src="https://github.com/user-attachments/assets/d513d2c7-973a-44f1-b184-7303c794e605" />
+RF-010	Enviar notificações de falhas críticas via sistema
+<img width="1887" height="912" alt="alerta" src="https://github.com/user-attachments/assets/6ae4748b-2a37-48cc-a23e-70e95e006447" />
+
+RF-011	Permitir a busca de histórico de inspeções por placa
+<img width="1917" height="832" alt="historico" src="https://github.com/user-attachments/assets/c0a06e9c-2b8e-4d1e-b01d-0705d87fad97" />
 RF-012	Permitir a exportação de dados em formato CSV
 Exportação de veículos cadastrados
 <img width="1642" height="405" alt="image" src="https://github.com/user-attachments/assets/c843cf63-bc08-467e-8c2a-42c6e1f95b3e" />
-
 RF-013	Permitir realizar login
+<img width="1906" height="915" alt="Login01" src="https://github.com/user-attachments/assets/01a4ca75-b449-4766-adba-a623df17f883" />
+<img width="1902" height="837" alt="Login2" src="https://github.com/user-attachments/assets/17fe2988-5f89-4efc-bdb1-04643834eb81" />
+<img width="1897" height="918" alt="Login03" src="https://github.com/user-attachments/assets/f6053727-f8d3-487d-af08-75f15c83172e" />
+
