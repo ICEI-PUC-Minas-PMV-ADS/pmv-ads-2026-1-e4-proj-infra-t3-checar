@@ -4,7 +4,7 @@ import { ScrollView, View, Text, TouchableOpacity, StyleSheet } from 'react-nati
 const PoliticaPrivacidade = ({ navegar }) => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <TouchableOpacity onPress={() => navegar('cadastro')} style={styles.voltarBtn} accessibilityLabel="Voltar ao cadastro" accessibilityRole="button">
+      <TouchableOpacity onPress={() => navegar('registro')} style={styles.voltarBtn} accessibilityLabel="Voltar ao cadastro" accessibilityRole="button">
         <Text style={styles.voltarTexto}>← Voltar</Text>
       </TouchableOpacity>
 

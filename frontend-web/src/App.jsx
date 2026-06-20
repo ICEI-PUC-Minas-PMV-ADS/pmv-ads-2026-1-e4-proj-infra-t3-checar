@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicRoute from './components/PublicRoute';
 import Layout from './components/Layout';
 import BuscarVeiculos from './pages/BuscarVeiculos';
 import UploadFotos from './pages/UploadFotos';
@@ -35,10 +36,11 @@ function App() {
       <Router>
         <Layout>
           <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-            <Route path="/cadastro" element={<UserRegistration />} />
+            {/* Public routes — apenas login e cadastro */}
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/cadastro" element={<PublicRoute><UserRegistration /></PublicRoute>} />
+            {/* Fluxo de autenticação (acessível sem login) */}
+            <Route path="/recuperar-senha" element={<PublicRoute><RecuperarSenha /></PublicRoute>} />
             <Route path="/privacidade" element={<PoliticaPrivacidade />} />
 
             {/* Root: auth-aware redirect (no double-hop through ProtectedRoute) */}

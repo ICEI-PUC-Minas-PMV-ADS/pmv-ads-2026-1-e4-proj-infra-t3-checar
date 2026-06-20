@@ -8,7 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { extractList } from '../utils/apiPayload';
 
-const PUBLIC_PATHS = ['/login', '/cadastro', '/recuperar-senha'];
+const PUBLIC_PATHS = ['/login', '/cadastro', '/recuperar-senha', '/privacidade'];
 
 const NAV_LINKS = [
   { to: '/veiculos',    Icon: Car,        label: 'Veículos' },

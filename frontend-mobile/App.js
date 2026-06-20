@@ -57,7 +57,8 @@ function AppContent() {
 
   // Auth guard: bloqueia navegação para telas protegidas sem autenticação
   const navegar = (tela, params = {}) => {
-    if (!TELAS_PUBLICAS.includes(tela) && !usuarioAutenticado) {
+    const autenticado = usuarioAutenticado || Boolean(auth.currentUser);
+    if (!TELAS_PUBLICAS.includes(tela) && !autenticado) {
       setTelaAtual('login');
       setTelaParams({});
       return;
@@ -75,7 +76,10 @@ function AppContent() {
     }
   };
 
-  const eAutenticado = !TELAS_PUBLICAS.includes(telaAtual);
+  const eAutenticado = usuarioAutenticado && !TELAS_PUBLICAS.includes(telaAtual);
+  const telaRenderizada = !usuarioAutenticado && !TELAS_PUBLICAS.includes(telaAtual)
+    ? 'login'
+    : telaAtual;
 
   // Mostra spinner enquanto verifica sessão persistida
   if (carregandoAuth) {
@@ -92,7 +96,7 @@ function AppContent() {
       <StatusBar barStyle="light-content" backgroundColor="#00112b" />
 
       {/* Header fixo (apenas telas busca e upload) */}
-      {TELAS_COM_HEADER.includes(telaAtual) && (
+      {TELAS_COM_HEADER.includes(telaRenderizada) && usuarioAutenticado && (
         <Header navegar={navegar} />
       )}
 
@@ -103,35 +107,35 @@ function AppContent() {
           { marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
         ]}
       >
-        {telaAtual === 'registro' && <UserRegistration navegar={navegar} />}
-        {telaAtual === 'login' && <Login navegar={navegar} />}
-        {telaAtual === 'recuperarSenha' && <ForgotPassword navegar={navegar} />}
-        {telaAtual === 'politicaPrivacidade' && <PoliticaPrivacidade navegar={navegar} />}
+        {telaRenderizada === 'registro' && <UserRegistration navegar={navegar} />}
+        {telaRenderizada === 'login' && <Login navegar={navegar} />}
+        {telaRenderizada === 'recuperarSenha' && <ForgotPassword navegar={navegar} />}
+        {telaRenderizada === 'politicaPrivacidade' && <PoliticaPrivacidade navegar={navegar} />}
 
-        {telaAtual === 'busca' && (
+        {telaRenderizada === 'busca' && (
           <BuscarVeiculos aoTrocarTela={() => navegar('upload')} navegar={navegar} />
         )}
 
-        {telaAtual === 'upload' && (
+        {telaRenderizada === 'upload' && (
           <UploadFotos aoVoltar={() => navegar('busca')} />
         )}
 
-        {telaAtual === 'modelos' && (
+        {telaRenderizada === 'modelos' && (
           <ModeloChecklistSelection navegar={navegar} params={telaParams} />
         )}
 
-        {telaAtual === 'modeloEdit' && (
+        {telaRenderizada === 'modeloEdit' && (
           <ModeloChecklistEdit navegar={navegar} params={telaParams} />
         )}
 
-        {telaAtual === 'checklist' && (
+        {telaRenderizada === 'checklist' && (
           <ChecklistExecution navegar={navegar} params={telaParams} />
         )}
 
-        {telaAtual === 'relatorios' && <Relatorios navegar={navegar} />}
-        {telaAtual === 'historico' && <Historico navegar={navegar} />}
-        {telaAtual === 'notificacoes' && <Notificacoes navegar={navegar} />}
-        {telaAtual === 'exportacoes' && <Exportacoes navegar={navegar} />}
+        {telaRenderizada === 'relatorios' && <Relatorios navegar={navegar} />}
+        {telaRenderizada === 'historico' && <Historico navegar={navegar} />}
+        {telaRenderizada === 'notificacoes' && <Notificacoes navegar={navegar} />}
+        {telaRenderizada === 'exportacoes' && <Exportacoes navegar={navegar} />}
       </View>
 
       {/* Hamburger menu flutuante (substitui TabBar em telas autenticadas) */}
