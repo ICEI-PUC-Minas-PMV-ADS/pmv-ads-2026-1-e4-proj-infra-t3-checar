@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Car, Plus, RefreshCw, Copy, Check } from 'lucide-react';
 import api from '../services/api';
-import { extractList, getApiErrorMessage } from '../utils/apiPayload';
+import { extractList, getApiErrorMessage, mapUltimoChecklistPorVeiculo } from '../utils/apiPayload';
 
 const BuscarVeiculos = () => {
   const navigate = useNavigate();
@@ -16,8 +16,12 @@ const BuscarVeiculos = () => {
     setCarregando(true);
     setErro('');
     try {
-      const response = await api.get('/vehicles');
-      const dadosVeiculos = extractList(response.data);
+      const [vehiclesRes, checklistsRes] = await Promise.all([
+        api.get('/vehicles'),
+        api.get('/checklists').catch(() => ({ data: { data: [] } })),
+      ]);
+      const dadosVeiculos = extractList(vehiclesRes.data);
+      const ultimoChecklist = mapUltimoChecklistPorVeiculo(extractList(checklistsRes.data));
       setVeiculos(dadosVeiculos.map((v) => ({
         _id: v._id,
         nome: v.model,
@@ -26,6 +30,7 @@ const BuscarVeiculos = () => {
         ano: v.year,
         quilometragem: v.mileage,
         observacao: v.observation,
+        checklistId: ultimoChecklist.get(String(v._id))?.id || null,
       })));
     } catch (error) {
       const status = error.response?.status;
@@ -60,7 +65,7 @@ const BuscarVeiculos = () => {
     const termoId = termo.replace(/[^a-f0-9]/g, '');
     const placa = (v.placa || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const nome  = (v.nome  || '').toLowerCase();
-    const id = (v._id || '').toLowerCase();
+    const id = (v.checklistId || '').toLowerCase();
     return (
       (termoPlaca && placa.includes(termoPlaca))
       || nome.includes(termo)
@@ -89,7 +94,7 @@ const BuscarVeiculos = () => {
         <div className="relative mb-4 shrink-0">
           <input
             type="text"
-            placeholder="Placa, modelo ou ID…"
+            placeholder="Placa, modelo ou ID do checklist…"
             className="w-full rounded-2xl border border-white/10 bg-[#0099cc]/20 py-3.5 pl-5 pr-14 text-white placeholder-blue-300/50 backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-[#00b7eb]"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
@@ -145,23 +150,25 @@ const BuscarVeiculos = () => {
                       {veiculo.placa}
                     </p>
                     <div className="mt-1 flex items-center gap-1.5 min-w-0">
-                      <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">ID</span>
-                      <span className="font-mono text-[10px] opacity-70 truncate" title={veiculo._id}>
-                        {veiculo._id}
+                      <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">Checklist</span>
+                      <span className="font-mono text-[10px] opacity-70 truncate" title={veiculo.checklistId || undefined}>
+                        {veiculo.checklistId || '—'}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => copiarId(veiculo._id)}
-                        className="shrink-0 rounded-md p-1 text-white/50 transition hover:bg-white/10 hover:text-[#00b7eb]"
-                        title="Copiar ID do veículo"
-                        aria-label="Copiar ID do veículo"
-                      >
-                        {copiadoId === veiculo._id ? (
-                          <Check size={12} className="text-green-400" />
-                        ) : (
-                          <Copy size={12} />
-                        )}
-                      </button>
+                      {veiculo.checklistId && (
+                        <button
+                          type="button"
+                          onClick={() => copiarId(veiculo.checklistId)}
+                          className="shrink-0 rounded-md p-1 text-white/50 transition hover:bg-white/10 hover:text-[#00b7eb]"
+                          title="Copiar ID do checklist"
+                          aria-label="Copiar ID do checklist"
+                        >
+                          {copiadoId === veiculo.checklistId ? (
+                            <Check size={12} className="text-green-400" />
+                          ) : (
+                            <Copy size={12} />
+                          )}
+                        </button>
+                      )}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-x-2 text-[10px] opacity-60 md:text-xs">
                       <span>{veiculo.ano}</span>

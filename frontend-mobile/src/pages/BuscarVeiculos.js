@@ -8,7 +8,7 @@ import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../services/api';
-import { extractList, getApiErrorMessage } from '../utils/apiPayload';
+import { extractList, getApiErrorMessage, mapUltimoChecklistPorVeiculo } from '../utils/apiPayload';
 
 export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
   const insets = useSafeAreaInsets();
@@ -22,8 +22,12 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
   const carregarDados = async () => {
     try {
       setCarregando(true);
-      const response = await api.get('/vehicles');
-      const dadosVeiculos = extractList(response.data);
+      const [vehiclesRes, checklistsRes] = await Promise.all([
+        api.get('/vehicles'),
+        api.get('/checklists').catch(() => ({ data: { data: [] } })),
+      ]);
+      const dadosVeiculos = extractList(vehiclesRes.data);
+      const ultimoChecklist = mapUltimoChecklistPorVeiculo(extractList(checklistsRes.data));
 
       setVeiculos(dadosVeiculos.map((v) => ({
         _id:            v._id,
@@ -33,6 +37,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
         ano:            v.year,
         quilometragem:  v.mileage,
         observacao:     v.observation,
+        checklistId:    ultimoChecklist.get(String(v._id))?.id || null,
       })));
       setErro(null);
     } catch (error) {
@@ -66,7 +71,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
     const termoId = termo.replace(/[^a-f0-9]/g, '');
     const placa = (v.placa || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const nome  = (v.nome  || '').toLowerCase();
-    const id = (v._id || '').toLowerCase();
+    const id = (v.checklistId || '').toLowerCase();
     return (
       (termoPlaca && placa.includes(termoPlaca))
       || nome.includes(termo)
@@ -85,7 +90,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Placa, modelo ou ID…"
+          placeholder="Placa, modelo ou ID do checklist…"
           placeholderTextColor="rgba(147, 197, 253, 0.5)"
           value={busca}
           onChangeText={setBusca}
@@ -147,20 +152,24 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
                 <Text style={styles.vehicleName} numberOfLines={1}>{veiculo.nome}</Text>
                 <Text style={styles.vehiclePlate}>{veiculo.placa}</Text>
                 <View style={styles.idRow}>
-                  <Text style={styles.idLabel}>ID</Text>
-                  <Text style={styles.idValue} numberOfLines={1} selectable>{veiculo._id}</Text>
-                  <TouchableOpacity
-                    onPress={() => copiarId(veiculo._id)}
-                    style={styles.copyButton}
-                    activeOpacity={0.7}
-                    accessibilityLabel="Copiar ID do veículo"
-                  >
-                    <Ionicons
-                      name={copiadoId === veiculo._id ? 'checkmark' : 'copy-outline'}
-                      size={14}
-                      color={copiadoId === veiculo._id ? '#4ade80' : 'rgba(255,255,255,0.5)'}
-                    />
-                  </TouchableOpacity>
+                  <Text style={styles.idLabel}>Checklist</Text>
+                  <Text style={styles.idValue} numberOfLines={1} selectable>
+                    {veiculo.checklistId || '—'}
+                  </Text>
+                  {veiculo.checklistId ? (
+                    <TouchableOpacity
+                      onPress={() => copiarId(veiculo.checklistId)}
+                      style={styles.copyButton}
+                      activeOpacity={0.7}
+                      accessibilityLabel="Copiar ID do checklist"
+                    >
+                      <Ionicons
+                        name={copiadoId === veiculo.checklistId ? 'checkmark' : 'copy-outline'}
+                        size={14}
+                        color={copiadoId === veiculo.checklistId ? '#4ade80' : 'rgba(255,255,255,0.5)'}
+                      />
+                    </TouchableOpacity>
+                  ) : null}
                 </View>
                 <View style={styles.metaRow}>
                   <Text style={styles.metaText}>{veiculo.ano}</Text>

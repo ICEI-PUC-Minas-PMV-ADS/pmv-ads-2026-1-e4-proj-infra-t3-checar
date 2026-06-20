@@ -89,6 +89,13 @@ router.get("/checklists/historico", async (req, res) => {
       if (req.query.endDate)   filtros.data.$lte = new Date(req.query.endDate);
     }
 
+    if (req.query.checklistId) {
+      if (!isValidObjectId(req.query.checklistId)) {
+        return res.status(400).json({ erro: 'checklistId invalido' });
+      }
+      filtros._id = req.query.checklistId;
+    }
+
     const [checklists, total] = await Promise.all([
       Checklist.find(filtros).sort({ data: -1 }).skip(skip).limit(limit),
       Checklist.countDocuments(filtros),

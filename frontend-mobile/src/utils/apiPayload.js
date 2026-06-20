@@ -23,3 +23,18 @@ export function getApiErrorMessage(error, fallback = 'Não foi possível complet
   }
   return msg || fallback;
 }
+
+/** Mapa veiculoId → _id do checklist mais recente (por campo data). */
+export function mapUltimoChecklistPorVeiculo(checklists) {
+  const map = new Map();
+  for (const c of checklists) {
+    const veiculoId = String(c.veiculoId?._id || c.veiculoId || '');
+    if (!veiculoId) continue;
+    const quando = new Date(c.data || c.createdAt || 0).getTime();
+    const atual = map.get(veiculoId);
+    if (!atual || quando > atual.quando) {
+      map.set(veiculoId, { id: String(c._id), quando });
+    }
+  }
+  return map;
+}

@@ -41,7 +41,7 @@ function Historico() {
   const [placaInsp, setPlacaInsp] = useState('');
 
   // Filtros Checklists
-  const [veiculoId, setVeiculoId] = useState('');
+  const [checklistId, setChecklistId] = useState('');
   const [conformidade, setConformidade] = useState('');
 
   // Estado de resultado
@@ -78,7 +78,7 @@ function Historico() {
         const params = { page: novaPagina, limit };
         if (startDate) params.startDate = startDate;
         if (endDate) params.endDate = endDate;
-        if (veiculoId.trim()) params.veiculoId = veiculoId.trim();
+        if (checklistId.trim()) params.checklistId = checklistId.trim();
         if (conformidade) params.conformidade = conformidade;
         res = await api.get('/checklists/historico', { params });
       }
@@ -114,7 +114,7 @@ function Historico() {
     setTotalPages(1);
     setErro('');
     setBuscado(false);
-    setVeiculoId('');
+    setChecklistId('');
     setConformidade('');
   };
 
@@ -196,14 +196,14 @@ function Historico() {
 
           {tabAtiva === 1 && (
             <div className="space-y-1">
-              <label className="text-xs text-white/60" htmlFor="filtro-veiculo-id">ID do veículo</label>
+              <label className="text-xs text-white/60" htmlFor="filtro-checklist-id">ID do checklist</label>
               <input
-                id="filtro-veiculo-id"
+                id="filtro-checklist-id"
                 type="text"
-                value={veiculoId}
-                onChange={(e) => setVeiculoId(e.target.value)}
+                value={checklistId}
+                onChange={(e) => setChecklistId(e.target.value)}
                 placeholder="Cole o ID copiado da busca"
-                aria-label="Filtrar por ID do veículo"
+                aria-label="Filtrar por ID do checklist"
                 className="w-full rounded-lg border border-[#33ccff]/30 bg-[#00112b] px-3 py-2 text-sm text-white placeholder-white/30 outline-none focus:border-[#00b7eb] transition-colors font-mono"
               />
             </div>

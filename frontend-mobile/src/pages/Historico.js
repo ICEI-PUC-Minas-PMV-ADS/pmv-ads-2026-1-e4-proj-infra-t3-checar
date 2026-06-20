@@ -38,7 +38,7 @@ const formatarData = (dataStr) => {
 export default function Historico({ navegar }) {
   const [aba, setAba] = useState('inspecoes'); // 'inspecoes' | 'checklists'
   const [placa, setPlaca] = useState('');
-  const [veiculoId, setVeiculoId] = useState('');
+  const [checklistId, setChecklistId] = useState('');
   const [filtroConformidade, setFiltroConformidade] = useState('');
 
   const [dados, setDados] = useState([]);
@@ -67,7 +67,7 @@ export default function Historico({ navegar }) {
         });
       } else {
         const params = { page: novaPagina, limit: LIMIT };
-        if (veiculoId.trim()) params.veiculoId = veiculoId.trim();
+        if (checklistId.trim()) params.checklistId = checklistId.trim();
         if (filtroConformidade.trim()) params.conformidade = filtroConformidade.trim();
         response = await api.get('/checklists/historico', { params });
       }
@@ -84,7 +84,7 @@ export default function Historico({ navegar }) {
       setCarregando(false);
       setRefreshing(false);
     }
-  }, [aba, placa, veiculoId, filtroConformidade]);
+  }, [aba, placa, checklistId, filtroConformidade]);
 
   const onRefresh = () => buscar(1, true);
 
@@ -96,7 +96,7 @@ export default function Historico({ navegar }) {
     setErro(null);
     setBuscado(false);
     setPlaca('');
-    setVeiculoId('');
+    setChecklistId('');
     setFiltroConformidade('');
   };
 
@@ -181,10 +181,10 @@ export default function Historico({ navegar }) {
           <View style={styles.filtrosChecklist}>
             <TextInput
               style={styles.input}
-              placeholder="ID do veículo (cole aqui)"
+              placeholder="ID do checklist (cole aqui)"
               placeholderTextColor="rgba(147, 197, 253, 0.5)"
-              value={veiculoId}
-              onChangeText={setVeiculoId}
+              value={checklistId}
+              onChangeText={setChecklistId}
               autoCapitalize="none"
               autoCorrect={false}
             />
