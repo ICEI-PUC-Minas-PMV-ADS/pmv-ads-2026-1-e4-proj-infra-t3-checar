@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Car, Plus, RefreshCw } from 'lucide-react';
+import { Search, Car, Plus, RefreshCw, Copy, Check } from 'lucide-react';
 import api from '../services/api';
 import { extractList, getApiErrorMessage } from '../utils/apiPayload';
 
@@ -10,6 +10,7 @@ const BuscarVeiculos = () => {
   const [busca, setBusca]         = useState('');
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro]           = useState('');
+  const [copiadoId, setCopiadoId] = useState(null);
 
   const carregarDados = useCallback(async () => {
     setCarregando(true);
@@ -42,12 +43,29 @@ const BuscarVeiculos = () => {
 
   useEffect(() => { carregarDados(); }, [carregarDados]);
 
+  const copiarId = async (id) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiadoId(id);
+      setTimeout(() => setCopiadoId(null), 2000);
+    } catch {
+      /* clipboard indisponível */
+    }
+  };
+
   const veiculosFiltrados = veiculos.filter((v) => {
-    const termo = busca.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const termo = busca.toLowerCase().trim();
     if (!termo) return true;
+    const termoPlaca = termo.replace(/[^a-z0-9]/g, '');
+    const termoId = termo.replace(/[^a-f0-9]/g, '');
     const placa = (v.placa || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const nome  = (v.nome  || '').toLowerCase();
-    return placa.includes(termo) || nome.includes(termo);
+    const id = (v._id || '').toLowerCase();
+    return (
+      (termoPlaca && placa.includes(termoPlaca))
+      || nome.includes(termo)
+      || (termoId && id.includes(termoId))
+    );
   });
 
   return (
@@ -71,7 +89,7 @@ const BuscarVeiculos = () => {
         <div className="relative mb-4 shrink-0">
           <input
             type="text"
-            placeholder="Placa ou modelo…"
+            placeholder="Placa, modelo ou ID…"
             className="w-full rounded-2xl border border-white/10 bg-[#0099cc]/20 py-3.5 pl-5 pr-14 text-white placeholder-blue-300/50 backdrop-blur-sm transition focus:outline-none focus:ring-2 focus:ring-[#00b7eb]"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
@@ -126,6 +144,25 @@ const BuscarVeiculos = () => {
                     <p className="font-mono text-xs font-bold tracking-tighter text-[#00b7eb] md:text-sm">
                       {veiculo.placa}
                     </p>
+                    <div className="mt-1 flex items-center gap-1.5 min-w-0">
+                      <span className="text-[9px] uppercase tracking-wider opacity-40 shrink-0">ID</span>
+                      <span className="font-mono text-[10px] opacity-70 truncate" title={veiculo._id}>
+                        {veiculo._id}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copiarId(veiculo._id)}
+                        className="shrink-0 rounded-md p-1 text-white/50 transition hover:bg-white/10 hover:text-[#00b7eb]"
+                        title="Copiar ID do veículo"
+                        aria-label="Copiar ID do veículo"
+                      >
+                        {copiadoId === veiculo._id ? (
+                          <Check size={12} className="text-green-400" />
+                        ) : (
+                          <Copy size={12} />
+                        )}
+                      </button>
+                    </div>
                     <div className="mt-1 flex flex-wrap gap-x-2 text-[10px] opacity-60 md:text-xs">
                       <span>{veiculo.ano}</span>
                       <span>•</span>

@@ -38,6 +38,7 @@ const formatarData = (dataStr) => {
 export default function Historico({ navegar }) {
   const [aba, setAba] = useState('inspecoes'); // 'inspecoes' | 'checklists'
   const [placa, setPlaca] = useState('');
+  const [veiculoId, setVeiculoId] = useState('');
   const [filtroConformidade, setFiltroConformidade] = useState('');
 
   const [dados, setDados] = useState([]);
@@ -66,6 +67,7 @@ export default function Historico({ navegar }) {
         });
       } else {
         const params = { page: novaPagina, limit: LIMIT };
+        if (veiculoId.trim()) params.veiculoId = veiculoId.trim();
         if (filtroConformidade.trim()) params.conformidade = filtroConformidade.trim();
         response = await api.get('/checklists/historico', { params });
       }
@@ -82,7 +84,7 @@ export default function Historico({ navegar }) {
       setCarregando(false);
       setRefreshing(false);
     }
-  }, [aba, placa, filtroConformidade]);
+  }, [aba, placa, veiculoId, filtroConformidade]);
 
   const onRefresh = () => buscar(1, true);
 
@@ -94,6 +96,7 @@ export default function Historico({ navegar }) {
     setErro(null);
     setBuscado(false);
     setPlaca('');
+    setVeiculoId('');
     setFiltroConformidade('');
   };
 
@@ -175,15 +178,26 @@ export default function Historico({ navegar }) {
             autoCorrect={false}
           />
         ) : (
-          <TextInput
-            style={styles.input}
-            placeholder="Filtrar por conformidade (opcional)"
-            placeholderTextColor="rgba(147, 197, 253, 0.5)"
-            value={filtroConformidade}
-            onChangeText={setFiltroConformidade}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+          <View style={styles.filtrosChecklist}>
+            <TextInput
+              style={styles.input}
+              placeholder="ID do veículo (cole aqui)"
+              placeholderTextColor="rgba(147, 197, 253, 0.5)"
+              value={veiculoId}
+              onChangeText={setVeiculoId}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Conformidade (opcional)"
+              placeholderTextColor="rgba(147, 197, 253, 0.5)"
+              value={filtroConformidade}
+              onChangeText={setFiltroConformidade}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
         )}
         <TouchableOpacity
           style={[styles.searchButton, carregando && styles.buttonDisabled]}
@@ -335,6 +349,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 16,
     marginBottom: 12,
+    gap: 8,
+  },
+  filtrosChecklist: {
+    flex: 1,
     gap: 8,
   },
   input: {

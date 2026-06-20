@@ -4,6 +4,7 @@ import {
   FlatList, ActivityIndicator, Platform, RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../services/api';
@@ -16,6 +17,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
   const [carregando,  setCarregando]  = useState(true);
   const [refreshing,  setRefreshing]  = useState(false);
   const [erro,        setErro]        = useState(null);
+  const [copiadoId,   setCopiadoId]   = useState(null);
 
   const carregarDados = async () => {
     try {
@@ -51,12 +53,25 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
 
   useEffect(() => { carregarDados(); }, []);
 
+  const copiarId = async (id) => {
+    await Clipboard.setStringAsync(id);
+    setCopiadoId(id);
+    setTimeout(() => setCopiadoId(null), 2000);
+  };
+
   const veiculosFiltrados = veiculos.filter((v) => {
-    if (!busca.trim()) return true;
-    const termo = busca.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const termo = busca.toLowerCase().trim();
+    if (!termo) return true;
+    const termoPlaca = termo.replace(/[^a-z0-9]/g, '');
+    const termoId = termo.replace(/[^a-f0-9]/g, '');
     const placa = (v.placa || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const nome  = (v.nome  || '').toLowerCase();
-    return placa.includes(termo) || nome.includes(termo);
+    const id = (v._id || '').toLowerCase();
+    return (
+      (termoPlaca && placa.includes(termoPlaca))
+      || nome.includes(termo)
+      || (termoId && id.includes(termoId))
+    );
   });
 
   return (
@@ -70,7 +85,7 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Placa ou modelo…"
+          placeholder="Placa, modelo ou ID…"
           placeholderTextColor="rgba(147, 197, 253, 0.5)"
           value={busca}
           onChangeText={setBusca}
@@ -131,6 +146,22 @@ export default function BuscarVeiculos({ aoTrocarTela, navegar }) {
               <View style={styles.infoContainer}>
                 <Text style={styles.vehicleName} numberOfLines={1}>{veiculo.nome}</Text>
                 <Text style={styles.vehiclePlate}>{veiculo.placa}</Text>
+                <View style={styles.idRow}>
+                  <Text style={styles.idLabel}>ID</Text>
+                  <Text style={styles.idValue} numberOfLines={1} selectable>{veiculo._id}</Text>
+                  <TouchableOpacity
+                    onPress={() => copiarId(veiculo._id)}
+                    style={styles.copyButton}
+                    activeOpacity={0.7}
+                    accessibilityLabel="Copiar ID do veículo"
+                  >
+                    <Ionicons
+                      name={copiadoId === veiculo._id ? 'checkmark' : 'copy-outline'}
+                      size={14}
+                      color={copiadoId === veiculo._id ? '#4ade80' : 'rgba(255,255,255,0.5)'}
+                    />
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.metaRow}>
                   <Text style={styles.metaText}>{veiculo.ano}</Text>
                   <Text style={styles.metaText}>•</Text>
@@ -193,6 +224,10 @@ const styles = StyleSheet.create({
   infoContainer:      { flex: 1, paddingLeft: 12 },
   vehicleName:        { fontSize: 15, fontWeight: '900', color: '#fff', textTransform: 'uppercase' },
   vehiclePlate:       { fontSize: 13, fontWeight: 'bold', color: '#00b7eb', marginVertical: 2, fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' },
+  idRow:              { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2, minWidth: 0 },
+  idLabel:            { fontSize: 9, fontWeight: '700', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5 },
+  idValue:            { flex: 1, fontSize: 10, color: 'rgba(255,255,255,0.65)', fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace' },
+  copyButton:         { padding: 4 },
   metaRow:            { flexDirection: 'row', gap: 6, opacity: 0.6 },
   metaText:           { color: '#fff', fontSize: 11 },
   checklistButton:    { alignSelf: 'flex-start', backgroundColor: '#00b7eb', borderRadius: 8, paddingHorizontal: 9, paddingVertical: 5, marginTop: 7 },
