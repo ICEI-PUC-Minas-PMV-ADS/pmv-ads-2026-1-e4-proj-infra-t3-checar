@@ -14,6 +14,7 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 
 * **Slides de Apresentação**: [CHECAR_Apresentacao.pdf](https://github.com/user-attachments/files/28926925/CHECAR_Apresentacao.pdf)
 * **Vídeo de Apresentação:**: https://drive.google.com/file/d/1eH7O4gnm62PxeQd7wfMp-0EFjoc8PapC/view?usp=sharing
+* **Link do site: https://checarapp.azurewebsites.net
 
 
 
