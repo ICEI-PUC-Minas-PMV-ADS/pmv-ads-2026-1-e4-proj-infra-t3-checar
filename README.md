@@ -24,3 +24,8 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Gabriela Aparecida Alcântara Silva | A disciplina proporcionou aprendizado significativo sobre as tecnologias utilizadas no projeto, contribuindo para o desenvolvimento de novas competências técnicas. Entretanto, houve desafios relacionados ao engajamento de parte da equipe, o que resultou em uma distribuição desigual das atividades e maior sobrecarga para alguns integrantes. Em relação à linguagem utilizada, apesar do aprendizado adquirido, tive maior afinidade com o desenvolvimento utilizando C# devido às experiências anteriores e à familiaridade com a tecnologia. |
 | Renata Pereira da Rocha | A experiência na disciplina foi positiva, permitindo ampliar conhecimentos e desenvolver novas competências durante a execução do projeto. Como ponto de dificuldade, o engajamento do grupo foi menor que nos semestres anteriores, mesmo assim, a atividade contribuiu significativamente para meu aprendizado. |
+
+Vídeo Final:
+https://github.com/user-attachments/assets/480f4576-cdd8-4a14-b541-b74d4435b16f
+
+
