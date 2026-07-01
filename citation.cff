@@ -1,29 +1,25 @@
-message: Please cite this software using these metadata.
-title:
+message: Checar nasceu da necessidade de pequenas, médias e grandes empresas realizarem o acompanhamento periódico dos componentes associados à sua frota. O sistema utiliza checklists para auxiliar operadores e equipes de manutenção na identificação de possíveis falhas antes que atinjam um estado crítico, evitando paradas emergenciais dos equipamentos.
+title: Checar
 authors:
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
-  - family-names: 
-    given-names: 
+  - family-names: Alcântara Silva
+    given-names: Gabriela Aparecida
+  - family-names: Pereira da Rocha
+    given-names: Renata
+  - family-names: Alves Santos Faria
+    given-names: Gabriel Rodrigues
+  - family-names: Alves Quintas
+    given-names: Marcus Vinicius
+  - family-names: Augusto Prudêncio Santos
+    given-names: Talisson
+  - family-names: Aparecido de Oliveira
+    given-names: Israel
   - name-suffix: Professor
     affiliation: PUC Minas
-    family-names: 
-    given-names: 
-  - name-suffix: Professor
-    affiliation: PUC Minas
-    family-names: 
-    given-names: 
+    family-names: Jerônimo de Almeida
+    given-names: Carolina Stephanie
 keywords:
-  - 
-  - 
-repository-code: 
+  - checklist
+  - manutenção
+repository-code: https://github.com/ICEI-PUC-Minas-PMV-ADS/pmv-ads-2026-1-e4-proj-infra-t3-checar
 version: 1.0.0
-date-released: 2023-10-31
+date-released: 2026-07-01
